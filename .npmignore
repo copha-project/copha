@@ -1,0 +1,6 @@
+.github
+.eslint*
+.git
+/test
+/dev
+CNAME

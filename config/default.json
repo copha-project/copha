@@ -1,0 +1,21 @@
+{
+    "Editor": "",
+    "DataPath":"",
+    "DefaultMaxPages": 999999,
+    "ListTimeInterval": 2000,
+    "Storage":{
+        "Type":["file","mongodb","mysql"],
+        "AdapterList":{
+            "mongodb":{
+                "host": "localhost",
+                "port": 27017,
+                "user": "",
+                "pass": ""
+            }
+        }
+    },
+    "Server":{
+        "Host": "127.0.0.1",
+        "Port": 7000
+    }
+}

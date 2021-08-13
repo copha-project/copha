@@ -1,0 +1,35 @@
+{
+  "name": "copha",
+  "version": "0.0.1",
+  "description": "A tool which fetch the web content.",
+  "repository": "https://github.com/yxwzaxns/copha.git",
+  "bin": {
+    "copha": "./bin/index.js"
+  },
+  "scripts": {
+    "postinstall": "node ./bin/init.js",
+    "dev": "node ./app.js",
+    "test": "node ./test/index.js",
+    "clear": "node ./bin/dev.js"
+  },
+  "main": "./index.js",
+  "author": "aong",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "cli-progress": "^3.4.0",
+    "commander": "^5.1.0",
+    "koa": "^2.13.1",
+    "koa-compose": "^4.1.0",
+    "koa-router": "^10.0.0",
+    "mysql2": "^2.1.0",
+    "pidusage": "^2.0.20",
+    "selenium-webdriver": "^4.0.0-alpha.5",
+    "sequelize": "^6.3.3",
+    "winston": "^3.2.1"
+  }
+}

@@ -1,0 +1,22 @@
+[
+    [
+        "Not find msg for index",
+        "没有找到提示信息"
+    ],
+    [
+        "Use `copha config` Set root path before run first.",
+        "第一次使用需要运行 `copha config` 设置全局数据路径参数"
+    ],
+    [
+        "Data path not is a absolute path"
+    ],
+    [
+        "Data path not exist"
+    ],
+    [
+        "App config file not found (4)"
+    ],
+    [
+        "not fond custom exec code. (5)"
+    ]
+]
