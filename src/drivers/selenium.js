@@ -519,7 +519,11 @@ class Selenium extends Base {
         const items = await item.findElements(selector)
         if (items.length !== 1) throw new Error('not find id of item!')
 
-        id = await items[0].getText()
+        if(await items[0].getTagName() === 'a'){
+            id = await items[0].getAttribute('href')
+        }else{
+            id = await items[0].getText()
+        }
         id = id.trim().replace(/[\s/]/g, '_')
         if (this.processConfig.GetItemId?.startWithIdx){
             id = `${item._idx}_${id}`

@@ -1,10 +1,12 @@
 const path = require('path')
 const fs = require('fs')
+const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./class/base')
 
 class Task extends Base {
     #paths = {}
+    #event = null
     constructor(conf) {
         super(conf)
         this.#initValue()
@@ -12,6 +14,7 @@ class Task extends Base {
         // 初始化重写函数
         this.custom = this.#setCustomCode()
         this.driver.setCustom(this.custom)
+        this.#event = new events.EventEmitter()
     }
     static getPath(name,key){
         const taskData = {
@@ -27,44 +30,15 @@ class Task extends Base {
         return path.join(this.appSettings.DataPath,name,taskData[key]||'')
     }
 
-    setExitHandle() {
-        let exitProcess = false // 防抖，多次按退出
-        const exitScript = async (args) => {
-            // 只有start需要执行特别退出流程
-            if (!this.vStartState) process.exit(0)
-            this.log.warn(`get exit signal by ${args}`)
-            if (!exitProcess) {
-                exitProcess = true
-                // 等待正在进行的任务，通过检查相关变量来判断是否可以停止任务
-                this.log.warn('检测到关闭操作，等待业务暂停。')
-                this.vNeedStop = true
-                let limitTime = 0
-                while (!this.vCanStop) {
-                    limitTime++
-                    await Utils.sleep(500)
-                    if (limitTime > 40) {
-                        this.log.warn(`Can't get signal of stop, but then stop process`)
-                        break
-                    }
-                }
-                this.log.warn('Ready to stop process, plaese waitting')
-                await this.saveContext()
-                process.exit(0)
-            }
-        }
-        process.on('SIGINT', exitScript)
-        // process.on('SIGTERM', exitScript)
-        // process.on('SIGHUP',exitScript)
-    }
-    async loadState() {
-        // 导入任务状态
-        this.state = await this.getState()
-        this.log.info('getState finished')
-        // 导入可能存在的未完成的页数据
-        await this.importReworkPages()
-        this.log.info('importReworkPages finished')
-        // 导入上次任务最后的数据
-        this.currentPage = this.lastRunPage = await this.getLastPage()
+    async #startPrepare(){
+        this.#setExitHandle()
+        this.#event.on('taskCanStop',async ()=>{
+            this.log.warn('Ready to stop process, plaese waitting')
+            await this.saveContext()
+            process.exit(0)
+        })
+        this.#setRunPid()
+        await this.#loadState()
     }
     async test() {
         this.log.info(this.getMsg(6))
@@ -84,11 +58,9 @@ class Task extends Base {
     }
     async start() {
         this.log.info(this.getMsg(7,this.#name))
-        this.setExitHandle()
-        this.#setRunPid()
         let hasErr = false
         try {
-            await this.loadState()
+            await this.#startPrepare()
             await this.initDriver()
             this.log.info('init Driver finished')
             await this.openUrl()
@@ -104,9 +76,7 @@ class Task extends Base {
             this.log.err(`work start error: ${error}`)
             hasErr = true
         }
-        if (this.vNeedStop) {
-            await this._stop()
-        }
+        await this.#checkNeedStop()
         // 遇到错误退出程序，有可能的话重启进程
         if (hasErr) {
             try {
@@ -114,25 +84,44 @@ class Task extends Base {
                 await this.saveContext()
                 this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
                 if (this.conf?.main?.alwaysRestart) {
-                    const count = await this.getRestartCount()
-                    const waitSecond = 2 ** (parseInt(count) || 1)
-                    this.log.warn(`-----wait ${waitSecond}s Restart Process -----`)
-                    await Utils.sleep(waitSecond * 1000)
-                    Utils.restartProcess()
+                    await this.#restart()
                 }
             } catch (error) {
                 //pass
             }
             return
         }
-        try {
-            await this.execCode()
-        } catch (error) {
-            this.log.err(`execCode err: ${error.message}`)
-        }
+        await this.execCode()
         await this.recover()
         await this.clear()
         this.log.info('Task finished')
+    }
+    #setExitHandle() {
+        let exitProcess = false // 防抖，多次按退出
+        const exitScript = async (args) => {
+            // 只有start需要执行特别退出流程
+            if (!this.vStartState) process.exit(0)
+            this.log.warn(`get exit signal by ${args}`)
+            if (!exitProcess) {
+                exitProcess = true
+                // 等待正在进行的任务，通过检查vNeedStop变量来判断是否需要暂停任务
+                this.log.warn('检测到关闭操作，通知业务暂停。')
+                this.vNeedStop = true
+            }
+        }
+        process.on('SIGINT', exitScript)
+        // process.on('SIGTERM', exitScript)
+        // process.on('SIGHUP',exitScript)
+    }
+    async #loadState() {
+        // 导入任务状态
+        this.state = await this.getState()
+        this.log.info('getState finished')
+        // 导入可能存在的未完成的页数据
+        await this.importReworkPages()
+        this.log.info('importReworkPages finished')
+        // 导入上次任务最后的数据
+        this.currentPage = this.lastRunPage = await this.getLastPage()
     }
     async recover() {
         fs.writeFileSync(this.getPath('lastPageFile'), `1`)
@@ -153,24 +142,17 @@ class Task extends Base {
         this.log.info('start fetch data')
         while (this.currentPage <= this.pages) {
             // 检查是否有停止信号
-            if (this.vNeedStop) {
-                await this._stop()
-            }
-            let hasErr = false
+            await this.#checkNeedStop()
             try {
-                const notDoneList = await this.getList()
-                if (notDoneList.length > 0) hasErr = true
+                const notDoneList = await this.#doList()
+                if (notDoneList.length > 0) {
+                    throw new Error('do list not complete')
+                }
             } catch (error) {
-                this.log.err(`loopFetch error: ${error.message}`)
-                hasErr = true
-            }
-            if (this.vNeedStop) {
-                await this._stop()
-            }
-            if (hasErr) {
-                this.log.err(`loopFetch -> getList rework : ${this.currentPage}`);
+                this.log.err(`loopFetch -> getList rework : ${this.currentPage}, ${error.message}`);
                 this.reworkPages.push(this.currentPage)
             }
+            await this.#checkNeedStop()
             try {
                 await this.goNext()
             } catch (error) {
@@ -180,48 +162,47 @@ class Task extends Base {
             }
             await Utils.sleep(this.appSettings.ListTimeInterval)
         }
-        await this.subFetch()
+        // await this.#subFetch()
         this.finished = true
     }
-    async subFetch() {
-        // 处理需要重新进行的列表页
-        if (this.reworkPages.length > 0) {
-            this.log.info(`start rework page : [${this.reworkPages}]`)
-            for (let i = 0; i < this.reworkPages.length;) {
-                const page = this.reworkPages[i]
-                this.log.info(`rework page: ${page}`)
-                let hasErr = false
-                try {
-                    await this.goPage(page)
-                    this.log.info(`refetch data of : ${page} page`)
-                    const notDoneList = await this.getList()
-                    if (notDoneList.length > 0) {
-                        hasErr = true
-                    }
-                } catch (error) {
-                    hasErr = true
-                }
-                if (!hasErr) i++
-                await Utils.sleep(1000)
-            }
-
-            this.reworkPages = []
-        }
-    }
+    // TODO: rework 功能暂时屏蔽
+    // async #subFetch() {
+    //     // 处理需要重新进行的列表页
+    //     if (this.reworkPages.length > 0) {
+    //         this.log.info(`start rework page : [${this.reworkPages}]`)
+    //         for (let i = 0; i < this.reworkPages.length;) {
+    //             const page = this.reworkPages[i]
+    //             this.log.info(`rework page: ${page}`)
+    //             let hasErr = false
+    //             try {
+    //                 await this.goPage(page)
+    //                 this.log.info(`refetch data of : ${page} page`)
+    //                 const notDoneList = await this.getList()
+    //                 if (notDoneList.length > 0) {
+    //                     hasErr = true
+    //                 }
+    //             } catch (error) {
+    //                 hasErr = true
+    //             }
+    //             if (!hasErr) i++
+    //             await Utils.sleep(1000)
+    //         }
+    //
+    //         this.reworkPages = []
+    //     }
+    // }
     async goNext() {
         this.currentPage++
         if (this.pages < this.currentPage) return
         return this.goPage(this.currentPage)
     }
-    async getList() {
+    async #doList() {
         let list = await this.getListData()
         this.log.info(`fetch list data : length ${list.length} , ${this.currentPage}/${this.pages} pages`);
         const notDoneList = []
         for (const i in list) {
             // 检查是否有停止信号
-            if (this.vNeedStop) {
-                await this._stop()
-            }
+            await this.#checkNeedStop()
             // 解决获取item时跳转页面导致的item值失效
             const realList = await this.getListData()
             const item = realList[i]
@@ -254,7 +235,7 @@ class Task extends Base {
             }
             await Utils.sleep(this.conf.main.pageTimeInterval * 1000 || 500)
         }
-        if (notDoneList.length == list.length) {
+        if (notDoneList.length === list.length) {
             this.vItemsErrIndex += 1
             const sleepTime = 10 ** this.vItemsErrIndex
             this.log.warn(`fetch item error, sleep ${sleepTime}s to continue!!`)
@@ -285,6 +266,63 @@ class Task extends Base {
                 name: id
             })
             return res.length === 1
+        }
+    }
+    async getLastPage() {
+        const page = await Utils.readFile(this.getPath('lastPageFile'))
+        return parseInt(page) || 1
+    }
+    async importReworkPages() {
+        const pagesString = await Utils.readFile(this.getPath('reworkPagesFile'))
+        try {
+            const pages = JSON.parse(pagesString)
+            if (pages?.length > 0) {
+                this.reworkPages.push(...pages)
+            }
+        } catch (error) {
+            throw new Error(`import rework pages error: ${pagesString}`)
+        }
+    }
+
+    async saveContext() {
+        this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
+        fs.writeFileSync(this.getPath('lastPageFile'), `${this.currentPage}`)
+        if (this.reworkPages.length > 0) {
+            fs.writeFileSync(this.getPath('reworkPagesFile'), JSON.stringify(this.reworkPages))
+        }
+        // save context state
+        if (!this.vTestState) await this.saveState()
+
+        // delete pid file
+        fs.writeFileSync(this.getPath('pidPath'), ``)
+    }
+
+    //public 基础task方法
+    /**
+     * 返回task相关配置的路径
+     */
+    getPath(key) {
+        // TODO: 需要整理一下路径的代码
+        const name = this[key] || this.#paths[key]
+        return name
+    }
+    async setPage(page) {
+        return this.#setPage(page)
+    }
+    async reset(options){
+        // last_page.txt set 1
+        await this.#setPage(1)
+        // reworks pages set []
+        await this.#resetReworkPages()
+        // delete log
+        await this.#deleteLog()
+        // task.pid set ''
+        await this.#clearPid()
+        // task_state.json set init
+        await this.#clearState()
+        // delete data of cache
+        if(options.hard){
+            await this.#deleteData()
         }
     }
     async exportData() {
@@ -326,78 +364,13 @@ class Task extends Base {
         this.log.info('data export success.')
         await this.storage.close()
     }
-    async getLastPage() {
-        const page = await Utils.readFile(this.getPath('lastPageFile'))
-        return parseInt(page) || 1
+    async execCode() {
+        if(await Utils.checkFile(this.getPath('customExecCode')) !== true) throw new Error(this.getMsg(5))
+        this.log.info('start exec custom code')
+        const customCode = require(this.getPath('customExecCode'))
+        return customCode?.call(this)
     }
-    async importReworkPages() {
-        const pagesString = await Utils.readFile(this.getPath('reworkPagesFile'))
-        try {
-            const pages = JSON.parse(pagesString)
-            if (pages?.length > 0) {
-                this.reworkPages.push(...pages)
-            }
-        } catch (error) {
-            throw new Error(`import rework pages error: ${pagesString}`)
-        }
-    }
-    async getRestartCount() {
-        if (!this.state?.RestartCount) {
-            this.state.RestartCount = 1
-        } else {
-            this.state.RestartCount += 1
-        }
-        return this.state.RestartCount
-    }
-    async saveContext() {
-        this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
-        fs.writeFileSync(this.getPath('lastPageFile'), `${this.currentPage}`)
-        if (this.reworkPages.length > 0) {
-            fs.writeFileSync(this.getPath('reworkPagesFile'), JSON.stringify(this.reworkPages))
-        }
-        // save context state
-        if (!this.vTestState) await this.saveState()
-
-        // delete pid file
-        fs.writeFileSync(this.getPath('pidPath'), ``)
-    }
-    async _stop() {
-        this.log.warn('检测到停止信号，业务暂停30s，等待程序停止')
-        this.vCanStop = true
-        await Utils.sleep(30000)
-        this.log.warn('任务等待停止超时，强制停止进程')
-        process.exit(1)
-    }
-
-    // 基础task方法
-    /**
-     * 返回task相关配置的路径
-     */
-    getPath(key) {
-        // TODO: 需要整理一下路径的代码
-        const name = this[key] || this.#paths[key]
-        return name
-    }
-    async setPage(page) {
-        return this.#setPage(page)
-    }
-    async reset(options){
-        // last_page.txt set 1
-        await this.#setPage(1)
-        // reworks pages set []
-        await this.#resetReworkPages()
-        // delete log
-        await this.#deleteLog()
-        // task.pid set ''
-        await this.#clearPid()
-        // task_state.json set init
-        await this.#clearState()
-        // delete data of cache
-        if(options.hard){
-            await this.#deleteData()
-        }
-    }
-
+    //public end
     // interface of task
     /**
      * 获取任务进度状态信息
@@ -421,7 +394,6 @@ class Task extends Base {
      */
     async clear() {
         await this.driver.clear()
-        if (this.storage) await this.storage.close()
     }
     /**
      * 打开 URL 窗口
@@ -435,12 +407,7 @@ class Task extends Base {
     async initDriver() {
         return this.driver.initDriver()
     }
-    async execCode() {
-        if(await Utils.checkFile(this.getPath('customExecCode')) !== true) throw new Error(this.getMsg(5))
-        this.log.info('start exec custom code')
-        const customCode = require(this.getPath('customExecCode'))
-        await customCode?.call(this)
-    }
+
     //interface of process
     async runBefore() {
         if (this.conf.process?.CustomStage?.RunBefore) {
@@ -530,9 +497,8 @@ class Task extends Base {
         this.finished = false
         // 临时状态设置
         this.vItemsErrIndex = 0
-        // 发出可以停止信号
-        this.vCanStop = false
-        // 外界发出关闭指令，内法发出需要停止信号，通知相关流程暂停运行，等待程序关闭
+
+        // 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
         this.vNeedStop = false
         // 测试流程运行标志
         this.vTestState = false
@@ -557,6 +523,30 @@ class Task extends Base {
             return require(this.getPath('overwriteCode'))
         } catch (e) {
             throw new Error(`setCustomCode error : ${e.message}`)
+        }
+    }
+    #getRestartCount() {
+        if (!this.state?.RestartCount) {
+            this.state.RestartCount = 1
+        } else {
+            this.state.RestartCount += 1
+        }
+        return this.state.RestartCount
+    }
+    async #restart(){
+        const count = this.getRestartCount()
+        const waitSecond = 2 ** (parseInt(count) || 1)
+        this.log.warn(`-----wait ${waitSecond}s Restart Process -----`)
+        await Utils.sleep(waitSecond * 1000)
+        Utils.restartProcess()
+    }
+    async #checkNeedStop() {
+        if (this.vNeedStop) {
+            this.log.warn('检测到停止信号，业务暂停30s，等待程序停止')
+            this.#event.emit('taskCanStop')
+            await Utils.sleep(30000)
+            this.log.warn('任务等待停止超时，强制停止进程')
+            process.exit(1)
         }
     }
     get #name(){
