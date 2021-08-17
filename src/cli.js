@@ -31,7 +31,8 @@ class Cli extends Base {
             tasksData.map(task => {
                 return {
                     Name: task.name,
-                    Description: task.desc || ''
+                    Description: task.desc || '',
+                    createTime: task.createTime || '-'
                 }
             })
         )
@@ -45,42 +46,33 @@ class Cli extends Base {
         }
     }
     runTask = async (name, options) => {
-        console.log('sss');
+        name = await this.core.getTaskName(name)
         if (options.export) {
-            return this.exportTaskData(name)
+            return (await this.core.getTask(name)).exportData()
         } else if (options.test) {
-            return this.testTask(name)
+            return (await this.core.getTask(name)).test()
         } else if (options.runcode) {
-            return this.core.execCode(name)
+            return (await this.core.getTask(name)).execCode()
         } else if (options.daemon) {
-            try {
-                const pid = await Utils.readFile(path.join(this.core.config.DataPath, name, 'task.pid'))
-                const pInfo = await pidusage(parseInt(pid))
-                this.log.err(`Run Task Err: Task is running at ${pInfo.pid}`)
-            } catch (error) {
-                this.log.info(`Task [${name}] ready to run with daemon`)
-                return Utils.createProcess(path.resolve(__dirname, '../bin/index.js'), ['run', name])
-            }
-        } else {
-            this.log.info(`Task [${name}] ready to run`)
-            return this.core.runTask(name)
+            // TODO: 重写后台运行功能
+            // try {
+            //     const pid = await Utils.readFile(path.join(this.core.config.DataPath, name, 'task.pid'))
+            //     const pInfo = await pidusage(parseInt(pid))
+            //     this.log.err(`Run Task Err: Task is running at ${pInfo.pid}`)
+            // } catch (error) {
+            //     this.log.info(`Task [${name}] ready to run with daemon`)
+            //     return Utils.createProcess(path.resolve(__dirname, '../bin/index.js'), ['run', name])
+            // }
         }
+        return (await this.core.getTask(name)).start()
     }
     stopTask = async (name, options) => {
+        name = await this.core.getTaskName(name)
+        this.log.info(`Task [${name}] ready to stop`)
+        await this.core.stopTask(name)
         if (options.restart) {
             this.log.info(`Task [${name}] ready to restart`)
-            try {
-                await this.core.restartTask(name)
-            } catch (error) {
-                this.log.err(`Restart task err: ${error.message}`)
-            }
-        } else {
-            this.log.info(`Task [${name}] ready to stop`)
-            try {
-                await this.core.stopTask(name)
-            } catch (error) {
-                this.log.err(`Stop task err: ${error.message}`)
-            }
+            await this.core.restartTask(name)
         }
     }
     resetTask = async (name, options) => {
@@ -88,14 +80,6 @@ class Cli extends Base {
             await this.core.resetTask(name, options)
         } catch (error) {
             this.log.err(`ResetTask err: ${error.message}`)
-        }
-    }
-    testTask = async (name) => {
-        console.log(`${name} task ready to test`)
-        try {
-            await this.core.runTaskTest(name)
-        } catch (e) {
-            console.log(e.message)
         }
     }
     exportTaskData = async (name) => {
@@ -117,13 +101,13 @@ class Cli extends Base {
                 return this.core.setTaskConfig(name, options.set)
             }
             if (options.custom) {
-                configPath = await task.getPath('customExecCode')
+                configPath = task.getPath('customExecCode')
             }
             if (options.overwrite) {
-                configPath = await task.getPath('overwriteCode')
+                configPath = task.getPath('overwriteCode')
             }
             if (options.export_data) {
-                configPath = await task.getPath('customExportData')
+                configPath = task.getPath('customExportData')
             }
         }
         const child = require('child_process').spawn('atom', [configPath], {
@@ -135,12 +119,8 @@ class Cli extends Base {
     }
     createTask = async (name) => {
         this.log.info(`creatre new task named ${name}`)
-        try {
-            await this.core.checkName(name)
-            await this.core.createTask(name)
-        } catch (e) {
-            this.log.err(`Task [${name}] init failed: ${e.message}`)
-        }
+        await this.core.checkName(name)
+        await this.core.createTask(name)
     }
     checkRun = async () => {
         let stat = await Core.checkDataPath()

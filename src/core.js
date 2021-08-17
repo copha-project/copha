@@ -1,8 +1,6 @@
 const path = require('path')
 const pkg = require('../package')
 const Utils = require('uni-utils')
-const RootPath = path.resolve(__dirname, '../')
-const Config = require('../config')
 const Task = require('./task')
 const Base = require('./class/base');
 class Core extends Base{
@@ -10,8 +8,6 @@ class Core extends Base{
     constructor(){
         super()
         process.title = pkg.name
-        this.config = Config
-        this.coreConfPath = path.join(RootPath, 'config/default.json')
     }
     static getInstance(){
         if(!Core.instance){
@@ -34,31 +30,33 @@ class Core extends Base{
         }
         return stat
     }
-    async setConfig(conf={}){
-        return Utils.saveJson(conf, this.coreConfPath)
-    }
-    async getConfig(){
-        return Utils.readJson(this.coreConfPath)
+
+    async getTaskName(data){
+        if(parseInt(data, 10)>=0){
+            return (await this.listTask())[data].name
+        }
+        return data
     }
     async createTask(name){
-        this.log.info(`Task [${name}] init ...`)
+        this.log.info(`Task [${name}] init`)
         // 复制项目模板文件到新的任务目录
         try {
-            await this._genTpl(name)
+            await this.#genTpl(name)
         } catch (e) {
             await this.deleteTask(name)
-            throw(e)
+            console.log(e);
+            throw new Error(e)
         }
         this.log.info(`Task [${name}] created successfully!`)
     }
     async checkName(name){
-        const taskRootPath = await this._getTaskRootPath(name)
+        const taskRootPath = this.#getTaskRootPath(name)
         if(name && await Utils.fileExist(taskRootPath)){
-            throw(Error(`Task [${name}] exist!`))
+            throw new Error(`Task [${name}] exist!`)
         }
     }
     async deleteTask(name){
-        const taskPath = await this._getTaskRootPath(name)
+        const taskPath = this.#getTaskRootPath(name)
         // 删除数据文件
         await Utils.rm(taskPath)
     }
@@ -76,18 +74,6 @@ class Core extends Base{
         }
         return new Task(taskConf)
     }
-    async exportTaskData(name){
-        const task = await this.getTask(name)
-        if (task) await task.exportData()
-    }
-    async execCode(name){
-        try {
-            const task = await this.getTask(name)
-            await task.execCode()
-        } catch (e) {
-            this.log.err('Task execCode err: ', e.message)
-        }
-    }
     async setTaskConfig(name,data){
         const task = await this.getTask(name)
         const kv = data.split('=')
@@ -97,84 +83,37 @@ class Core extends Base{
         }
         switch (kv[0]) {
             case 'p':
-                return this._setTaskPage(task, kv[1])
+                return task.setPage(kv[1])
             default:
                 break;
         }
     }
-    async runTaskTest(name) {
-        try {
-            const task = await this.getTask(name)
-            await task.test()
-        } catch (e) {
-            this.log.err(e.message)
-        }
-    }
-    async runTask(name){
-        try {
-            const task = await this.getTask(name)
-            await task.start()
-        } catch (e) {
-            this.log.err('Task run err: ', e.message)
-        }
-    }
     async stopTask(name){
-        const pid = await Utils.readFile(path.join(await this._getTaskRootPath(name),'task.pid'))
-        process.kill(parseInt(pid),'SIGINT')
+        const task = await this.getTask(name)
+        const pid = parseInt(await Utils.readFile(task.getPath('pidPath')))
+        if(pid>0) {
+            process.kill(pid,'SIGINT')
+        }
     }
     async restartTask(name){
-        await this.stopTask(name)
-        return Utils.createProcess(path.resolve(RootPath, './bin/index.js'), ['run', name])
+        return Utils.createProcess(this.AppExecutableCommandPath, ['run', name])
     }
     async resetTask(name,options){
         const task = await this.getTask(name)
-        if (!task) return false
-        // last_page.txt set 1
-        await this._setTaskPage(task,1)
-        // reworks pages set []
-        await this._clearTaskReworkPages(task)
-        // delete log
-        await this._deleteTaskLog(task)
-        // task.pid set ''
-        await this._clearTaskPid(task)
-        // task_state.json set init
-        await this._clearTaskState(task)
-        // delete data of cache
-        if(options.hard){
-            await this._deleteTaskData(task)
-        }
+        return task.reset(options)
     }
     async listTask (){
-        const files = await Utils.readDir(Config.DataPath)
+        const files = await Utils.readDir(this.appSettings.DataPath)
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
             return (await Utils.readJson(this.#getTaskConfPath(name))).main
         }))
         return  data
     }
-    async _setTaskPage(task, page) {
-        return Utils.saveFile(`${page}`, task.lastPageFile)
-    }
-    async _deleteTaskLog(task) {
-        await Utils.rm(task.infoLogPath)
-        await Utils.rm(task.errLogPath)
-    }
-    async _deleteTaskData(task) {
-        await Utils.rm(`${task.saveDetailDataDir}/*`)
-    }
-    async _clearTaskPid(task) {
-        return Utils.saveFile('', task.taskPidPath)
-    }
-    async _clearTaskReworkPages(task){
-        return Utils.saveFile('[]', task.reworkPagesFile)
-    }
-    async _clearTaskState(task){
-        const state = await Utils.readJson(task.statePath)
-        state.RestartCount = 0
-        return Utils.saveJson(state,task.statePath)
-    }
-    async _genTpl(name) {
-        const taskRootPath = await this._getTaskRootPath(name)
+
+    async #genTpl(name) {
+        const taskRootPath = this.#getTaskRootPath(name)
         const taskConfigPath = this.#getTaskConfPath(name)
+        // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
             taskRootPath,
             path.join(taskRootPath, 'config'),
@@ -186,44 +125,46 @@ class Core extends Base{
             path.join(taskRootPath, 'log'),
         ])
         await Utils.copyFile(
-            path.resolve(RootPath, 'config/task.conf.tpl.json'),
+            this.AppConfigTpl.configPath,
             taskConfigPath
             )
         await Utils.copyFile(
-            path.resolve(RootPath, 'config/task_state.json'),
-            path.join(taskRootPath, 'task_state.json')
+            this.AppConfigTpl.statePath,
+            Task.getPath(name,'task_state')
         )
         await Utils.copyFile(
-            path.resolve(RootPath, 'config/custom_export_data.js'),
-            path.join(taskRootPath, 'custom_export_data.js')
+            this.AppConfigTpl.custom_export_data,
+            Task.getPath(name,'custom_export_data')
         )
         await Utils.copyFile(
-            path.resolve(RootPath, 'config/custom_over_write_code.js'),
-            path.join(taskRootPath, 'custom_over_write_code.js')
+            this.AppConfigTpl.custom_over_write_code,
+            Task.getPath(name,'custom_over_write_code')
         )
         await Utils.copyFile(
-            path.resolve(RootPath, 'config/custom_exec_code.js'),
-            path.join(taskRootPath, 'custom_exec_code.js')
+            this.AppConfigTpl.custom_exec_code,
+            Task.getPath(name,'custom_exec_code')
         )
-        await Utils.saveFile('1', path.join(taskRootPath, 'last_page.txt'))
-        await Utils.saveFile('[]', path.join(taskRootPath, 'rework_pages.json'))
+        await Utils.saveFile('1', Task.getPath(name,'last_page'))
+        await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
         try {
             const taskConf = await Utils.readJson(taskConfigPath)
             taskConf.main.name = name
             taskConf.main.configPath = taskConfigPath
             taskConf.main.rootPath = taskRootPath
-            taskConf.main.dataPath = path.join(taskRootPath, 'data')
+            taskConf.main.dataPath = Task.getPath(name,'data')
+            taskConf.main.createTime = new Date()
             await Utils.saveFile(JSON.stringify(taskConf, null, 4), taskConfigPath)
         } catch (error) {
             this.log.err('genTpl for task err: ',error.message)
             throw(`_genTpl for task err: ${error.message}`)
         }
     }
+
     #getTaskConfPath(name){
-        return path.join(this.#getTaskRootPath(name), 'config/config.json')
+        return Task.getPath(name,'config')
     }
     #getTaskRootPath(name){
-        return path.resolve(this.appSettings.DataPath, name)
+        return Task.getPath(name,'root')
     }
 }
 

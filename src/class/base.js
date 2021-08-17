@@ -19,7 +19,10 @@ class Base {
         Base.log.debug(`Base class init for : ${new.target.name}`)
     }
     #initValues(){
+        this.RootPath = path.resolve(__dirname, '../../')
         this.AppConfigPath = ConstData.AppConfigPath
+        this.AppExecutableCommandPath = ConstData.AppExecutableCommandPath
+        this.AppConfigTpl = ConstData.AppConfigTpl
     }
     #initConfig(){
         if(!Base.appSettings){
@@ -66,8 +69,16 @@ class Base {
         }
         return Base.storage
     }
-    getMsg(index){
-        return Msgs[index || 0][0]
+    getMsg(code,options){
+        let text = Msgs[code || 0][0]
+        if(options){
+            if (text.includes('#')) {
+                // TODO: 要支持多个数据替换
+                text = text.replace('#',options)
+            }
+        }
+        return text.slice(0,-3)
+
     }
     getEnv(key){
         return process.env[key]

@@ -2,6 +2,7 @@
     "main": {
         "name": "",
         "desc": "",
+        "createTime": "",
         "rootPath": "",
         "configPath": "",
         "dataPath": "",

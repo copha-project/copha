@@ -11,7 +11,6 @@ const firefox = require('selenium-webdriver/firefox')
 const chrome = require('selenium-webdriver/chrome')
 const { Builder } = require('selenium-webdriver')
 
-
 class Selenium extends Base {
     constructor({ conf }) {
         super(conf)
