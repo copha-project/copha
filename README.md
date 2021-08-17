@@ -1,5 +1,5 @@
 # Copha
-## Copha is a tool which fetch the web content.
+## Copha is a tool that fetches the web content.
 
 # Getting Started
 ## Installation
@@ -28,6 +28,11 @@ copha run task-name
 Run For Test
 ```
 copha run task-name -t
+```
+
+Launch a web server of api
+```
+copha server
 ```
 
 ## Env
