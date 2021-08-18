@@ -2,7 +2,7 @@ const path = require('path')
 const pkg = require('../package')
 const Utils = require('uni-utils')
 const Task = require('./task')
-const Base = require('./class/base');
+const Base = require('./class/base')
 class Core extends Base{
     static instance = null
     constructor(){

@@ -132,6 +132,7 @@
                 "type": "xpath",
                 "value": ""
             },
+            "regexp": "",
             "startWithIdx": false
         }
     },

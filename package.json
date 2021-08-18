@@ -1,7 +1,7 @@
 {
   "name": "copha",
-  "version": "0.0.1",
-  "description": "A tool which fetch the web content.",
+  "version": "0.0.2",
+  "description": "A tool that fetches the web content.",
   "repository": "https://github.com/yxwzaxns/copha.git",
   "bin": {
     "copha": "./bin/index.js"

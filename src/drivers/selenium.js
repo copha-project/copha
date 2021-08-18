@@ -238,7 +238,7 @@ class Selenium extends Base {
             try {
                 p = await checkFunc()
             } catch (error) {
-                this.log.err(`checkFunc error: ${error.message}`)
+                this.log.err(`checkFunc error: ${error}`)
                 count += 10
             }
             if (count > 100) throw new Error(`not go page: ${page}`)
@@ -357,6 +357,7 @@ class Selenium extends Base {
     }
     async getItemData(item) {
         let itemData = []
+        // 处理特殊情况下的 item
         if(Array.isArray(item)){
             for (const field of item) {
                 itemData.push(await field.getText())
@@ -365,7 +366,9 @@ class Selenium extends Base {
             return itemData;
         }
         const fields = await item.findElements(this.getItemSelector())
+        // 传递id给后面操作使用
         itemData.id = await this.getItemId(item)
+        itemData.push(itemData.id)
         for (const i in fields) {
             // if ([0].includes(parseInt(i))) continue
             const field = fields[i]
@@ -462,7 +465,7 @@ class Selenium extends Base {
                             }
                     }
                     if(itemConfig?.replace){
-                        itemData = []
+                        itemData = [itemData[0]]
                     }
                     for (const item of content) {
                         if ((await item?.getTagName()).toLowerCase() === 'a'){
@@ -523,6 +526,9 @@ class Selenium extends Base {
             id = await items[0].getAttribute('href')
         }else{
             id = await items[0].getText()
+        }
+        if(this.processConfig.GetItemId?.regexp){
+            id = new RegExp(this.processConfig.GetItemId?.regexp).exec(id)[1]
         }
         id = id.trim().replace(/[\s/]/g, '_')
         if (this.processConfig.GetItemId?.startWithIdx){

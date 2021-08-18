@@ -106,7 +106,7 @@ class Cli extends Base {
             if (options.overwrite) {
                 configPath = task.getPath('overwriteCode')
             }
-            if (options.export_data) {
+            if (options.exportData) {
                 configPath = task.getPath('customExportData')
             }
         }

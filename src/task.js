@@ -3,16 +3,20 @@ const fs = require('fs')
 const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./class/base')
+const Storage = require('./storage')
 
 class Task extends Base {
     #paths = {}
+    #storage = null
     #event = null
     constructor(conf) {
         super(conf)
         this.#initValue()
+        // 初始化 web-driver
         this.driver = this.#initWebDriver()
-        // 初始化重写函数
+        // 初始化 用户自定义操作
         this.custom = this.#setCustomCode()
+
         this.driver.setCustom(this.custom)
         this.#event = new events.EventEmitter()
     }
@@ -34,7 +38,7 @@ class Task extends Base {
         this.#setExitHandle()
         this.#event.on('taskCanStop',async ()=>{
             this.log.warn('Ready to stop process, plaese waitting')
-            await this.saveContext()
+            await this.#saveContext()
             process.exit(0)
         })
         this.#setRunPid()
@@ -81,7 +85,7 @@ class Task extends Base {
         if (hasErr) {
             try {
                 await this.clear()
-                await this.saveContext()
+                await this.#saveContext()
                 this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
                 if (this.conf?.main?.alwaysRestart) {
                     await this.#restart()
@@ -216,7 +220,7 @@ class Task extends Base {
                 continue
             }
             //是否已经保存过该页面数据
-            const hasExist = await this.itemExist(id)
+            const hasExist = await this.#find(id)
             if (hasExist) {
                 this.log.warn(`item data has saved : ${id}`)
                 continue
@@ -227,7 +231,7 @@ class Task extends Base {
                 if (contentTest == '[]' || contentTest == '{}') {
                     throw new Error(`item : ${id} content is empty`)
                 }
-                await this.saveItemData(itemData, id)
+                await this.#save(itemData, id)
             } catch (e) {
                 this.log.err(`item data get error : ${e.message}`)
                 notDoneList.push(id)
@@ -245,28 +249,21 @@ class Task extends Base {
         }
         return notDoneList
     }
-    async saveItemData(data, id) {
-        if (this.storage.type == "file") {
-            const file = path.join(this.getPath('saveDetailDataDir'), `${id}.json`)
-            await Utils.saveJson(data, file)
-        } else {
-            await this.storage.save('detail', {
-                name: id,
-                data: data
-            })
-        }
+    async #save(data, id) {
         this.log.info(`save item data of ${id}`)
+        return this.storage.save({id,data})
     }
-    async itemExist(id) {
-        if (this.storage.type == "file") {
-            const file = path.join(this.getPath('saveDetailDataDir'), `${id}.json`)
-            return await Utils.checkFile(file) === true
-        } else {
-            const res = await this.storage.query('detail', {
-                name: id
-            })
-            return res.length === 1
-        }
+    async #find(id) {
+        return this.storage.findById(id)
+        // if (this.storage.type == "file") {
+        //     const file = path.join(this.getPath('saveDetailDataDir'), `${id}.json`)
+        //     return await Utils.checkFile(file) === true
+        // } else {
+        //     const res = await this.storage.query('detail', {
+        //         name: id
+        //     })
+        //     return res.length === 1
+        // }
     }
     async getLastPage() {
         const page = await Utils.readFile(this.getPath('lastPageFile'))
@@ -282,19 +279,6 @@ class Task extends Base {
         } catch (error) {
             throw new Error(`import rework pages error: ${pagesString}`)
         }
-    }
-
-    async saveContext() {
-        this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
-        fs.writeFileSync(this.getPath('lastPageFile'), `${this.currentPage}`)
-        if (this.reworkPages.length > 0) {
-            fs.writeFileSync(this.getPath('reworkPagesFile'), JSON.stringify(this.reworkPages))
-        }
-        // save context state
-        if (!this.vTestState) await this.saveState()
-
-        // delete pid file
-        fs.writeFileSync(this.getPath('pidPath'), ``)
     }
 
     //public 基础task方法
@@ -326,23 +310,27 @@ class Task extends Base {
         }
     }
     async exportData() {
-        this.log.info('prepare to export data')
+        this.log.info('Prepare to export data')
         // TODO: 使用用户自定义的导出函数
-        // if(this.custom.exportData){
-        //     return this.custom.exportData()
-        // }
-        let files = []
-        if (this.storage.type == "file") {
-            files = (await Utils.readDir(this.getPath('saveDetailDataDir')))
-                .filter(f => f.endsWith('.json'))
-                .map(f => path.join(this.getPath('saveDetailDataDir'), f))
-        } else {
-            // TODO: 不要一次性导出所有数据
-            files = await this.storage.queryAsync('detail', {})
+        if(this.conf.process?.CustomStage?.ExportData){
+            if(await Utils.checkFile(this.getPath('customExportData')) !== true) throw new Error(this.getMsg(5))
+            this.log.info('Start exec custom method of export data')
+            const customCode = require(this.getPath('customExportData'))
+            return customCode?.call(this)
         }
 
+        let files = await this.storage.all()
+        // if (this.storage.type == "file") {
+            // files = (await Utils.readDir(this.getPath('saveDetailDataDir')))
+            //     .filter(f => f.endsWith('.json'))
+            //     .map(f => path.join(this.getPath('saveDetailDataDir'), f))
+        // } else {
+            // TODO: 不要一次性导出所有数据
+
+        // }
+
         if (files.length == 0) {
-            throw new Error('0 files can\'t save')
+            throw new Error('0 files, not need save.')
         }
         this.log.info(`has ${files.length} data prepare to export`);
         const endData = await Utils.loopTask(files, Utils.readJson, {
@@ -522,7 +510,7 @@ class Task extends Base {
         try {
             return require(this.getPath('overwriteCode'))
         } catch (e) {
-            throw new Error(`setCustomCode error : ${e.message}`)
+            throw new Error(`setCustomCode error : ${e}`)
         }
     }
     #getRestartCount() {
@@ -532,6 +520,28 @@ class Task extends Base {
             this.state.RestartCount += 1
         }
         return this.state.RestartCount
+    }
+    #initStorage() {
+        this.log.debug('Task: init storage')
+        try {
+            const storage = new Storage(this.conf)
+            storage.init()
+            return storage
+        } catch (e) {
+            throw new Error(`init storage error: ${e}`)
+        }
+    }
+    async #saveContext() {
+        this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
+        fs.writeFileSync(this.getPath('lastPageFile'), `${this.currentPage}`)
+        if (this.reworkPages.length > 0) {
+            fs.writeFileSync(this.getPath('reworkPagesFile'), JSON.stringify(this.reworkPages))
+        }
+        // save context state
+        if (!this.vTestState) await this.saveState()
+
+        // delete pid file
+        fs.writeFileSync(this.getPath('pidPath'), ``)
     }
     async #restart(){
         const count = this.getRestartCount()
@@ -548,6 +558,12 @@ class Task extends Base {
             this.log.warn('任务等待停止超时，强制停止进程')
             process.exit(1)
         }
+    }
+    get storage(){
+        if(!this.#storage){
+            this.#storage = this.#initStorage()
+        }
+        return this.#storage
     }
     get #name(){
         return this.conf.main.name

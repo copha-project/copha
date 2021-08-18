@@ -3,12 +3,10 @@ const os = require('os')
 const Utils = require('uni-utils')
 const Config = require('../../config')
 const Logger = require('./logger')
-const Storage = require('../storage')
 const Msgs = require("../resource/i18n.json")
 const ConstData = require("../resource/const")
 
 class Base {
-    static storage = null
     static appSettings = null
     static log = null
     constructor(taskConf={}) {
@@ -40,17 +38,6 @@ class Base {
             Base.log = new Logger()
         }
     }
-    #initStorage() {
-        this.log.debug('Base: init storage')
-        try {
-            const storage = new Storage(this.conf.Storage)
-            storage.init()
-            return storage
-        } catch (e) {
-            this.log.err(`init storage error: ${e.message}`)
-            throw new Error(`init storage error: ${e.message}`)
-        }
-    }
     getPathFor(key){
         return this.#pathData[key]
     }
@@ -62,12 +49,6 @@ class Base {
     }
     get log(){
         return Base.log
-    }
-    get storage(){
-        if(!Base.storage){
-            Base.storage = this.#initStorage()
-        }
-        return Base.storage
     }
     getMsg(code,options){
         let text = Msgs[code || 0][0]

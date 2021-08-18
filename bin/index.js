@@ -46,7 +46,7 @@ program.command('config [name]')
     .option('-s, --set <key=value>', 'set config')
     .option('--custom', 'edit custom exec code')
     .option('-o --overwrite', 'edit overwrite code of task')
-    .option('--export_data', 'edit custom export data code')
+    .option('-e --export-data', 'edit custom export data code')
     .action(cli.setConfig)
 
 program.command('server')

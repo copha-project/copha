@@ -1,34 +1,38 @@
-const Config = require('../../config');
-class DB {
+const Base = require('../class/base')
+
+class DB extends Base {
+    #db = null
     constructor(taskConf) {
-        const db = require(`./${taskConf.Type}`)
-        this.db = new db(Config.Storage.AdapterList[taskConf.Type])
-        this.taskConf = taskConf
-        this.isInit = false
-        this.type = taskConf.Type
+        super(taskConf)
+        this.storageType = taskConf?.Storage?.Type || 'file'
+        const Adapter = require(`./${this.storageType}`)
+        const adapterConfig = this.appSettings.Storage.AdapterList[this.storageType]
+        this.#db = new Adapter(adapterConfig,taskConf)
     }
     init(){
-        this.db.init(this.taskConf).then(()=>{
-            this.isInit = true
-        })
+        // this.isInit = true
+        // this.#db.init(this.taskConf).then(()=>{
+        //     this.isInit = true
+        // })
     }
+    async findById(id){
+        return this.#db.findById(id)
+    }
+    async all(){
+        return this.#db.all()
+    }
+    async save(data){
+        return this.#db.save(data)
+    }
+
     async query(table,p){
-        if(!this.isInit) await this.init()
-        return this.db.query(table,p)
+        return this.#db.query(table,p)
     }
-    async queryAsync(table,p){
+    async querySync(table,p){
         return this.query(table,p)
     }
-    async findById(table,id){
-        if(!this.isInit) await this.init()
-        return this.db.findById(table,id)
-    }
-    async save(table,data){
-        if(!this.isInit) await this.init()
-        return this.db.save(table,data)
-    }
     async close(){
-        return this.db.close()
+        return this.#db.close()
     }
 }
 module.exports = DB
