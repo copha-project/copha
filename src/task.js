@@ -343,9 +343,10 @@ class Task extends Base {
         //     // endData.push(item.data)
         // })
         this.log.info(`first export data preview: ${endData[0]}`)
+        const filename = `${Utils.getTodayDate()}_${endData.length}_export_data`
         try {
-            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), 'export.json'), 'json')
-            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), 'export.csv'), 'csv')
+            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), `${filename}.json`), 'json')
+            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), `${filename}.csv`), 'csv')
         } catch (error) {
             this.log.err(`export data failed:`, error.message)
         }

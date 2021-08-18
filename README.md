@@ -1,6 +1,8 @@
 # Copha
 ## Copha is a tool that fetches the web content.
 
+> ⚠️ [ Usage Warning](https://copha.net/usage_waining)
+
 # Getting Started
 ## Installation
 ```
