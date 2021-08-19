@@ -6,3 +6,5 @@ thumbs.db
 !.gitkeep
 yarn-error.log
 /dev
+/docs/_site
+/docs/.jekyll-cache

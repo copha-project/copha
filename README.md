@@ -1,3 +1,7 @@
+---
+layout: default
+permalink: /
+---
 # Copha
 ## Copha is a tool that fetches the web content.
 
