@@ -1,11 +1,7 @@
----
-layout: default
-permalink: /
----
 # Copha
 ## Copha is a tool that fetches the web content.
 
-> ⚠️ [ Usage Warning](https://copha.net/usage_waining)
+> ⚠️ [ Usage Warning](https://copha.net/usage_warning)
 
 # Getting Started
 ## Installation

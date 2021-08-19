@@ -8,3 +8,5 @@ yarn-error.log
 /dev
 /docs/_site
 /docs/.jekyll-cache
+/docs/Gemfile
+/docs/Gemfile.lock

@@ -1,5 +1,7 @@
 ---
-permalink: /usage_warning
+title: "使用警告"
+description: "Usage Warning"
+show_home: true
 ---
 
 # 使用警告
