@@ -1,7 +1,7 @@
 # Copha
 ## Copha is a tool that fetches the web content.
 
-> ⚠️ [ Usage Warning](https://copha.net/usage_warning)
+> ⚠️ [Usage Warning](/usage_warning)
 
 # Getting Started
 ## Installation
@@ -37,13 +37,8 @@ Launch a web server of api
 copha server
 ```
 
-## Env
-* [COPHA_DATA_PATH]()
-* [COPHA_DEBUG]()
-* [COPHA_SHOW_HEADLESS_GUI]()
-* [COPHA_USE_PROXY]()
-
 # Resources
 * [Home Page](https://copha.net)
-* [API Documents](https://copha.net/document)
-* [Examples](https://copha.net/examples)
+* [API Documents](/api)
+* [Environment](/env)
+* [Examples](/examples)
