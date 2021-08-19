@@ -1,7 +1,7 @@
 # Copha
 ## Copha is a tool that fetches the web content.
 
-> ⚠️ [Usage Warning](/usage_warning)
+> ⚠️ [Usage Warning](https://copha.net/usage_warning)
 
 # Getting Started
 ## Installation
@@ -39,6 +39,6 @@ copha server
 
 # Resources
 * [Home Page](https://copha.net)
-* [API Documents](/api)
-* [Environment](/env)
-* [Examples](/examples)
+* [API Documents](https://copha.net/api)
+* [Environment](https://copha.net/env)
+* [Examples](https://copha.net/examples)
