@@ -38,6 +38,16 @@ class Base {
             Base.log = new Logger()
         }
     }
+    static getMsg(code,options){
+        let text = Msgs[code || 0][0]
+        if(options){
+            if (text.includes('#')) {
+                // TODO: 要支持多个数据替换
+                text = text.replace('#',options)
+            }
+        }
+        return text.slice(0,-3)
+    }
     getPathFor(key){
         return this.#pathData[key]
     }
@@ -50,16 +60,8 @@ class Base {
     get log(){
         return Base.log
     }
-    getMsg(code,options){
-        let text = Msgs[code || 0][0]
-        if(options){
-            if (text.includes('#')) {
-                // TODO: 要支持多个数据替换
-                text = text.replace('#',options)
-            }
-        }
-        return text.slice(0,-3)
-
+    getMsg(...p){
+        return Base.getMsg(p)
     }
     getEnv(key){
         return process.env[key]

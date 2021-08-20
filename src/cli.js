@@ -42,7 +42,7 @@ class Cli extends Base {
             await this.core.deleteTask(name)
             this.log.info(`task delete success.`)
         } catch (e) {
-            this.log.err(e.message)
+            this.log.err(e)
         }
     }
     runTask = async (name, options) => {
