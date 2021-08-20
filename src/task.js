@@ -6,7 +6,6 @@ const Base = require('./class/base')
 const Storage = require('./storage')
 
 class Task extends Base {
-    #paths = {}
     #storage = null
     #event = null
     constructor(conf) {
@@ -21,17 +20,8 @@ class Task extends Base {
         this.#event = new events.EventEmitter()
     }
     static getPath(name,key){
-        const taskData = {
-            data: 'data',
-            config: 'config/config.json',
-            custom_exec_code:'custom_exec_code.js',
-            custom_over_write_code:'custom_over_write_code.js',
-            custom_export_data:'custom_export_data.js',
-            task_state: 'task_state.json',
-            last_page: 'last_page.txt',
-            rework_pages: 'rework_pages.json'
-        }
-        return path.join(this.appSettings.DataPath,name,taskData[key]||'')
+        if(!this.AppTaskPathSet[key]) throw new Error(`path about ${key}  not exist`)
+        return path.join(this.appSettings.DataPath,name,this.AppTaskPathSet[key]||'')
     }
 
     async #startPrepare(){
@@ -128,8 +118,8 @@ class Task extends Base {
         this.currentPage = this.lastRunPage = await this.getLastPage()
     }
     async recover() {
-        fs.writeFileSync(this.getPath('lastPageFile'), `1`)
-        fs.writeFileSync(this.getPath('reworkPagesFile'), `[]`)
+        fs.writeFileSync(this.getPath('last_page'), `1`)
+        fs.writeFileSync(this.getPath('rework_pages'), `[]`)
     }
     async initPageInfo() {
         await Utils.sleep(1000)
@@ -170,7 +160,7 @@ class Task extends Base {
         this.finished = true
     }
     // TODO: rework 功能暂时屏蔽
-    // async #subFetch() {
+    async #subFetch() {
     //     // 处理需要重新进行的列表页
     //     if (this.reworkPages.length > 0) {
     //         this.log.info(`start rework page : [${this.reworkPages}]`)
@@ -194,7 +184,7 @@ class Task extends Base {
     //
     //         this.reworkPages = []
     //     }
-    // }
+    }
     async goNext() {
         this.currentPage++
         if (this.pages < this.currentPage) return
@@ -266,11 +256,11 @@ class Task extends Base {
         // }
     }
     async getLastPage() {
-        const page = await Utils.readFile(this.getPath('lastPageFile'))
+        const page = await Utils.readFile(this.getPath('last_page'))
         return parseInt(page) || 1
     }
     async importReworkPages() {
-        const pagesString = await Utils.readFile(this.getPath('reworkPagesFile'))
+        const pagesString = await Utils.readFile(this.getPath('rework_pages'))
         try {
             const pages = JSON.parse(pagesString)
             if (pages?.length > 0) {
@@ -287,8 +277,9 @@ class Task extends Base {
      */
     getPath(key) {
         // TODO: 需要整理一下路径的代码
-        const name = this[key] || this.#paths[key]
-        return name
+        // const name = this[key] || this.#paths[key]
+        // return name
+        return Task.getPath(this.#name,key)
     }
     async setPage(page) {
         return this.#setPage(page)
@@ -313,9 +304,9 @@ class Task extends Base {
         this.log.info('Prepare to export data')
         // TODO: 使用用户自定义的导出函数
         if(this.conf.process?.CustomStage?.ExportData){
-            if(await Utils.checkFile(this.getPath('customExportData')) !== true) throw new Error(this.getMsg(5))
+            if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
-            const customCode = require(this.getPath('customExportData'))
+            const customCode = require(this.getPath('custom_export_data'))
             return customCode?.call(this)
         }
 
@@ -345,8 +336,8 @@ class Task extends Base {
         this.log.info(`first export data preview: ${endData[0]}`)
         const filename = `${Utils.getTodayDate()}_${endData.length}_export_data`
         try {
-            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), `${filename}.json`), 'json')
-            await Utils.exportFile(endData, path.join(this.getPath('exportDataDirPath'), `${filename}.csv`), 'csv')
+            await Utils.exportFile(endData, path.join(this.getPath('data'), `export/${filename}.json`), 'json')
+            await Utils.exportFile(endData, path.join(this.getPath('data'), `export/${filename}.csv`), 'csv')
         } catch (error) {
             this.log.err(`export data failed:`, error.message)
         }
@@ -354,9 +345,9 @@ class Task extends Base {
         await this.storage.close()
     }
     async execCode() {
-        if(await Utils.checkFile(this.getPath('customExecCode')) !== true) throw new Error(this.getMsg(5))
+        if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
-        const customCode = require(this.getPath('customExecCode'))
+        const customCode = require(this.getPath('custom_exec_code'))
         return customCode?.call(this)
     }
     //public end
@@ -368,7 +359,7 @@ class Task extends Base {
         if (this.driver.getState) return this.driver.getState()
         let state = {}
         try {
-            state = await Utils.readJson(this.getPath('statePath'))
+            state = await Utils.readJson(this.getPath('state'))
         } catch (error) {
             // pass
         }
@@ -376,7 +367,7 @@ class Task extends Base {
     }
     async saveState() {
         if (this.driver.saveState) return this.driver.saveState(this.state)
-        if (this.state) await Utils.saveJson(this.state, this.getPath('statePath'))
+        if (this.state) await Utils.saveJson(this.state, this.getPath('state'))
     }
     /**
      * 清除各种进程
@@ -436,48 +427,32 @@ class Task extends Base {
     }
     // self method
     #setRunPid(){
-        fs.writeFileSync(this.getPath('pidPath'), `${process.pid}`)
+        fs.writeFileSync(this.getPath('pid'), `${process.pid}`)
     }
     // set page of task run start
     async #setPage(page) {
-        return Utils.saveFile(`${page}`, this.getPath('lastPageFile'))
+        return Utils.saveFile(`${page}`, this.getPath('last_page'))
     }
     async #resetReworkPages(){
-        return Utils.saveFile('[]', this.getPath('reworkPagesFile'))
+        return Utils.saveFile('[]', this.getPath('rework_pages'))
     }
     async #deleteLog() {
-        await Utils.rm(this.getPath('infoLogPath'))
-        await Utils.rm(this.getPath('errLogPath'))
+        await Utils.rm(this.getPath('info_log'))
+        await Utils.rm(this.getPath('err_log'))
     }
     async #clearPid() {
-        return Utils.saveFile('', this.getPath('pidPath'))
+        return Utils.saveFile('', this.getPath('pid'))
     }
     async #clearState(){
-        const state = await Utils.readJson(this.getPath('statePath'))
+        const state = await Utils.readJson(this.getPath('state'))
         state.RestartCount = 0
-        return Utils.saveJson(state,this.getPath('statePath'))
+        return Utils.saveJson(state,this.getPath('state'))
     }
     async #deleteData() {
-        await Utils.rm(`${this.getPath('saveDetailDataDir')}/*`)
+        await Utils.rm(`${this.getPath('data')}/detail/*`)
     }
 
     #initValue() {
-        const taskRootPath = this.conf.main.rootPath
-        const taskDataPath = this.conf.main.dataPath
-        // 最后一次访问的页
-        this.#paths['lastPageFile'] = path.join(taskRootPath, `last_page.txt`)
-        // 要重新获取的页
-        this.#paths['reworkPagesFile'] = path.join(taskRootPath, `rework_pages.json`)
-        this.#paths['exportDataDirPath'] = path.join(taskDataPath, 'export')
-        this.#paths['saveDetailDataDir'] = path.join(taskDataPath, 'detail')
-        this.#paths['pidPath'] = path.join(taskRootPath, 'task.pid')
-        this.#paths['infoLogPath'] = path.join(taskRootPath, 'log/info.log')
-        this.#paths['errLogPath'] = path.join(taskRootPath, 'log/err.log')
-        this.#paths['statePath'] = path.join(taskRootPath, 'task_state.json')
-        this.#paths['customExecCode'] = path.join(taskRootPath, 'custom_exec_code.js')
-        this.#paths['customExportData'] = path.join(taskRootPath, 'custom_export_data.js')
-        this.#paths['overwriteCode'] = path.join(taskRootPath, 'custom_over_write_code.js')
-
         this.currentPage = 1
         this.pages = 1
         this.state = null
@@ -497,6 +472,7 @@ class Task extends Base {
         this.driver = null
         this.custom = null
     }
+
     #initWebDriver() {
         try {
             const driverClass = require(`./drivers/${this.conf.main?.useDriver || 'selenium'}`)
@@ -509,7 +485,7 @@ class Task extends Base {
     }
     #setCustomCode() {
         try {
-            return require(this.getPath('overwriteCode'))
+            return require(this.getPath('custom_over_write_code'))
         } catch (e) {
             throw new Error(`setCustomCode error : ${e}`)
         }
@@ -534,15 +510,15 @@ class Task extends Base {
     }
     async #saveContext() {
         this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
-        fs.writeFileSync(this.getPath('lastPageFile'), `${this.currentPage}`)
+        fs.writeFileSync(this.getPath('last_page'), `${this.currentPage}`)
         if (this.reworkPages.length > 0) {
-            fs.writeFileSync(this.getPath('reworkPagesFile'), JSON.stringify(this.reworkPages))
+            fs.writeFileSync(this.getPath('rework_pages'), JSON.stringify(this.reworkPages))
         }
         // save context state
         if (!this.vTestState) await this.saveState()
 
         // delete pid file
-        fs.writeFileSync(this.getPath('pidPath'), ``)
+        fs.writeFileSync(this.getPath('pid'), ``)
     }
     async #restart(){
         const count = this.getRestartCount()
@@ -567,16 +543,16 @@ class Task extends Base {
         return this.#storage
     }
     get #name(){
-        return this.conf.main.name
+        return this.conf?.main?.name
     }
     get helper(){
     	return {
             getDedailList : async () => {
-        		const files = await Utils.readDir(this.getPath('saveDetailDataDir'))
+        		const files = await Utils.readDir(path.join(this.getPath('data'),'detail'))
         		return files.filter(e => e.endsWith('.json'))
         	},
         	getExportJsonData : async () => {
-        		return Utils.readJson(path.join(this.getPath('exportDataDirPath'), 'export.json'))
+        		return Utils.readJson(path.join(this.getPath('data'), 'export/export.json'))
         	},
         	download : Utils.listDownload
         }

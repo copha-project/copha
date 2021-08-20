@@ -15,9 +15,25 @@ const AppConfigTpl = {
     rework_pages: path.join(AppTplConfigPath, 'rework_pages.json'),
 }
 
+const AppTaskPathSet =  {
+    data: 'data',
+    config: 'config/config.json',
+    custom_exec_code:'custom_exec_code.js',
+    custom_over_write_code:'custom_over_write_code.js',
+    custom_export_data:'custom_export_data.js',
+    task_state: 'task_state.json',
+    last_page: 'last_page.txt',
+    rework_pages: 'rework_pages.json',
+    info_log: 'log/info.log',
+    err_log: 'log/err.log',
+    pid: 'task.pid',
+    state: 'task_state.json'
+}
+
 module.exports = {
     AppConfigDir,
     AppConfigPath,
     AppExecutableCommandPath,
-    AppConfigTpl
+    AppConfigTpl,
+    AppTaskPathSet
 }

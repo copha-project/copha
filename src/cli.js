@@ -38,6 +38,7 @@ class Cli extends Base {
         )
     }
     deleteTask = async (name) => {
+        name = await this.core.getTaskName(name)
         try {
             await this.core.deleteTask(name)
             this.log.info(`task delete success.`)
@@ -76,6 +77,7 @@ class Cli extends Base {
         }
     }
     resetTask = async (name, options) => {
+        name = await this.core.getTaskName(name)
         try {
             await this.core.resetTask(name, options)
         } catch (error) {
@@ -83,6 +85,7 @@ class Cli extends Base {
         }
     }
     exportTaskData = async (name) => {
+        name = await this.core.getTaskName(name)
         console.log(`${name} task ready to export data`)
         try {
             await this.core.exportTaskData(name)
@@ -91,6 +94,7 @@ class Cli extends Base {
         }
     }
     setConfig = async (name, options) => {
+        name = await this.core.getTaskName(name)
         let configPath = this.getPathFor('AppConfigPath')
         // open or edit task config if has task name
         if (name) {
@@ -101,13 +105,13 @@ class Cli extends Base {
                 return this.core.setTaskConfig(name, options.set)
             }
             if (options.custom) {
-                configPath = task.getPath('customExecCode')
+                configPath = task.getPath('custom_exec_code')
             }
             if (options.overwrite) {
-                configPath = task.getPath('overwriteCode')
+                configPath = task.getPath('custom_over_write_code')
             }
             if (options.exportData) {
-                configPath = task.getPath('customExportData')
+                configPath = task.getPath('custom_export_data')
             }
         }
         const child = require('child_process').spawn('atom', [configPath], {

@@ -90,7 +90,7 @@ class Core extends Base{
     }
     async stopTask(name){
         const task = await this.getTask(name)
-        const pid = parseInt(await Utils.readFile(task.getPath('pidPath')))
+        const pid = parseInt(await Utils.readFile(task.getPath('pid')))
         if(pid>0) {
             process.kill(pid,'SIGINT')
         }

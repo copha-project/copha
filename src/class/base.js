@@ -9,6 +9,7 @@ const ConstData = require("../resource/const")
 class Base {
     static appSettings = null
     static log = null
+    static AppTaskPathSet = ConstData.AppTaskPathSet
     constructor(taskConf={}) {
         this.conf = taskConf
         this.#initValues()
