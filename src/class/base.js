@@ -1,5 +1,6 @@
 const path = require('path')
 const os = require('os')
+const commandExists = require('command-exists')
 const Utils = require('uni-utils')
 const Config = require('../../config')
 const Logger = require('./logger')
@@ -62,10 +63,19 @@ class Base {
         return Base.log
     }
     getMsg(...p){
-        return Base.getMsg(p)
+        return Base.getMsg(...p)
     }
     getEnv(key){
         return process.env[key]
+    }
+    async getEditor(){
+        const editorList = ['atom','vim','vi','nano']
+        for (const cmd of editorList) {
+            if(await commandExists(cmd)){
+                return cmd
+            }
+        }
+        return ''
     }
     #getAppSettings(){
         if(!Utils.checkFileSync(ConstData.AppConfigPath)) throw new Error(this.getMsg(4))

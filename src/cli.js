@@ -1,6 +1,7 @@
 const path = require('path')
 const pidusage = require('pidusage')
 const os = require('os')
+const openInEditor = require('open-in-editor')
 const Core = require('./core')
 const RootPath = path.resolve(__dirname, '../')
 const Base = require('./class/base')
@@ -114,12 +115,12 @@ class Cli extends Base {
                 configPath = task.getPath('custom_export_data')
             }
         }
-        const child = require('child_process').spawn('atom', [configPath], {
-            stdio: 'inherit'
-        })
-        child.on('exit', function() {
-            console.log("open config success.")
-        })
+        const editorBinName = await this.getEditor()
+        openInEditor.configure({
+            editor: editorBinName
+        },error => {
+            throw new Error(error)
+        })?.open(configPath)
     }
     createTask = async (name) => {
         this.log.info(`creatre new task named ${name}`)
