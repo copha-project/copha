@@ -32,7 +32,6 @@ class Task extends Base {
             process.exit(0)
         })
         this.#setRunPid()
-        await this.#loadState()
     }
     async test() {
         this.log.info(this.getMsg(6))
@@ -47,9 +46,15 @@ class Task extends Base {
         } catch (error) {
             this.log.err(`Run test err: ${error.message}`)
         } finally {
-            await this.clear()
+            await this.#clear()
         }
     }
+
+    /**
+        1 初始化 driver
+        2 运行 task
+        3 收尾
+    */
     async start() {
         this.log.info(this.getMsg(7,this.#name))
         let hasErr = false
@@ -57,13 +62,14 @@ class Task extends Base {
             await this.#startPrepare()
             await this.initDriver()
             this.log.info('init Driver finished')
+            await this.#loadState()
             await this.openUrl()
-            this.log.info('openUrl finished');
             await this.runBefore()
-            await this.initPageInfo()
+            await this.#initPageInfo()
             this.vStartState = true
             do {
-                await this.loopFetch()
+                await this.#listFetch()
+                await this.#checkNeedStop()
                 await Utils.sleep(5000)
             } while (!this.finished)
         } catch (error) {
@@ -74,7 +80,7 @@ class Task extends Base {
         // 遇到错误退出程序，有可能的话重启进程
         if (hasErr) {
             try {
-                await this.clear()
+                await this.#clear()
                 await this.#saveContext()
                 this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
                 if (this.conf?.main?.alwaysRestart) {
@@ -85,9 +91,9 @@ class Task extends Base {
             }
             return
         }
-        await this.execCode()
-        await this.recover()
-        await this.clear()
+        await this.#execCode()
+        await this.#recover()
+        await this.#clear()
         this.log.info('Task finished')
     }
     #setExitHandle() {
@@ -115,24 +121,10 @@ class Task extends Base {
         await this.importReworkPages()
         this.log.info('importReworkPages finished')
         // 导入上次任务最后的数据
-        this.currentPage = this.lastRunPage = await this.getLastPage()
+        this.currentPage = this.lastRunPage = await this.#getLastPage()
     }
-    async recover() {
-        fs.writeFileSync(this.getPath('last_page'), `1`)
-        fs.writeFileSync(this.getPath('rework_pages'), `[]`)
-    }
-    async initPageInfo() {
-        await Utils.sleep(1000)
-        this.pages = await this.getPages()
-        if (this.pages == 0) this.pages = this.appSettings.DefaultMaxPages
-        this.currentPage = await this.getCurrentPage()
-        this.log.info(`last page: ${this.lastRunPage},current page: ${this.currentPage},pages: ${this.pages}`)
-        if (this.lastRunPage > this.currentPage && this.lastRunPage <= this.pages) {
-            this.currentPage = this.lastRunPage
-            await this.goPage(this.currentPage)
-        }
-    }
-    async loopFetch() {
+
+    async #listFetch() {
         this.log.info('start fetch data')
         while (this.currentPage <= this.pages) {
             // 检查是否有停止信号
@@ -143,14 +135,14 @@ class Task extends Base {
                     throw new Error('do list not complete')
                 }
             } catch (error) {
-                this.log.err(`loopFetch -> getList rework : ${this.currentPage}, ${error.message}`);
+                this.log.err(`listFetch -> getList rework : ${this.currentPage}, ${error.message}`);
                 this.reworkPages.push(this.currentPage)
             }
             await this.#checkNeedStop()
             try {
-                await this.goNext()
+                await this.#goNext()
             } catch (error) {
-                this.log.err(`loopFetch -> goNext : ${error.message}`)
+                this.log.err(`listFetch -> goNext : ${error.message}`)
                 await this.openUrl()
                 await this.goPage(this.currentPage--)
             }
@@ -185,11 +177,7 @@ class Task extends Base {
     //         this.reworkPages = []
     //     }
     }
-    async goNext() {
-        this.currentPage++
-        if (this.pages < this.currentPage) return
-        return this.goPage(this.currentPage)
-    }
+
     async #doList() {
         let list = await this.getListData()
         this.log.info(`fetch list data : length ${list.length} , ${this.currentPage}/${this.pages} pages`);
@@ -255,10 +243,7 @@ class Task extends Base {
         //     return res.length === 1
         // }
     }
-    async getLastPage() {
-        const page = await Utils.readFile(this.getPath('last_page'))
-        return parseInt(page) || 1
-    }
+
     async importReworkPages() {
         const pagesString = await Utils.readFile(this.getPath('rework_pages'))
         try {
@@ -271,9 +256,17 @@ class Task extends Base {
         }
     }
 
-    //public 基础task方法
+    // 可代理的方法
+    async #execCode(){
+        if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
+        this.log.info('start exec custom code')
+        const customCode = require(this.getPath('custom_exec_code'))
+        return customCode?.call(this)
+    }
+
+    //public 方法
     /**
-     * 返回task相关配置的路径
+     * 返回 task 相关配置的路径
      */
     getPath(key) {
         // TODO: 需要整理一下路径的代码
@@ -345,13 +338,31 @@ class Task extends Base {
         await this.storage.close()
     }
     async execCode() {
-        if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
-        this.log.info('start exec custom code')
-        const customCode = require(this.getPath('custom_exec_code'))
-        return customCode?.call(this)
+        return this.#execCode()
     }
     //public end
+
     // interface of task
+    async #initPageInfo() {
+        await Utils.sleep(1000)
+        this.pages = await this.getPages()
+        if (this.pages == 0) this.pages = this.appSettings.DefaultMaxPages
+        this.currentPage = await this.getCurrentPage()
+        this.log.info(`last page: ${this.lastRunPage},current page: ${this.currentPage},pages: ${this.pages}`)
+        if (this.lastRunPage > this.currentPage && this.lastRunPage <= this.pages) {
+            this.currentPage = this.lastRunPage
+            await this.goPage(this.currentPage)
+        }
+    }
+    async #getLastPage() {
+        const page = await Utils.readFile(this.getPath('last_page'))
+        return parseInt(page) || 1
+    }
+    async #goNext() {
+        this.currentPage++
+        if (this.pages < this.currentPage) return
+        return this.goPage(this.currentPage)
+    }
     /**
      * 获取任务进度状态信息
      */
@@ -372,8 +383,8 @@ class Task extends Base {
     /**
      * 清除各种进程
      */
-    async clear() {
-        await this.driver.clear()
+    async #clear() {
+        return this.driver.clear()
     }
     /**
      * 打开 URL 窗口
@@ -391,7 +402,7 @@ class Task extends Base {
     //interface of process
     async runBefore() {
         if (this.conf.process?.CustomStage?.RunBefore) {
-            await this.custom.runBefore()
+            await this.custom?.runBefore.call(this)
         } else {
             await this.driver?.runBefore()
         }
@@ -476,8 +487,15 @@ class Task extends Base {
     #initWebDriver() {
         try {
             const driverClass = require(`./drivers/${this.conf.main?.useDriver || 'selenium'}`)
-            return new driverClass({
-                conf: this.conf
+            // return new driverClass({conf: this.conf})
+            return new Proxy(new driverClass({ conf: this.conf }), {
+                get: (target,propKey) => {
+                    if(propKey in target){
+                        return target[propKey]
+                    }else{
+                        return target.driver[propKey]
+                    }
+                }
             })
         } catch (error) {
             throw new Error(`can't load custom driver module : ${error.message}`)
@@ -507,6 +525,11 @@ class Task extends Base {
         } catch (e) {
             throw new Error(`init storage error: ${e}`)
         }
+    }
+    // 恢复任务状态
+    async #recover() {
+        fs.writeFileSync(this.getPath('last_page'), `1`)
+        fs.writeFileSync(this.getPath('rework_pages'), `[]`)
     }
     async #saveContext() {
         this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
@@ -541,6 +564,9 @@ class Task extends Base {
             this.#storage = this.#initStorage()
         }
         return this.#storage
+    }
+    get Driver(){
+        return this.driver.Driver
     }
     get #name(){
         return this.conf?.main?.name
