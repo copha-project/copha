@@ -40,5 +40,6 @@ copha server
 # Resources
 * [Home Page](https://copha.net)
 * [API Documents](https://copha.net/api)
+* [Configure](https://copha.net/configure)
 * [Environment](https://copha.net/env)
 * [Examples](https://copha.net/examples)
