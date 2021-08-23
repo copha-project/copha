@@ -7,7 +7,7 @@ const program = new commander.Command()
 const Cli = require('../src/cli')
 
 let cli = Cli.getInstance()
-if(!cli) return
+if(!cli) process.exit()
 
 program.version(pkg.version, '-v, --version', 'output the current version')
 

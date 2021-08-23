@@ -7,6 +7,7 @@
     "copha": "./bin/index.js"
   },
   "scripts": {
+    "start": "./node_modules/.bin/babel-node ./bin/index.js",
     "postinstall": "node ./bin/init.js",
     "dev": "node ./app.js",
     "test": "node ./test/index.js",
@@ -16,8 +17,11 @@
   "author": "aong",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0"
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "@babel/plugin-proposal-decorators": "^7.14.5",
+    "@babel/preset-env": "^7.15.0"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
