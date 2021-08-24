@@ -13,6 +13,6 @@ exports.errHandler = async (ctx, next) => {
         await next()
     } catch (e) {
         ctx.status = 500
-        ctx.body = "service not work"
+        ctx.body = "500 service not work"
     }
 }

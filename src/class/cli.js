@@ -2,9 +2,8 @@ const path = require('path')
 const pidusage = require('pidusage')
 const os = require('os')
 const openInEditor = require('open-in-editor')
+const Base = require('./base')
 const Core = require('./core')
-const RootPath = path.resolve(__dirname, '../')
-const Base = require('./class/base')
 const Utils = require('uni-utils')
 
 class Cli extends Base {
@@ -79,20 +78,7 @@ class Cli extends Base {
     }
     resetTask = async (name, options) => {
         name = await this.core.getTaskName(name)
-        try {
-            await this.core.resetTask(name, options)
-        } catch (error) {
-            this.log.err(`ResetTask err: ${error.message}`)
-        }
-    }
-    exportTaskData = async (name) => {
-        name = await this.core.getTaskName(name)
-        console.log(`${name} task ready to export data`)
-        try {
-            await this.core.exportTaskData(name)
-        } catch (e) {
-            console.log(e.message)
-        }
+        return this.core.resetTask(name, options)
     }
     setConfig = async (name, options) => {
         name = await this.core.getTaskName(name)

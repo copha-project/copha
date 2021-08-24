@@ -18,6 +18,7 @@ class Selenium extends Base {
         this.processConfig = conf.process
         this.driver = null
         this.custom = null
+        this.Driver = require('selenium-webdriver')
     }
     setTestState(bol) {
         this.vTestState = bol

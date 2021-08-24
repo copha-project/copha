@@ -14,6 +14,9 @@ class Service extends Base {
         return this
     }
     async home(ctx){
+        ctx.body = "ok"
+    }
+    settings(ctx){
         ctx.body = ctx.copha.appSettings
     }
     async task(ctx){

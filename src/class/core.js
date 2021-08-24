@@ -1,13 +1,11 @@
 const path = require('path')
-const pkg = require('../package')
 const Utils = require('uni-utils')
 const Task = require('./task')
-const Base = require('./class/base')
+const Base = require('./base')
 class Core extends Base{
     static instance = null
     constructor(){
         super()
-        process.title = pkg.name
     }
     static getInstance(){
         if(!Core.instance){
@@ -107,7 +105,7 @@ class Core extends Base{
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
             return (await Utils.readJson(this.#getTaskConfPath(name))).main
         }))
-        return  data
+        return data
     }
 
     async #genTpl(name) {

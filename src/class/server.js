@@ -1,10 +1,10 @@
 const Koa = require('koa')
 const Compose = require('koa-compose')
-const Base = require('./class/base')
+const Base = require('./base')
 const Core = require('./core')
 const Utils = require('uni-utils')
-const {CommonRouter, ApiRouter} = require('./server/router')
-const {errHandler, reqLog, notFind} = require('./server/mid')
+const {CommonRouter, ApiRouter} = require('../server/router')
+const {errHandler, reqLog, notFind} = require('../server/mid')
 
 class Server extends Base {
     constructor() {

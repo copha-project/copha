@@ -1,6 +1,11 @@
 {
-	"presets":["@babel/preset-env"],
-	"plugins": [
-["@babel/plugin-proposal-decorators",{"decoratorsBeforeExport":false}]
-]
+    "presets": ["@babel/preset-env"],
+    "plugins": [
+        ["@babel/plugin-proposal-decorators", {
+            "decoratorsBeforeExport": false
+        }]
+    ],
+    "targets": {
+        "node": "12"
+    }
 }

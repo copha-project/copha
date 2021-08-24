@@ -2,8 +2,8 @@ const path = require('path')
 const fs = require('fs')
 const events = require('events')
 const Utils = require('uni-utils')
-const Base = require('./class/base')
-const Storage = require('./storage')
+const Base = require('./base')
+const Storage = require('../storage')
 
 class Task extends Base {
     #storage = null
@@ -486,7 +486,7 @@ class Task extends Base {
 
     #initWebDriver() {
         try {
-            const driverClass = require(`./drivers/${this.conf.main?.useDriver || 'selenium'}`)
+            const driverClass = require(`../drivers/${this.conf.main?.useDriver || 'selenium'}`)
             // return new driverClass({conf: this.conf})
             return new Proxy(new driverClass({ conf: this.conf }), {
                 get: (target,propKey) => {

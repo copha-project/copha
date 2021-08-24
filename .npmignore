@@ -1,6 +1,10 @@
 .github
 .eslint*
 .git
+.eslintrc.json
+.tern-project
+ecosystem.config.js
 /test
 /dev
-CNAME
+/example
+/test
