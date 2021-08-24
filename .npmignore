@@ -1,10 +1,14 @@
 .github
 .eslint*
-.git
 .eslintrc.json
 .tern-project
 ecosystem.config.js
 /test
+/src
 /dev
+/docs
 /example
 /test
+babel.config.json
+/yarn-error.log
+CHANGELOG.md

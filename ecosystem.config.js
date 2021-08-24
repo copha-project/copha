@@ -1,8 +1,10 @@
 module.exports = {
   apps : [{
     name: "copha",
-    script: 'app.js',
-    watch: ['./src/server.js','./src/server/'],
+    interpreter: './node_modules/.bin/babel-node',
+    script: './bin/index.js',
+    args: 'server',
+    watch: ['./src/class/server.js','./src/server/'],
     env: {
       NODE_ENV: "development",
     },

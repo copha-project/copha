@@ -3,10 +3,11 @@ node_modules
 npm-debug.log
 npm-debug.log.*
 thumbs.db
-!.gitkeep
 yarn-error.log
+/dist/*
 /dev
 /docs/_site
 /docs/.jekyll-cache
 /docs/Gemfile
 /docs/Gemfile.lock
+!.gitkeep

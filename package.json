@@ -5,6 +5,10 @@
     "keywords": ["nodejs", "selenium", "crawler", "puppeteer"],
     "repository": "https://github.com/yxwzaxns/copha.git",
     "homepage": "https://copha.net",
+    "bugs": {
+        "url": "https://github.com/yxwzaxns/copha/issues",
+        "email": "i@aong.cn"
+    },
     "bin": {
         "copha": "./bin/index.js"
     },
