@@ -2,8 +2,10 @@ const path = require('path')
 const Utils = require('uni-utils')
 const Task = require('./task')
 const Base = require('./base')
+
 class Core extends Base{
     static instance = null
+    static needPreCheckList = ['listTask']
     constructor(){
         super()
     }
@@ -13,20 +15,39 @@ class Core extends Base{
         }
         return Core.instance
     }
-    static async checkDataPath (){
+    static async preCheck(){
+        await this.rootDataPathAvailabilityCheck()
+    }
+
+    static async rootDataPathAvailabilityCheck(){
         let stat = true
-        if (this.appSettings.DataPath === '') {
-            stat = this.getMsg(1)
-        } else {
-            if (!path.isAbsolute(this.appSettings.DataPath)) {
-                stat = this.getMsg(2)
+        try {
+            if (this.appSettings.DataPath === '') {
+                stat = this.getMsg(1)
             } else {
-                if (await Utils.checkFile(this.appSettings.DataPath) !== true) {
-                    stat = this.getMsg(3)
+                if (!path.isAbsolute(this.appSettings.DataPath)) {
+                    stat = this.getMsg(2)
+                } else {
+                    if (await Utils.checkFile(this.appSettings.DataPath) !== true) {
+                        stat = this.getMsg(3)
+                    }
                 }
             }
+        } catch (e) {
+            stat = e.message
         }
-        return stat
+        if(stat !== true){
+            throw new Error(stat)
+        }
+    }
+
+    // TODO: 现在是扫描数据目录获取task list，需要重构成把task信息记录在文件了里
+    async listTask (){
+        const files = await Utils.readDir(this.appSettings.DataPath)
+        const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
+            return (await Utils.readJson(this.#getTaskConfPath(name))).main
+        }))
+        return data
     }
 
     async getTaskName(data){
@@ -100,13 +121,7 @@ class Core extends Base{
         const task = await this.getTask(name)
         return task.reset(options)
     }
-    async listTask (){
-        const files = await Utils.readDir(this.appSettings.DataPath)
-        const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
-            return (await Utils.readJson(this.#getTaskConfPath(name))).main
-        }))
-        return data
-    }
+
 
     async #genTpl(name) {
         const taskRootPath = this.#getTaskRootPath(name)

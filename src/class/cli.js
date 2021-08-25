@@ -6,6 +6,16 @@ const Base = require('./base')
 const Core = require('./core')
 const Utils = require('uni-utils')
 
+function preCheck() {
+    return function(o, k, descriptor) {
+        const method = descriptor.value
+        descriptor.value = async function(...args) {
+            await Core.preCheck()
+            await method.apply(this, args)
+        }
+    }
+}
+
 class Cli extends Base {
     static core = null
     constructor() {
@@ -18,13 +28,16 @@ class Cli extends Base {
             Base.log.err(e.message)
         }
     }
+
     get core() {
         if (!Cli.core) {
             Cli.core = Core.getInstance()
         }
         return Cli.core
     }
-    listTask = async () => {
+
+    @preCheck()
+    async listTask() {
         const tasksData = await this.core.listTask()
         console.log('Task List:')
         console.table(
@@ -37,7 +50,9 @@ class Cli extends Base {
             })
         )
     }
-    deleteTask = async (name) => {
+
+    @preCheck()
+    async deleteTask(name){
         name = await this.core.getTaskName(name)
         try {
             await this.core.deleteTask(name)
@@ -46,7 +61,9 @@ class Cli extends Base {
             this.log.err(e)
         }
     }
-    runTask = async (name, options) => {
+
+    @preCheck()
+    async runTask(name, options) {
         name = await this.core.getTaskName(name)
         if (options.export) {
             return (await this.core.getTask(name)).exportData()
@@ -67,7 +84,9 @@ class Cli extends Base {
         }
         return (await this.core.getTask(name)).start()
     }
-    stopTask = async (name, options) => {
+
+    @preCheck()
+    async stopTask(name, options) {
         name = await this.core.getTaskName(name)
         this.log.info(`Task [${name}] ready to stop`)
         await this.core.stopTask(name)
@@ -76,61 +95,70 @@ class Cli extends Base {
             await this.core.restartTask(name)
         }
     }
-    resetTask = async (name, options) => {
+
+    @preCheck()
+    async resetTask(name, options) {
         name = await this.core.getTaskName(name)
         return this.core.resetTask(name, options)
     }
-    setConfig = async (name, options) => {
-        name = await this.core.getTaskName(name)
-        let configPath = this.getPathFor('AppConfigPath')
+
+    async setConfig(name, options) {
         // open or edit task config if has task name
         if (name) {
-            const task = await this.core.getTask(name)
-            if (!task) return
-            configPath = task.conf.main.configPath
-            if (options.set) {
-                return this.core.setTaskConfig(name, options.set)
-            }
-            if (options.custom) {
-                configPath = task.getPath('custom_exec_code')
-            }
-            if (options.overwrite) {
-                configPath = task.getPath('custom_over_write_code')
-            }
-            if (options.exportData) {
-                configPath = task.getPath('custom_export_data')
-            }
+            return this.setTaskConfig(name, options)
         }
         const editorBinName = await this.getEditor()
         openInEditor.configure({
             editor: editorBinName
-        },error => {
+        }, error => {
+            throw new Error(error)
+        })?.open(this.AppConfigPath)
+    }
+
+    @preCheck()
+    async setTaskConfig(name, options) {
+        let configPath = ''
+        name = await this.core.getTaskName(name)
+        const task = await this.core.getTask(name)
+        if (!task) return
+        configPath = task.conf.main.configPath
+        if (options.set) {
+            return this.core.setTaskConfig(name, options.set)
+        }
+        if (options.custom) {
+            configPath = task.getPath('custom_exec_code')
+        }
+        if (options.overwrite) {
+            configPath = task.getPath('custom_over_write_code')
+        }
+        if (options.exportData) {
+            configPath = task.getPath('custom_export_data')
+        }
+        const editorBinName = await this.getEditor()
+        openInEditor.configure({
+            editor: editorBinName
+        }, error => {
             throw new Error(error)
         })?.open(configPath)
     }
-    createTask = async (name) => {
-        this.log.info(`creatre new task named ${name}`)
+
+    @preCheck()
+    async createTask(name) {
+        this.log.info(`prepare to create a new task named ${name}`)
         await this.core.checkName(name)
         await this.core.createTask(name)
     }
-    checkRun = async () => {
-        let stat = await Core.checkDataPath()
-        // 无参数命令显示帮助内容
-        if (process.argv.length === 2) {
-            stat = true
-        }
-        if (process.argv.length == 3 && ['config', '--help', '-h'].includes(process.argv[2])) {
-            stat = true
-        }
-        if (stat !== true) {
-            this.log.err(stat)
-        }
-        return stat === true
-    }
-    server = async (options) => {
+
+    @preCheck()
+    async server(options) {
         const Server = require('./server')
         const server = new Server()
         server.launch()
+    }
+
+    // get method bind this
+    getMethod(name){
+        return this[name].bind(this)
     }
 }
 
