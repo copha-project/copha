@@ -20,7 +20,8 @@ class Task extends Base {
         this.#event = new events.EventEmitter()
     }
     static getPath(name,key){
-        if(!this.AppTaskPathSet[key]) throw new Error(`path about ${key}  not exist`)
+        if(!name) throw new Error(`task name cannot be empty`)
+        if(key !== 'root' && !this.AppTaskPathSet[key]) throw new Error(`path about '${key}' not exist`)
         return path.join(this.appSettings.DataPath,name,this.AppTaskPathSet[key]||'')
     }
 

@@ -1,6 +1,7 @@
 {
-    "Editor": "",
     "DataPath":"",
+    "Editor": "",
+    "Language": "en",
     "DefaultMaxPages": 999999,
     "ListTimeInterval": 2000,
     "Storage":{
@@ -14,6 +15,15 @@
             }
         }
     },
+    "Proxy": [
+        {
+            "type": "http",
+            "host": "127.0.0.1",
+            "port": 1087,
+            "user": "",
+            "pass": ""
+        }
+    ],
     "Server":{
         "Host": "127.0.0.1",
         "Port": 7000

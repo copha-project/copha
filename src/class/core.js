@@ -5,7 +5,6 @@ const Base = require('./base')
 
 class Core extends Base{
     static instance = null
-    static needPreCheckList = ['listTask']
     constructor(){
         super()
     }
@@ -121,7 +120,6 @@ class Core extends Base{
         const task = await this.getTask(name)
         return task.reset(options)
     }
-
 
     async #genTpl(name) {
         const taskRootPath = this.#getTaskRootPath(name)
