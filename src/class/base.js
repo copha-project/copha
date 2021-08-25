@@ -9,7 +9,8 @@ const ConstData = require("../resource/const")
 
 class Base {
     static appSettings = null
-    static log = null
+    static constData = ConstData
+    static log = new Logger()
     static AppTaskPathSet = ConstData.AppTaskPathSet
     constructor(taskConf={}) {
         this.conf = taskConf
@@ -19,8 +20,8 @@ class Base {
         Base.log.debug(`Base class init for : ${new.target.name}`)
     }
     #initValues(){
-        this.RootPath = path.resolve(__dirname, '../../')
-        this.AppConfigPath = ConstData.AppConfigPath
+        this.RootPath = ConstData.AppProjectRootPath
+        this.AppConfigPath = ConstData.AppConfigUserPath
         this.AppExecutableCommandPath = ConstData.AppExecutableCommandPath
         this.AppConfigTpl = ConstData.AppConfigTpl
     }
@@ -30,14 +31,11 @@ class Base {
         }
     }
     #initLogger(){
-        if(Base.log) return
         if (this.conf?.main?.rootPath){
             Base.log = new Logger({
                                     'infoPath': path.join(this.conf.main.rootPath, 'log/info.log'),
                                     'errPath': path.join(this.conf.main.rootPath, 'log/err.log')
                                 })
-        }else{
-            Base.log = new Logger()
         }
     }
     static getMsg(code,options){
@@ -49,6 +47,21 @@ class Base {
             }
         }
         return text.slice(0,-3)
+    }
+    static async installCheck(){
+        if(await Utils.checkFile(this.constData.AppConfigUserDir)) return true
+        this.log.info(this.getMsg(9))
+        await Utils.createDir(this.constData.AppConfigUserDir)
+        try {
+            await Utils.copyFile(this.constData.AppDefaultConfigPath, this.constData.AppConfigUserPath)
+            await Utils.saveFile("", this.constData.AppInstalledLockFile)
+            return true
+        } catch (e) {
+            await Utils.rm(this.constData.AppConfigUserDir)
+            this.log.err(this.getMsg(8,this.constData.BugLink))
+            this.log.err(e)
+        }
+        return false
     }
     getPathFor(key){
         return this.#pathData[key]
@@ -78,8 +91,8 @@ class Base {
         return ''
     }
     #getAppSettings(){
-        if(!Utils.checkFileSync(ConstData.AppConfigPath)) throw new Error(this.getMsg(4))
-        const config = Utils.readJsonSync(ConstData.AppConfigPath)
+        if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
+        const config = Utils.readJsonSync(ConstData.AppConfigUserPath)
         if (config?.DataPath === ""){
             if(this.getEnv('COPHA_DATA_PATH')){
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')

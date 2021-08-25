@@ -1,10 +1,19 @@
 const path = require('path')
 const os = require('os')
+const pkg = require('../../package')
+// code rootPath
+const AppProjectRootPath = path.resolve(__dirname, '../../')
+// store dir on install
+const AppConfigUserDir = path.resolve(os.homedir(),'.copha')
+// app config file path on user disk
+const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
-const AppConfigDir = path.resolve(os.homedir(),'.copha')
-const AppConfigPath = path.join(AppConfigDir,'config.json')
-const AppTplConfigPath = path.resolve(__dirname,'../../config')
-const AppExecutableCommandPath = path.join(__dirname, '../../bin/index.js')
+const AppTplConfigPath = path.resolve(AppProjectRootPath, 'config')
+
+const AppDefaultConfigPath = path.resolve(AppProjectRootPath, './config/default.json')
+
+const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
+
 const AppConfigTpl = {
     configPath: path.join(AppTplConfigPath, 'task.conf.tpl.json'),
     statePath: path.join(AppTplConfigPath, 'task_state.json'),
@@ -30,10 +39,19 @@ const AppTaskPathSet =  {
     state: 'task_state.json'
 }
 
+const BugLink = pkg?.bugs?.url
+
+const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
+
 module.exports = {
-    AppConfigDir,
-    AppConfigPath,
+    AppProjectRootPath,
+    AppConfigUserDir,
+    AppConfigUserPath,
+    AppTplConfigPath,
+    AppDefaultConfigPath,
     AppExecutableCommandPath,
     AppConfigTpl,
-    AppTaskPathSet
+    AppTaskPathSet,
+    BugLink,
+    AppInstalledLockFile
 }

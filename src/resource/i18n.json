@@ -24,5 +24,12 @@
     ],
     [
         "Task [#] ready to run.(7)"
+    ],
+    [
+        "There was an error with the initialization configuration, please visit this link for a solution : # .(8)",
+        "初始化配置出错，请访问这个链接 : # ."
+    ],
+    [
+        "Run for the first time, app need to init global config.(9)"
     ]
 ]
