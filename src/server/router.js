@@ -9,6 +9,7 @@ apiRouter
 .get('/',service.home)
 .get('/task', service.task)
 .get('/settings', service.settings)
+.get('/task/:name/config',service.task_conf)
 
 router.get('/',service.home)
 router.all('(.*)',service.notFind)

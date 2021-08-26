@@ -22,6 +22,10 @@ class Service extends Base {
     async task(ctx){
         ctx.body = await ctx.copha.listTask()
     }
+
+    async task_conf(ctx){
+        ctx.body = await ctx.copha.getTaskConf(ctx.params.name)
+    }
     async notFind(ctx){
         ctx.status = 404
         ctx.body = "not found"
