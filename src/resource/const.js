@@ -25,7 +25,14 @@ const AppConfigTpl = {
 }
 
 const AppTaskPathSet =  {
-    data: 'data',
+    root_dir: '',
+    config_dir: 'config',
+    data_dir: 'data',
+    download_dir: 'data/download',
+    page_dir: 'data/page',
+    detail_dir: 'data/detail',
+    export_dir: 'data/export',
+    log_dir: 'log',
     config: 'config/config.json',
     custom_exec_code:'custom_exec_code.js',
     custom_over_write_code:'custom_over_write_code.js',
