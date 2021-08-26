@@ -11,10 +11,8 @@ class Base {
     static constData = ConstData
     static log = new Logger()
     static AppTaskPathSet = ConstData.AppTaskPathSet
-    constructor(taskConf={}) {
-        this.conf = taskConf
+    constructor() {
         this.#initValues()
-        this.#initLogger()
         this.#initConfig()
         Base.log.debug(`Base class init for : ${new.target.name}`)
     }
@@ -27,14 +25,6 @@ class Base {
     #initConfig(){
         if(!Base.appSettings){
             Base.appSettings = this.#getAppSettings()
-        }
-    }
-    #initLogger(){
-        if (this.conf?.main?.rootPath){
-            Base.log = new Logger({
-                                    'infoPath': path.join(this.conf.main.rootPath, 'log/info.log'),
-                                    'errPath': path.join(this.conf.main.rootPath, 'log/err.log')
-                                })
         }
     }
     static getMsg(code,options){
@@ -73,6 +63,9 @@ class Base {
     }
     get log(){
         return Base.log
+    }
+    setLog(conf){
+        Base.log = new Logger(conf)
     }
     getMsg(...p){
         return Base.getMsg(...p)
