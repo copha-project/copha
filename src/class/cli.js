@@ -52,6 +52,13 @@ class Cli extends Base {
     }
 
     @preCheck()
+    async createTask(name, {type}) {
+        this.log.info(`prepare to create a new task named ${name}`)
+        await this.core.checkName(name)
+        return this.core.createTask(name,type)
+    }
+
+    @preCheck()
     async deleteTask(name){
         name = await this.core.getTaskName(name)
         try {
@@ -121,7 +128,7 @@ class Cli extends Base {
         name = await this.core.getTaskName(name)
         const task = await this.core.getTask(name)
         if (!task) return
-        configPath = task.conf.main.configPath
+        configPath = task.getPath('config')
         if (options.set) {
             return this.core.setTaskConfig(name, options.set)
         }
@@ -140,13 +147,6 @@ class Cli extends Base {
         }, error => {
             throw new Error(error)
         })?.open(configPath)
-    }
-
-    @preCheck()
-    async createTask(name) {
-        this.log.info(`prepare to create a new task named ${name}`)
-        await this.core.checkName(name)
-        await this.core.createTask(name)
     }
 
     @preCheck()

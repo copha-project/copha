@@ -8,6 +8,7 @@ function createCommander(program,cli) {
 
     program.command('create <name>')
         .description('create a new task')
+        .option('-t, --type <value>', 'choose task type')
         .action(cli.getMethod('createTask'))
 
     program.command('delete <name>')

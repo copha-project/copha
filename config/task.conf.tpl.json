@@ -11,7 +11,8 @@
         "useProxy": true,
         "pageTimeInterval": 5,
         "alwaysRestart": false,
-        "driver": "firefox"
+        "driver": "firefox",
+        "type": ""
     },
     "process": {
         "Test": {

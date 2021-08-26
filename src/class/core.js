@@ -44,7 +44,7 @@ class Core extends Base{
     async listTask (){
         const files = await Utils.readDir(this.appSettings.DataPath)
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
-            return (await Utils.readJson(this.#getTaskConfPath(name))).main
+            return (await Utils.readJson(Task.getPath(name,'config'))).main
         }))
         return data
     }
@@ -55,31 +55,31 @@ class Core extends Base{
         }
         return data
     }
-    async createTask(name){
-        this.log.info(`Task [${name}] init`)
+    async createTask(name,type){
+        // TODO: check type
+        const taskType = type || 'default'
+        this.log.info(`Type of ${taskType} task [${name}] prepare to init`)
         // 复制项目模板文件到新的任务目录
         try {
-            await this.#genTpl(name)
+            await this.#genTpl(name,taskType)
         } catch (e) {
             await this.deleteTask(name)
-            console.log(e);
             throw new Error(e)
         }
         this.log.info(`Task [${name}] created successfully!`)
     }
     async checkName(name){
-        const taskRootPath = this.#getTaskRootPath(name)
-        if(name && await Utils.fileExist(taskRootPath)){
+        if(name && await Utils.fileExist(Task.getPath(name,'root_dir'))){
             throw new Error(`Task [${name}] exist!`)
         }
     }
     async deleteTask(name){
-        const taskPath = this.#getTaskRootPath(name)
+        const taskPath = Task.getPath(name,'root_dir')
         // 删除数据文件
         await Utils.rm(taskPath)
     }
     async getTask(name){
-        const taskConfigPath = this.#getTaskConfPath(name)
+        const taskConfigPath = Task.getPath(name,'config')
         if(!name || await Utils.checkFile(taskConfigPath) !== true){
             throw new Error(`Task [${name}] not exist`)
         }
@@ -121,20 +121,27 @@ class Core extends Base{
         return task.reset(options)
     }
 
-    async #genTpl(name) {
-        const taskRootPath = this.#getTaskRootPath(name)
-        const taskConfigPath = this.#getTaskConfPath(name)
+    async getTaskConf(name){
+        return Utils.readJson(Task.getPath(name,'config'))
+    }
+    async saveTaskConf(name, config){
+        return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
+    }
+
+    async #genTpl(name,type) {
+        const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
-            taskRootPath,
-            path.join(taskRootPath, 'config'),
-            path.join(taskRootPath, 'data'),
-            path.join(taskRootPath, 'data/download'),
-            path.join(taskRootPath, 'data/page'),
-            path.join(taskRootPath, 'data/detail'),
-            path.join(taskRootPath, 'data/export'),
-            path.join(taskRootPath, 'log'),
+            Task.getPath(name,'root_dir'),
+            Task.getPath(name,'config_dir'),
+            Task.getPath(name,'data_dir'),
+            Task.getPath(name,'download_dir'),
+            Task.getPath(name,'page_dir'),
+            Task.getPath(name,'detail_dir'),
+            Task.getPath(name,'export_dir'),
+            Task.getPath(name,'log_dir')
         ])
+        // config file
         await Utils.copyFile(
             this.AppConfigTpl.configPath,
             taskConfigPath
@@ -157,25 +164,13 @@ class Core extends Base{
         )
         await Utils.saveFile('1', Task.getPath(name,'last_page'))
         await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
-        try {
-            const taskConf = await Utils.readJson(taskConfigPath)
-            taskConf.main.name = name
-            taskConf.main.configPath = taskConfigPath
-            taskConf.main.rootPath = taskRootPath
-            taskConf.main.dataPath = Task.getPath(name,'data')
-            taskConf.main.createTime = new Date()
-            await Utils.saveFile(JSON.stringify(taskConf, null, 4), taskConfigPath)
-        } catch (error) {
-            this.log.err('genTpl for task err: ',error.message)
-            throw(`_genTpl for task err: ${error.message}`)
-        }
-    }
 
-    #getTaskConfPath(name){
-        return Task.getPath(name,'config')
-    }
-    #getTaskRootPath(name){
-        return Task.getPath(name,'root')
+        const taskConf = await this.getTaskConf(name)
+        taskConf.main.name = name
+        taskConf.main.type = type
+        taskConf.main.dataPath = Task.getPath(name,'data_dir')
+        taskConf.main.createTime = Utils.getTodayDate()
+        await this.saveTaskConf(name, taskConf)
     }
 }
 
