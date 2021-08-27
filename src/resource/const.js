@@ -50,6 +50,11 @@ const BugLink = pkg?.bugs?.url
 
 const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 
+const AppTaskTypeMap = {
+    default: 'empty',
+    list: 'list_fetch'
+}
+
 module.exports = {
     AppProjectRootPath,
     AppConfigUserDir,
@@ -60,5 +65,6 @@ module.exports = {
     AppConfigTpl,
     AppTaskPathSet,
     BugLink,
-    AppInstalledLockFile
+    AppInstalledLockFile,
+    AppTaskTypeMap
 }
