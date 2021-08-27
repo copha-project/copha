@@ -61,6 +61,9 @@ class Base {
     get appSettings() {
         return Base.appSettings
     }
+    get constData(){
+        return Base.constData
+    }
     get log(){
         return Base.log
     }
