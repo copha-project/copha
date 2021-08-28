@@ -3,19 +3,19 @@ const path = require('path')
 const Utils = require('uni-utils')
 // eslint-disable-next-line no-unused-vars
 const { By, until, Key } = require('selenium-webdriver')
-const Base = require('../class/base')
+const Driver = require('../class/driver')
 const webdriver = require('selenium-webdriver')
 const proxy = require('selenium-webdriver/proxy')
 const firefox = require('selenium-webdriver/firefox')
 const chrome = require('selenium-webdriver/chrome')
 const { Builder } = require('selenium-webdriver')
 
-class Selenium extends Base {
-    Driver = require('selenium-webdriver')
+class Selenium extends Driver {
+    DriverModule = require('selenium-webdriver')
     #conf = null
     #driver = null
     constructor(conf) {
-        super()
+        super(conf)
         this.#conf = conf
     }
     // core process
