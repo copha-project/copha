@@ -2,6 +2,7 @@ const Base = require('./base')
 const Task = require('./task')
 
 class Job extends Base {
+    #storage = null
     #driver = null
     #custom = null
     #taskConf = null
@@ -9,6 +10,9 @@ class Job extends Base {
     constructor(taskConf) {
         super()
         this.#taskConf = taskConf
+    }
+    setStorage(storage){
+        this.#storage = storage
     }
     setDriver(driver){
         this.#driver = driver
@@ -24,8 +28,8 @@ class Job extends Base {
     async run(){}
     async saveContext(){}
     async recover(){}
-
     async reset(){}
+    async clear(){}
 
     get taskConf(){
         return this.#taskConf
@@ -35,6 +39,9 @@ class Job extends Base {
     }
     get driver(){
         return this.#driver
+    }
+    get storage(){
+        return this.#storage
     }
     get #taskName(){
         return this.taskConf?.main.name
