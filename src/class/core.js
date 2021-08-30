@@ -96,15 +96,10 @@ class Core extends Base{
         const task = await this.getTask(name)
         const kv = data.split('=')
         if(kv.length!=2) {
-            this.log.err('config data is a error format');
+            this.log.err('The data was formatted incorrectly')
             return
         }
-        switch (kv[0]) {
-            case 'p':
-                return task.setPage(kv[1])
-            default:
-                break;
-        }
+        return task.updateConf(kv)
     }
     async stopTask(name){
         const task = await this.getTask(name)
