@@ -5,11 +5,11 @@ class Job extends Base {
     #storage = null
     #driver = null
     #custom = null
-    #taskConf = null
+    #conf = null
 
     constructor(taskConf) {
         super()
-        this.#taskConf = taskConf
+        this.#conf = taskConf
     }
     setStorage(storage){
         this.#storage = storage
@@ -32,22 +32,34 @@ class Job extends Base {
     async clear(){}
 
     getPath(name){
-        return Task.getTask(this.#taskName,name)
+        return Task.getTask(this.taskName,name)
     }
 
-    get taskConf(){
-        return this.#taskConf
+    checkNeedStop(){
+
+    }
+    get conf(){
+        return this.#conf
     }
     get custom(){
         return this.#custom
     }
+    set custom(v){
+        this.#custom = v
+    }
     get driver(){
         return this.#driver
+    }
+    set driver(v){
+        this.#driver = v
     }
     get storage(){
         return this.#storage
     }
-    get #taskName(){
+    set storage(v){
+        this.#storage = v
+    }
+    get taskName(){
         return this.taskConf?.main.name
     }
 }
