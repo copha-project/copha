@@ -63,7 +63,7 @@ class Job extends Base {
         this.#storage = v
     }
     get taskName(){
-        return this.taskConf?.main.name
+        return this.conf?.main.name
     }
 }
 
