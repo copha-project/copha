@@ -35,7 +35,7 @@ class Job extends Base {
     async clear(){}
 
     getPath(name){
-        return Task.getTask(this.taskName,name)
+        return Task.getPath(this.taskName,name)
     }
 
     checkNeedStop(){
