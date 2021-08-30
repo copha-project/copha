@@ -1,69 +1,100 @@
-// eslint-disable-next-line no-unused-vars
 const path = require('path')
 const Utils = require('uni-utils')
-// eslint-disable-next-line no-unused-vars
 const Job = require('../class/Job')
-const Task = require('../class/task')
 
 class ListJob extends Job {
     constructor(taskConf) {
         super(taskConf)
+        this.#initValue()
     }
+    #initValue() {
+        this.processConfig = this.conf.process
+        this.currentPage = 1
+        this.pages = 1
+        this.state = null
 
-    async runTest() {
-        this.log.info(`run test:`)
-        try {
-            let currentPage = 1
-            if (this.processConfig?.Test?.GetCurrentPage) {
-                this.log.info('run test for getCurrentPage:')
-                currentPage = await this.getCurrentPage()
-                this.log.info(`GetCurrentPage done: ${currentPage}`)
-            }
+        this.reworkPages = []
+        this.finished = false
+        // 临时状态设置
+        this.vItemsErrIndex = 0
 
-            if (this.processConfig?.Test?.GoPage) {
-                this.log.info('run test for goPage:')
-                await this.goPage(currentPage+2)
-                this.log.info(`goPage ok\n`)
-            }
+        // 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
+        this.vNeedStop = false
+        // 测试流程运行标志
+        this.vTestState = false
+        // 正式运行流程运行标志
+        this.vStartState = false
 
-            if (this.processConfig?.Test?.GetPages) {
-                this.log.info('run test for GetPages:')
-                const pages = await this.getPages()
-                this.log.info(`getPages ok: ${pages}\n`)
-            }
-
-            let list = []
-            if (this.processConfig?.Test?.GetListData) {
-                this.log.info('run test for getListData:')
-                list = await this.getListData()
-                this.log.info(`getListData ok : ${list.length}\n`)
-            }
-            if (this.processConfig?.Test?.GetItemId) {
-                this.log.info('run test for getItemId:')
-                const itemId = await this.getItemId(list[0])
-                this.log.info(`getItemId ok : ${itemId}\n`)
-            }
-            if (this.processConfig?.Test?.GetItemData) {
-                this.log.info('run test for getItemData:')
-                const itemData = await this.getItemData(list[0])
-                this.log.info(`getItemData ok : ${itemData}\n`)
-            }
-        } catch (error) {
-            this.log.err(`test error result : ${error}`);
+        this.driver = null
+        this.custom = null
+    }
+    async runTest(){
+        let currentPage = 1
+        if (this.processConfig?.Test?.GetCurrentPage) {
+            this.log.info('run test for getCurrentPage:')
+            currentPage = await this.getCurrentPage()
+            this.log.info(`GetCurrentPage done: ${currentPage}`)
         }
+
+        if (this.processConfig?.Test?.GoPage) {
+            this.log.info('run test for goPage:')
+            await this.goPage(currentPage+2)
+            this.log.info(`goPage ok\n`)
+        }
+
+        if (this.processConfig?.Test?.GetPages) {
+            this.log.info('run test for GetPages:')
+            const pages = await this.getPages()
+            this.log.info(`getPages ok: ${pages}\n`)
+        }
+
+        let list = []
+        if (this.processConfig?.Test?.GetListData) {
+            this.log.info('run test for getListData:')
+            list = await this.getListData()
+            this.log.info(`getListData ok : ${list.length}\n`)
+        }
+        if (this.processConfig?.Test?.GetItemId) {
+            this.log.info('run test for getItemId:')
+            const itemId = await this.getItemId(list[0])
+            this.log.info(`getItemId ok : ${itemId}\n`)
+        }
+        if (this.processConfig?.Test?.GetItemData) {
+            this.log.info('run test for getItemData:')
+            const itemData = await this.getItemData(list[0])
+            this.log.info(`getItemData ok : ${itemData}\n`)
+        }
+
         this.log.info(`test end.`)
     }
-
     async run(){
+        this.log.info(this.getMsg(7,this.taskName))
+        await this.#loadState()
 
-    }
-
-    async #listFetch() {
+        await this.openUrl()
         await this.#initPageInfo()
+        this.vStartState = true
+        do {
+            await this.#listFetch()
+            await this.checkNeedStop()
+            await Utils.sleep(5000)
+        } while (!this.finished)
+    }
+    async #loadState() {
+        // 导入任务状态
+        this.state = await this.getState()
+        this.log.info('getState finished')
+        // 导入可能存在的未完成的页数据
+        await this.importReworkPages()
+        this.log.info('importReworkPages finished')
+        // 导入上次任务最后的数据
+        this.currentPage = this.lastRunPage = await this.#getLastPage()
+    }
+    async #listFetch() {
         this.log.info('start fetch data')
         while (this.currentPage <= this.pages) {
             // 检查是否有停止信号
-            await this.#checkNeedStop()
+            await this.checkNeedStop()
             try {
                 const notDoneList = await this.#doList()
                 if (notDoneList.length > 0) {
@@ -73,7 +104,7 @@ class ListJob extends Job {
                 this.log.err(`listFetch -> getList rework : ${this.currentPage}, ${error.message}`);
                 this.reworkPages.push(this.currentPage)
             }
-            await this.#checkNeedStop()
+            await this.checkNeedStop()
             try {
                 await this.#goNext()
             } catch (error) {
@@ -84,42 +115,16 @@ class ListJob extends Job {
             await Utils.sleep(this.appSettings.ListTimeInterval)
         }
         // await this.#subFetch()
-
+        this.finished = true
     }
-    // TODO: rework 功能暂时屏蔽
-    async #subFetch() {
-    //     // 处理需要重新进行的列表页
-    //     if (this.reworkPages.length > 0) {
-    //         this.log.info(`start rework page : [${this.reworkPages}]`)
-    //         for (let i = 0; i < this.reworkPages.length;) {
-    //             const page = this.reworkPages[i]
-    //             this.log.info(`rework page: ${page}`)
-    //             let hasErr = false
-    //             try {
-    //                 await this.goPage(page)
-    //                 this.log.info(`refetch data of : ${page} page`)
-    //                 const notDoneList = await this.getList()
-    //                 if (notDoneList.length > 0) {
-    //                     hasErr = true
-    //                 }
-    //             } catch (error) {
-    //                 hasErr = true
-    //             }
-    //             if (!hasErr) i++
-    //             await Utils.sleep(1000)
-    //         }
-    //
-    //         this.reworkPages = []
-    //     }
-    }
-
+    async #subFetch() {}
     async #doList() {
         let list = await this.getListData()
         this.log.info(`fetch list data : length ${list.length} , ${this.currentPage}/${this.pages} pages`);
         const notDoneList = []
         for (const i in list) {
             // 检查是否有停止信号
-            await this.#checkNeedStop()
+            await this.checkNeedStop()
             // 解决获取item时跳转页面导致的item值失效
             const realList = await this.getListData()
             const item = realList[i]
@@ -150,7 +155,7 @@ class ListJob extends Job {
                 notDoneList.push(id)
                 continue
             }
-            await Utils.sleep(this.#conf.main.pageTimeInterval * 1000 || 500)
+            await Utils.sleep(this.conf.main.pageTimeInterval * 1000 || 500)
         }
         if (notDoneList.length === list.length) {
             this.vItemsErrIndex += 1
@@ -163,16 +168,23 @@ class ListJob extends Job {
         return notDoneList
     }
 
-    async #loadState() {
-        // 导入任务状态
-        this.state = await this.getState()
-        this.log.info('getState finished')
-        // 导入可能存在的未完成的页数据
-        await this.importReworkPages()
-        this.log.info('importReworkPages finished')
-        // 导入上次任务最后的数据
-        this.currentPage = this.lastRunPage = await this.#getLastPage()
+    async #save(data, id) {
+        this.log.info(`save item data of ${id}`)
+        return this.storage.save({id,data})
     }
+    async #find(id) {
+        return this.storage.findById(id)
+        // if (this.storage.type == "file") {
+        //     const file = path.join(this.getPath('saveDetailDataDir'), `${id}.json`)
+        //     return await Utils.checkFile(file) === true
+        // } else {
+        //     const res = await this.storage.query('detail', {
+        //         name: id
+        //     })
+        //     return res.length === 1
+        // }
+    }
+
     async importReworkPages() {
         const pagesString = await Utils.readFile(this.getPath('rework_pages'))
         try {
@@ -185,44 +197,6 @@ class ListJob extends Job {
         }
     }
 
-    async getItemData(item) {
-        if (this.#custom.getItem) {
-            await this.#custom.getItem(item)
-        }
-        return this.#driver.getItemData(item)
-    }
-    async getItemId(item) {
-        if (this.#conf.process?.CustomStage?.GetItemId) {
-            return this.#custom.GetItemId(item)
-        } else {
-            return this.#driver?.getItemId(item)
-        }
-    }
-
-    // set page of task run start
-    async #setPage(page) {
-        return Utils.saveFile(`${page}`, this.getPath('last_page'))
-    }
-    async #resetReworkPages(){
-        return Utils.saveFile('[]', this.getPath('rework_pages'))
-    }
-
-    async #clearState(){
-        const state = await Utils.readJson(this.getPath('state'))
-        state.RestartCount = 0
-        return Utils.saveJson(state,this.getPath('state'))
-    }
-
-    async reset(){
-        // task_state.json set init
-        await this.#clearState()
-        // last_page.txt set 1
-        await this.#setPage(1)
-        // reworks pages set []
-        await this.#resetReworkPages()
-
-    }
-    // interface of task
     async #initPageInfo() {
         await Utils.sleep(1000)
         this.pages = await this.getPages()
@@ -247,7 +221,7 @@ class ListJob extends Job {
      * 获取任务进度状态信息
      */
     async getState() {
-        if (this.#driver.getState) return this.#driver.getState()
+        if (this.driver.getState) return this.driver.getState()
         let state = {}
         try {
             state = await Utils.readJson(this.getPath('state'))
@@ -257,9 +231,10 @@ class ListJob extends Job {
         return state
     }
     async saveState() {
-        if (this.#driver.saveState) return this.#driver.saveState(this.state)
+        if (this.driver.saveState) return this.driver.saveState(this.state)
         if (this.state) await Utils.saveJson(this.state, this.getPath('state'))
     }
+
 
     async goPage(page) {
         const goPageInfo = this.processConfig.GoPage
@@ -282,28 +257,28 @@ class ListJob extends Job {
             default:
                 {
                     const methodInfo = goPageInfo.method.click
-                    const goInput = await this.driver.findElement(By.xpath(methodInfo.value))
+                    const goInput = await this.driver.findElementByXpath(methodInfo.value)
                     // await driver.executeScript(`document.getElementsByClassName('default_pgCurrentPage').item(0).setAttribute('value',${page})`)
                     await goInput.clear()
                     if(methodInfo.clickOk){
-                        const okElement = await this.driver.findElement(By.xpath(methodInfo.clickOk))
+                        const okElement = await this.driver.findElementByXpath(methodInfo.clickOk)
                         if(!okElement) throw(Error(`not find click ok element!`))
                         await goInput.sendKeys(page)
                         await okElement.click()
                     }else{
-                        await goInput.sendKeys(page, Key.ENTER)
+                        await goInput.sendKeys(page, this.driver.getKey('enter'))
                     }
                 }
                 break;
         }
 
-        let checkFunc = this.getCurrentPage.bind(this)
+        let checkFunc = this.getCurrentPage
 
         if(goPageInfo?.customCheck?.enable){
             this.log.info('invoke custom check for goPgae')
             const customCheck = goPageInfo?.customCheck
             checkFunc = async () => {
-                let checkItem = await this.driver.findElements(By[customCheck.type](customCheck.value))
+                let checkItem = await this.driver.findElementsBy(customCheck.type,(customCheck.value))
                 if(customCheck.display){
                     if(checkItem.length==0) return -1
                 }else{
@@ -317,7 +292,7 @@ class ListJob extends Job {
         let count = 1
         if(count > 1) this.log.warn("start waitting page")
         do {
-            await this.driver.sleep(500)
+            await Utils.sleep(500)
             try {
                 p = await checkFunc()
             } catch (error) {
@@ -338,7 +313,7 @@ class ListJob extends Job {
                 break;
             case 'xpath':
                 {
-                    pages = await this.driver.findElement(By.xpath(pagesInfo.value)).getText()
+                    pages = await this.driver.findElementByXpath(pagesInfo.value).getText()
                     if (pagesInfo.regexp) {
                         try {
                             pages = parseInt(new RegExp(pagesInfo.regexp).exec(pages)[1])
@@ -350,7 +325,7 @@ class ListJob extends Job {
                 }
             case 'css':
                 {
-                    const selector = await this.driver.findElement(By.css(pagesInfo.value))
+                    const selector = await this.driver.findElementByCss(pagesInfo.value)
                     if(pagesInfo?.attr){
                         pages = await selector.getAttribute(pagesInfo.attr)
                     }else{
@@ -359,7 +334,7 @@ class ListJob extends Job {
                 }
                 break
             case 'id':
-                pages = await this.driver.findElement(By.id(pagesInfo.value)).getText()
+                pages = await this.driver.findElementById(pagesInfo.value).getText()
                 break
             default:
                 break;
@@ -376,7 +351,7 @@ class ListJob extends Job {
                 break;
             case 'xpath':
                 {
-                    page = await this.driver.findElement(By.xpath(theWayInfo.value))
+                    page = await this.driver.findElementsByXpath(theWayInfo.value)
                     page = await page.getText()
                     if (theWayInfo?.regexp) {
                         try {
@@ -389,7 +364,7 @@ class ListJob extends Job {
                 }
             case 'css':
                 {
-                    const selector = await this.driver.findElement(By.css(theWayInfo.value))
+                    const selector = await this.driver.findElementByCss(theWayInfo.value)
                     if(theWayInfo?.attr){
                         page = await selector.getAttribute(theWayInfo.attr)
                     }else{
@@ -399,7 +374,7 @@ class ListJob extends Job {
                 break
             case 'id':
                 {
-                    page = await this.driver.findElement(By.id(theWayInfo.value)).getText()
+                    page = await this.driver.findElementById(theWayInfo.value).getText()
                 }
                 break
             case 'url':
@@ -523,7 +498,7 @@ class ListJob extends Job {
                     if(fetchContentInfo.selector.type=='self'){
                         await item.click()
                     }else{
-                        let clickItem = await item.findElements(By[fetchContentInfo.selector.type](fetchContentInfo.selector.value))
+                        let clickItem = await item.findElementsBy(fetchContentInfo.selector.type,fetchContentInfo.selector.value)
                         if(clickItem.length!=1) break
                         clickItem = clickItem[0]
 
@@ -535,7 +510,7 @@ class ListJob extends Job {
                     }
                     // 处理新的页面数据
                     const clickContentInfo = fetchContentInfo.contentSelector
-                    await this.driver.sleep(1000)
+                    await Utils.sleep(1000)
 
                     let content = []
                     switch (clickContentInfo.type) {
@@ -544,7 +519,7 @@ class ListJob extends Job {
                             break;
                         default:
                             {
-                                content = await this.driver.findElements(By[clickContentInfo.type](clickContentInfo.value))
+                                content = await this.driver.findElementsBy(clickContentInfo.type,(clickContentInfo.value))
                             }
                     }
                     if(itemConfig?.replace){
@@ -561,7 +536,7 @@ class ListJob extends Job {
                         }
                     }
                     console.log(itemData[itemData.length-1]);
-                    await this.driver.sleep(1000)
+                    await Utils.sleep(1000)
                     // 关闭或者返回
                     if(fetchContentInfo.newTab){
                         await this.closeCurrentTab()
@@ -584,16 +559,16 @@ class ListJob extends Job {
             return  id;
         }
         const locValue = this.processConfig.GetItemId?.selector?.value
-        let selector = By.xpath(locValue)
+        let selector = this.driver.buildSelectorForXpath('locValue')
         switch (this.processConfig.GetItemId?.selector?.type) {
             case "id":
-                selector = By.id(locValue)
+                selector = this.driver.buildSelectorForId(locValue)
                 break;
             case "css":
-                selector = By.css(locValue)
+                selector = this.driver.buildSelectorForCss(locValue)
                 break
             case "xpath":
-                selector = By.xpath(locValue)
+                selector = this.driver.buildSelectorForXpath(locValue)
                 break
             case "page":
                 return this.getCurrentPage()
@@ -620,28 +595,15 @@ class ListJob extends Job {
         return id
     }
 
-    async saveContext(){
-        this.log.info(`Task will exit, save Context : current Page: ${this.currentPage}`)
-        fs.writeFileSync(Task.getPath(this.#taskName,'last_page'), `${this.currentPage}`)
-        if (this.reworkPages.length > 0) {
-            fs.writeFileSync(Task.getPath(this.#taskName,'rework_pages'), JSON.stringify(this.reworkPages))
-        }
-    }
-
-    async recover(){
-        fs.writeFileSync(Task.getPath(this.#taskName,'last_page'), `1`)
-        fs.writeFileSync(Task.getPath(this.#taskName,'rework_pages'), `[]`)
-    }
-
     getItemSelector() {
         const locValue = this.processConfig.GetItemData?.selector?.value
-        let selector = By.xpath(locValue)
+        let selector = this.driver.buildSelectorForXpath(locValue)
         switch (this.processConfig.GetItemData?.selector?.type) {
             case "id":
-                selector = By.id(locValue)
+                selector = this.driver.buildSelectorForId(locValue)
                 break;
             case "css":
-                selector = By.css(locValue)
+                selector = this.driver.buildSelectorForCss(locValue)
                 break
             default:
                 // xpath
@@ -651,13 +613,13 @@ class ListJob extends Job {
     }
     getListSelector() {
         const locValue = this.processConfig.GetListData?.selector?.value
-        let selector = By.xpath(locValue)
+        let selector = this.driver.buildSelectorForXpath(locValue)
         switch (this.processConfig.GetListData?.selector?.type) {
             case "id":
-                selector = By.id(locValue)
+                selector = this.driver.buildSelectorForId(locValue)
                 break;
             case "css":
-                selector = By.css(locValue)
+                selector = this.driver.buildSelectorForCss(locValue)
                 break
             default:
                 // xpath
