@@ -25,6 +25,9 @@ class Job extends Base {
     async runTest(){}
 
     async loadState(){}
+    async runBefore(){
+        await this.#driver.open()
+    }
     async run(){}
     async saveContext(){}
     async recover(){}
