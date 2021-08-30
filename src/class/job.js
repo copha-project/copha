@@ -31,6 +31,10 @@ class Job extends Base {
     async reset(){}
     async clear(){}
 
+    getPath(name){
+        return Task.getTask(this.#taskName,name)
+    }
+
     get taskConf(){
         return this.#taskConf
     }
