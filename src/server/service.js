@@ -22,8 +22,10 @@ class Service extends Base {
     async task(ctx){
         ctx.body = await ctx.copha.listTask()
     }
-
-    async task_conf(ctx){
+    async taskType(ctx){
+        ctx.body = await ctx.copha.listType()
+    }
+    async taskConf(ctx){
         ctx.body = await ctx.copha.getTaskConf(ctx.params.name)
     }
     async notFind(ctx){
