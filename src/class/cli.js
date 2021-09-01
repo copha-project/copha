@@ -37,7 +37,10 @@ class Cli extends Base {
     }
 
     @preCheck()
-    async listTask() {
+    async listTask(options) {
+        if(options.type){
+            return this.listType()
+        }
         const tasksData = await this.core.listTask()
         console.log('Task List:')
         console.table(
@@ -46,6 +49,19 @@ class Cli extends Base {
                     Name: task.name,
                     Description: task.desc || '',
                     createTime: task.createTime || '-'
+                }
+            })
+        )
+    }
+
+    async listType(){
+        const typeList = await this.core.listType()
+        console.log('Task Type List:')
+        console.table(
+            typeList.map(data => {
+                return {
+                    Name: data,
+                    Description: ''
                 }
             })
         )

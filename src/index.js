@@ -34,7 +34,8 @@ function createCommander(program,cli) {
         .action(cli.getMethod('resetTask'))
 
     program.command('list')
-        .description('list all task')
+        .description('list task info')
+        .option('-t, --type', 'show all available task types')
         .action(cli.getMethod('listTask'))
 
     program.command('config [name]')

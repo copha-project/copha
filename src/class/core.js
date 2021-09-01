@@ -49,6 +49,10 @@ class Core extends Base{
         return data
     }
 
+    async listType(){
+        return Object.keys(this.constData.AppTaskTypeMap)
+    }
+
     async getTaskName(data){
         if(parseInt(data, 10)>=0){
             return (await this.listTask())[data].name
