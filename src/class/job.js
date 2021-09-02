@@ -6,7 +6,6 @@ class Job extends Base {
     #driver = null
     #custom = null
     #conf = null
-
     constructor(taskConf) {
         super()
         this.#conf = taskConf
@@ -26,7 +25,7 @@ class Job extends Base {
 
     async loadState(){}
     async runBefore(){
-        await this.#driver.open()
+        await this.driver.open()
     }
     async run(){}
     async saveContext(){}
