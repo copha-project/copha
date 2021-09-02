@@ -70,8 +70,6 @@ class ListJob extends Job {
     async run(){
         this.log.info(this.getMsg(7,this.taskName))
         await this.#loadState()
-
-        await this.openUrl()
         await this.#initPageInfo()
         this.vStartState = true
         do {
@@ -109,7 +107,7 @@ class ListJob extends Job {
                 await this.#goNext()
             } catch (error) {
                 this.log.err(`listFetch -> goNext : ${error.message}`)
-                await this.openUrl()
+                await this.driver.open()
                 await this.goPage(this.currentPage--)
             }
             await Utils.sleep(this.appSettings.ListTimeInterval)
@@ -174,15 +172,6 @@ class ListJob extends Job {
     }
     async #find(id) {
         return this.storage.findById(id)
-        // if (this.storage.type == "file") {
-        //     const file = path.join(this.getPath('saveDetailDataDir'), `${id}.json`)
-        //     return await Utils.checkFile(file) === true
-        // } else {
-        //     const res = await this.storage.query('detail', {
-        //         name: id
-        //     })
-        //     return res.length === 1
-        // }
     }
 
     async importReworkPages() {
@@ -221,7 +210,6 @@ class ListJob extends Job {
      * 获取任务进度状态信息
      */
     async getState() {
-        if (this.driver.getState) return this.driver.getState()
         let state = {}
         try {
             state = await Utils.readJson(this.getPath('state'))
@@ -231,10 +219,8 @@ class ListJob extends Job {
         return state
     }
     async saveState() {
-        if (this.driver.saveState) return this.driver.saveState(this.state)
         if (this.state) await Utils.saveJson(this.state, this.getPath('state'))
     }
-
 
     async goPage(page) {
         const goPageInfo = this.processConfig.GoPage
