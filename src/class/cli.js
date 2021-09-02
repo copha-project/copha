@@ -37,10 +37,15 @@ class Cli extends Base {
     }
 
     @preCheck()
-    async listTask(options) {
-        if(options.type){
-            return this.listType()
+    async listInfo(options) {
+        switch (options.type) {
+            case 'list':
+                return this.listType()
+            default:
+                return this.listTask()
         }
+    }
+    async listTask(){
         const tasksData = await this.core.listTask()
         console.log('Task List:')
         console.table(
@@ -53,7 +58,6 @@ class Cli extends Base {
             })
         )
     }
-
     async listType(){
         const typeList = await this.core.listType()
         console.log('Task Type List:')

@@ -20,7 +20,7 @@ function createCommander(program,cli) {
         .option('-e, --export', 'export data only')
         .option('-t, --test', 'custom test only')
         .option('-d, --daemon', 'run with daemon mode')
-        .option('-c','run custom code')
+        .option('-c','run custom code after the task finished')
         .action(cli.getMethod('runTask'))
 
     program.command('stop <name>')
@@ -35,15 +35,15 @@ function createCommander(program,cli) {
 
     program.command('list')
         .description('list task info')
-        .option('-t, --type', 'show all available task types')
-        .action(cli.getMethod('listTask'))
+        .option('-t, --type <value>', 'show all available task types')
+        .action(cli.getMethod('listInfo'))
 
     program.command('config [name]')
         .description('set global or task config or custom code')
         .option('-s, --set <key=value>', 'set config')
-        .option('--custom', 'edit custom exec code')
-        .option('-o --overwrite', 'edit overwrite code of task')
-        .option('-e --export-data', 'edit custom export data code')
+        .option('-c, --custom', 'edit custom exec code')
+        .option('-o, --overwrite', 'edit overwrite code of task')
+        .option('-e, --export-data', 'edit custom export data code')
         .action(cli.getMethod('setConfig'))
 
     program.command('server')
