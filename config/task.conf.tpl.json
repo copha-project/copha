@@ -8,7 +8,7 @@
         "dataPath": "",
         "targetUrl": "",
         "debug": false,
-        "useProxy": true,
+        "useProxy": false,
         "pageTimeInterval": 5,
         "alwaysRestart": false,
         "driver": "firefox",

@@ -1,5 +1,4 @@
 async function runCode() {
-	this.log.info('custom code ok, some helper can use :')
-    console.log(Object.keys(this.helper))
+	this.log.info('it’s looks fine that run custom code, some helper can visit here :')
 }
 module.exports = runCode
