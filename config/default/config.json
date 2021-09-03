@@ -4,6 +4,13 @@
     "Language": "en",
     "DefaultMaxPages": 999999,
     "ListTimeInterval": 2000,
+    "Driver": {
+        "Time": {
+            "LocatingElementsTimeout": 10000,
+            "PageLoadTimeout": 60000,
+            "RunScriptTimeout": 30000
+        }
+    },
     "Storage":{
         "Type":["file","mongodb","mysql"],
         "AdapterList":{

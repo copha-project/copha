@@ -37,12 +37,12 @@ class Base {
         }
         return text.slice(0,-3)
     }
+
     static async installCheck(){
         if(await Utils.checkFile(this.constData.AppConfigUserDir)) return true
         this.log.info(this.getMsg(9))
-        await Utils.createDir(this.constData.AppConfigUserDir)
         try {
-            await Utils.copyFile(this.constData.AppDefaultConfigPath, this.constData.AppConfigUserPath)
+            await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
             await Utils.saveFile("", this.constData.AppInstalledLockFile)
             return true
         } catch (e) {
@@ -52,6 +52,7 @@ class Base {
         }
         return false
     }
+
     getPathFor(key){
         return this.#pathData[key]
     }

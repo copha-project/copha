@@ -10,7 +10,7 @@ const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
 const AppTplConfigPath = path.resolve(AppProjectRootPath, 'config')
 
-const AppDefaultConfigPath = path.resolve(AppProjectRootPath, './config/default.json')
+const AppDefaultConfigDir = path.resolve(AppProjectRootPath, './config/default')
 
 const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
 
@@ -60,7 +60,7 @@ module.exports = {
     AppConfigUserDir,
     AppConfigUserPath,
     AppTplConfigPath,
-    AppDefaultConfigPath,
+    AppDefaultConfigDir,
     AppExecutableCommandPath,
     AppConfigTpl,
     AppTaskPathSet,

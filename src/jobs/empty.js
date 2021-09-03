@@ -11,13 +11,12 @@ class EmptyJob extends Job {
 
     async runTest() {
         this.log.info(`run test:`)
+        await Utils.countdown(5)
         this.log.info(`test end.`)
     }
 
     async run(){
-        await this.driver.open('https://baidu.com')
-        console.log('sleep 100\'s to exit');
-        await Utils.sleep(100000)
+        this.log.info('run job')
     }
 
     async runBefore(){
