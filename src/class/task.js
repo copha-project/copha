@@ -33,11 +33,12 @@ class Task extends Base {
     async start(){
         return this.#start()
     }
-    async setPage(page) {
-        return this.#setPage(page)
+    async updateConf(kv) {
+        // TODO: 直接更新任务数据
+        return
     }
     async reset(options){
-        await this.#jobs?.reset()
+        await this.#job?.reset()
         // delete log
         await this.#deleteLog()
         // task.pid set ''
@@ -108,7 +109,7 @@ class Task extends Base {
     }
 
     async #startPrepare(){
-        this.init()
+        await this.init()
         this.#setExitHandle()
         await this.#setRunPid()
 
@@ -117,7 +118,7 @@ class Task extends Base {
 
         this.#job.setDriver(this.#driver)
         this.#job.setCustom(this.#custom)
-        this.#job.setStorage(this.#storage)
+        this.#job.setStorage(this.storage)
     }
 
     async #test() {
@@ -127,9 +128,11 @@ class Task extends Base {
             await this.#runBefore()
             await this.#job.runTest()
             await Utils.sleep(this.#conf.process.Test.WaitExitTime * 1000)
-        } catch (error) {
-            this.log.err(`Run test err: ${error}`)
-        } 
+        } catch (e) {
+            this.log.err(e)
+        } finally {
+            await this.#clear()
+        }
     }
 
     //interface of job
@@ -140,7 +143,7 @@ class Task extends Base {
         } else {
             await this.#job?.runBefore()
         }
-        this.log.info('Runbefore in task finished')
+        this.log.debug('Runbefore in task finished')
     }
 
     async #start() {
@@ -184,6 +187,7 @@ class Task extends Base {
 
     // self method
     async #setRunPid(){
+        this.log.info(`Task run pid on : ${process.pid}`)
         return Utils.saveFile(`${process.pid}`,this.getPath('pid'))
     }
 
@@ -201,14 +205,19 @@ class Task extends Base {
     }
 
     #setExitHandle() {
-        let exitProcess = false // 防抖，多次按退出
+        this.log.debug('set setExitHandle()')
+        let exitCount = 0 // 防抖，多次按退出
         const exitScript = async (args) => {
             this.log.warn(`get exit signal by ${args}`)
-            if (!exitProcess) {
-                exitProcess = true
+            if (!exitCount) {
+                exitCount = 1
                 // 等待正在进行的任务，通过检查vNeedStop变量来判断是否需要暂停任务
                 this.log.warn('检测到关闭操作，通知业务暂停。')
                 this.vNeedStop = true
+            }else{
+                console.log(exitCount);
+                // this.log.warn('强制关闭!')
+                // process.exit()
             }
         }
         process.on('SIGINT', exitScript)
@@ -220,7 +229,7 @@ class Task extends Base {
         // 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
         this.vNeedStop = false
     }
-    
+
     #initLogger(){
         if (this.#conf){
             this.setLog({
@@ -255,11 +264,14 @@ class Task extends Base {
             //     }
             // })
         } catch (error) {
-            throw new Error(`can't load custom driver module : ${error.message}`)
+            throw new Error(`Can't load web driver : ${error}`)
         }
     }
-    
+
     #loadJob(){
+        if(!this.#conf.main?.type){
+            throw new Error(`Task not has a type, please set it.`)
+        }
         const jobName = this.constData.AppTaskTypeMap[this.#conf.main?.type] || 'empty'
         try {
             const jobClass = require(`${this.constData.AppConfigUserDir}/jobs/${jobName}`)
@@ -268,7 +280,7 @@ class Task extends Base {
             throw new Error(`can't load job [${jobName}] : ${error}`)
         }
     }
-    
+
     #loadCustomCode() {
         try {
             this.#custom =  require(this.getPath('custom_over_write_code'))
@@ -299,6 +311,10 @@ class Task extends Base {
             this.#initStorage()
         }
         return this.#storage
+    }
+
+    get driver(){
+        return this.#driver
     }
 
     get Driver(){

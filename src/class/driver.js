@@ -26,7 +26,9 @@ class Driver extends Base{
         this.#driver = v
     }
 
+    // return key of keyboard
     getKey(name){}
+    // k is css xpath id js ...
     buildSelector(k,v){
         throw new Error('must implement buildSelector()')
     }
@@ -42,11 +44,9 @@ class Driver extends Base{
     buildSelectorForId(v){
         return this.buildSelector('id', v)
     }
-
     buildSelectorForXpath(v){
         return this.buildSelector('xpath', v)
     }
-
     buildSelectorForCss(v){
         return this.buildSelector('css', v)
     }
@@ -73,7 +73,6 @@ class Driver extends Base{
     async findElementsByXpath(v){
         return this.findElementsBy('xpath',v)
     }
-
 }
 
 module.exports = Driver

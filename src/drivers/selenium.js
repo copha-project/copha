@@ -12,11 +12,8 @@ const { Builder } = require('selenium-webdriver')
 
 class Selenium extends Driver {
     DriverModule = require('selenium-webdriver')
-    #conf = null
-    #driver = null
     constructor(conf) {
         super(conf)
-        this.#conf = conf
     }
     // core process
     async init() {
@@ -24,8 +21,15 @@ class Selenium extends Driver {
             const options = this.configOptions()
             const driverBuilder = await this.getDriverBuilder(options)
             this.setProxy(driverBuilder)
-            this.#driver = driverBuilder.build()
-            await this.#driver.manage().setTimeouts({ pageLoad: 30000, implicit: 10000 })
+            this.setPreference(driverBuilder)
+            this.setDriver(driverBuilder.build())
+
+            if(this.conf.main.driver == 'chrome'){
+                const service = chrome.getDefaultService()
+                this.log.debug(`Chrome driverService on : ${await service.address()}`)
+            }
+
+            await this.driver.manage().setTimeouts({ pageLoad: 30000, implicit: 10000 })
         } catch (error) {
             throw new Error(`Driver init failed : ${error}`)
         }
@@ -33,13 +37,13 @@ class Selenium extends Driver {
     }
     getDriverBuilder(options){
         let driverBuilder = new Builder()
-        switch (this.#conf.main?.driver) {
+        switch (this.conf.main?.driver) {
             case 'chrome':
                 {
                     driverBuilder.withCapabilities(webdriver.Capabilities.chrome())
                         .setChromeOptions(options)
                 }
-                break;
+                break
             default:
                 {
                     driverBuilder.withCapabilities(webdriver.Capabilities.firefox())
@@ -50,7 +54,7 @@ class Selenium extends Driver {
     }
     configOptions(){
         let options = null
-        switch (this.#conf.main?.driver) {
+        switch (this.conf.main?.driver) {
             case 'chrome':
                 {
                     options = new chrome.Options()
@@ -66,7 +70,7 @@ class Selenium extends Driver {
         if(this.getEnv("COPHA_SHOW_HEADLESS_GUI")){
 
         }else{
-            if (this.#conf.main.debug) {
+            if (this.conf.main.debug) {
 
             }else{
                 options.headless()
@@ -82,47 +86,62 @@ class Selenium extends Driver {
         if(process.env['COPHA_USE_PROXY']){
             _setProxy()
         }else{
-            if (this.#conf.main.useProxy) {
+            if (this.conf.main.useProxy) {
                 _setProxy()
             }
         }
     }
-    setPreference(){
+    setPreference(driverBuilder){
 
     }
-    async open(url) {
+    async open(url, ignoreErr=false) {
         // 3次重试
         const maxCount = 3
         let count = 1
         try {
-            await this.#driver.get(url||this.#conf.main.targetUrl)
+            await this.driver.get(url || this.conf.main?.targetUrl)
         } catch (error) {
-            while (count <= maxCount) {
+            while (count <= maxCount && !ignoreErr) {
                 this.log.warn(`refresh it again ${count}/${maxCount}`)
                 try {
-                    await this.#driver.navigate().refresh()
+                    await this.driver.navigate().refresh()
                     break
                 } catch (error) {
                     this.log.err(`open url err: ${error}`)
                     count++
-                    await Utils.sleep(1000)
                 }
             }
         }
-        if (count == 4) {
+        if (count == 4 && !ignoreErr) {
             throw new Error('open url failed, task stoped')
         }
     }
     async clear() {
-        if (this.#driver) {
+        if (this.driver) {
             try {
-                this.#driver.quit()
+                await this.driver.quit()
             } catch (error) {
                 this.log.err(`clear web driver err: ${error.message}`)
             } finally{
-                this.#driver = null
+                this.driver = null
             }
         }
+    }
+    async sleep(n) {
+        return this.driver.sleep(n)
+    }
+
+    buildSelector(k,v){
+        return By[k](v)
+    }
+    getKey(name){
+        return Key[name.toUpperCase()]
+    }
+    async findElements(v){
+        return this.driver.findElements(v)
+    }
+    async findElement(v){
+        return this.driver.findElement(v)
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -131,8 +150,8 @@ class Selenium extends Driver {
         const waitTime = 1000
         let count = 1
         while (count <= maxCount) {
-            await this.#driver.sleep(waitTime)
-            const whs = await this.#driver.getAllWindowHandles()
+            await this.driver.sleep(waitTime)
+            const whs = await this.driver.getAllWindowHandles()
             if (whs.length == 2) return
             if(whs.length>2){
                 // try {
@@ -151,31 +170,31 @@ class Selenium extends Driver {
         const waitTime = 1000
         let count = 1
         while (count <= maxCount) {
-            const funcExist = await this.#driver.executeScript((f) => eval("typeof " + f), funcName)
+            const funcExist = await this.driver.executeScript((f) => eval("typeof " + f), funcName)
             if (funcExist == 'function') return
             count++
-            await this.#driver.navigate().refresh()
-            await this.#driver.sleep(waitTime)
+            await this.driver.navigate().refresh()
+            await this.driver.sleep(waitTime)
         }
         this.log.err('not find function: ', funcName)
     }
     async swithToNewTab(){
-        const whs = await this.#driver.getAllWindowHandles()
-        await this.#driver.switchTo().window(whs[1])
+        const whs = await this.driver.getAllWindowHandles()
+        await this.driver.switchTo().window(whs[1])
         // await driver.wait(until.elementLocated(By.xpath(fields_xpath[0])), 30000)
     }
     async closeCurrentTab() {
-        const whs = await this.#driver.getAllWindowHandles()
-        await this.#driver.close()
-        await this.#driver.switchTo().window(whs[0])
+        const whs = await this.driver.getAllWindowHandles()
+        await this.driver.close()
+        await this.driver.switchTo().window(whs[0])
     }
     async _clearTab(){
-        const whs = await this.#driver.getAllWindowHandles()
+        const whs = await this.driver.getAllWindowHandles()
         for (let i = 1; i < whs.length; i++) {
-            await this.#driver.switchTo().window(whs[i])
-            await this.#driver.close()
+            await this.driver.switchTo().window(whs[i])
+            await this.driver.close()
         }
-        await this.#driver.switchTo().window(whs[0])
+        await this.driver.switchTo().window(whs[0])
     }
     async waitPage(p, driver) {
         const min_xpath = `//*[@id="pagetest2"]/table/tbody/tr/td/table/tbody/tr/td[11]/span[1]`
