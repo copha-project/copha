@@ -24,7 +24,7 @@
         "build": "./node_modules/.bin/babel --verbose src/ -d dist -D",
         "clear": "node ./bin/dev.js"
     },
-    "main": "./bin/index.js",
+    "main": "./index.js",
     "author": "aong",
     "license": "MIT",
     "os": [

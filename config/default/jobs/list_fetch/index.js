@@ -1,5 +1,5 @@
 const Utils = require('uni-utils')
-const { Job } = require('copha')
+const Job = require('copha').Job
 
 class ListJob extends Job {
     constructor(taskConf) {
