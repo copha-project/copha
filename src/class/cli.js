@@ -38,11 +38,14 @@ class Cli extends Base {
 
     @preCheck()
     async listInfo(options) {
+        if(!options.type) return this.listTask()
         switch (options.type) {
-            case 'list':
+            case 'type':
                 return this.listType()
-            default:
+            case 'task':
                 return this.listTask()
+            default:
+                throw new Error('unknow type of list')
         }
     }
     async listTask(){
