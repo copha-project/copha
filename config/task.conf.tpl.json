@@ -6,7 +6,6 @@
         "rootPath": "",
         "configPath": "",
         "dataPath": "",
-        "targetUrl": "",
         "debug": false,
         "useProxy": false,
         "pageTimeInterval": 5,
@@ -14,126 +13,7 @@
         "driver": "firefox",
         "type": ""
     },
-    "process": {
-        "Test": {
-            "GetCurrentPage": true,
-            "GoPage": true,
-            "GetPages": true,
-            "GetListData": true,
-            "GetItemId": true,
-            "GetItemData": true,
-            "custom": false,
-            "WaitExitTime": 0
-        },
-        "CustomStage":{
-            "RunBefore": false,
-            "GetItemId": false
-        },
-        "GetPages": {
-            "use":"number",
-            "number":{
-                "value": 1
-            },
-            "xpath": {
-                "type": "xpath",
-                "regexp": "\\/(\\d+)"
-            },
-            "css":{
-                "value": "",
-                "attr": "value"
-            }
-        },
-        "GetCurrentPage": {
-            "use": "url",
-            "xpath": {
-                "value": "/html/body/div[3]/div/div[1]/span",
-                "regexp": "(\\d+)\/"
-            },
-            "number": {
-                "value": 1
-            },
-            "url": {
-                "value": "",
-                "regexp": "(\\d+)\/"
-            },
-            "css":{
-                "value": "#pageNumber",
-                "attr": "value"
-            }
-        },
-        "GoPage": {
-            "type": "url",
-            "method":{
-                "url": {
-                    "value": ""
-                },
-                "click": {
-                    "value": "",
-                    "clickOk": ""
-                }
-            },
-            "customCheck": {
-                "enable": false,
-                "type": "css",
-                "value": "",
-                "display": false
-            }
-        },
-        "GetListData": {
-            "selector": {
-                "type": "xpath",
-                "value": ""
-            },
-            "mergeItem": {
-                "enable": false,
-                "count": 4
-            },
-            "skipRow": false
-        },
-        "GetItemData": {
-            "selector": {
-                "type": "css",
-                "value": "td"
-            },
-            "extraContent": false,
-            "content": {
-                "replace": false,
-                "use": "click",
-                "method": {
-                    "url": {
-                        "value": "http://xxx.com?id=#p",
-                        "params": [
-                            "id"
-                        ],
-                        "xmlParse": {
-                            "type": "cheerio",
-                            "value": "body > div.detail-content > div > table > tbody > tr > td"
-                        }
-                    },
-                    "click": {
-                        "selector": {
-                            "type": "self",
-                            "value": ""
-                        },
-                        "newTab": true,
-                        "contentSelector": {
-                            "type": "css",
-                            "value": "body > div.detail-content > div > table > tbody > tr > td",
-                            "attr": null
-                        }
-                    }
-                }
-            }
-        },
-        "GetItemId": {
-            "selector": {
-                "type": "xpath",
-                "value": ""
-            },
-            "regexp": "",
-            "startWithIdx": false
-        }
-    },
+    "Job": {},
     "Storage":{
         "Type": "file",
         "Database": ""

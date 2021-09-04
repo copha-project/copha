@@ -2,8 +2,6 @@
     "DataPath":"",
     "Editor": "",
     "Language": "en",
-    "DefaultMaxPages": 999999,
-    "ListTimeInterval": 2000,
     "Driver": {
         "Time": {
             "LocatingElementsTimeout": 10000,

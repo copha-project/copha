@@ -1,8 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-const path = require('path')
 const Utils = require('uni-utils')
-// eslint-disable-next-line no-unused-vars
-const Job = require('../class/Job')
+const {Job} = require('copha')
 
 class EmptyJob extends Job {
     constructor(taskConf) {

@@ -262,7 +262,7 @@ class Task extends Base {
     #loadJob(){
         const jobName = this.constData.AppTaskTypeMap[this.#conf.main?.type] || 'empty'
         try {
-            const jobClass = require(`../jobs/${jobName}`)
+            const jobClass = require(`${this.constData.AppConfigUserDir}/jobs/${jobName}`)
             this.#job = new jobClass(this.#conf)
         } catch (error) {
             throw new Error(`can't load job [${jobName}] : ${error}`)

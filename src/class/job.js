@@ -5,10 +5,12 @@ class Job extends Base {
     #storage = null
     #driver = null
     #custom = null
+    #taskConf = null
     #conf = null
     constructor(taskConf) {
         super()
-        this.#conf = taskConf
+        this.#taskConf = taskConf
+        this.#conf = taskConf?.Job || {}
     }
     setStorage(storage){
         this.#storage = storage
@@ -24,8 +26,9 @@ class Job extends Base {
     async runTest(){}
 
     async loadState(){}
+    // default open blank page.
     async runBefore(){
-        await this.driver.open()
+        return this.driver.open()
     }
     async run(){}
     async saveContext(){}
@@ -42,6 +45,9 @@ class Job extends Base {
     }
     get conf(){
         return this.#conf
+    }
+    get taskConf(){
+        return this.#taskConf
     }
     get custom(){
         return this.#custom
@@ -62,7 +68,7 @@ class Job extends Base {
         this.#storage = v
     }
     get taskName(){
-        return this.conf?.main.name
+        return this.#taskConf?.main.name
     }
 }
 

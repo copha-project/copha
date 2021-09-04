@@ -1,6 +1,5 @@
-const path = require('path')
 const Utils = require('uni-utils')
-const Job = require('../class/Job')
+const { Job } = require('copha')
 
 class ListJob extends Job {
     constructor(taskConf) {
@@ -8,7 +7,8 @@ class ListJob extends Job {
         this.#initValue()
     }
     #initValue() {
-        this.processConfig = this.conf.process
+        this.processConfig = this.conf.Process
+
         this.currentPage = 1
         this.pages = 1
         this.state = null
@@ -30,36 +30,36 @@ class ListJob extends Job {
     }
     async runTest(){
         let currentPage = 1
-        if (this.processConfig?.Test?.GetCurrentPage) {
+        if (this.conf?.Test?.GetCurrentPage) {
             this.log.info('run test for getCurrentPage:')
             currentPage = await this.getCurrentPage()
             this.log.info(`GetCurrentPage done: ${currentPage}`)
         }
 
-        if (this.processConfig?.Test?.GoPage) {
+        if (this.conf?.Test?.GoPage) {
             this.log.info('run test for goPage:')
             await this.goPage(currentPage+2)
             this.log.info(`goPage ok\n`)
         }
 
-        if (this.processConfig?.Test?.GetPages) {
+        if (this.conf?.Test?.GetPages) {
             this.log.info('run test for GetPages:')
             const pages = await this.getPages()
             this.log.info(`getPages ok: ${pages}\n`)
         }
 
         let list = []
-        if (this.processConfig?.Test?.GetListData) {
+        if (this.conf?.Test?.GetListData) {
             this.log.info('run test for getListData:')
             list = await this.getListData()
             this.log.info(`getListData ok : ${list.length}\n`)
         }
-        if (this.processConfig?.Test?.GetItemId) {
+        if (this.conf?.Test?.GetItemId) {
             this.log.info('run test for getItemId:')
             const itemId = await this.getItemId(list[0])
             this.log.info(`getItemId ok : ${itemId}\n`)
         }
-        if (this.processConfig?.Test?.GetItemData) {
+        if (this.conf?.Test?.GetItemData) {
             this.log.info('run test for getItemData:')
             const itemData = await this.getItemData(list[0])
             this.log.info(`getItemData ok : ${itemData}\n`)
@@ -110,7 +110,7 @@ class ListJob extends Job {
                 await this.driver.open()
                 await this.goPage(this.currentPage--)
             }
-            await Utils.sleep(this.appSettings.ListTimeInterval)
+            await Utils.sleep(this.conf.ListTimeInterval)
         }
         // await this.#subFetch()
         this.finished = true
@@ -189,7 +189,7 @@ class ListJob extends Job {
     async #initPageInfo() {
         await Utils.sleep(1000)
         this.pages = await this.getPages()
-        if (this.pages == 0) this.pages = this.appSettings.DefaultMaxPages
+        if (this.pages == 0) this.pages = this.conf.DefaultMaxPages
         this.currentPage = await this.getCurrentPage()
         this.log.info(`last page: ${this.lastRunPage},current page: ${this.currentPage},pages: ${this.pages}`)
         if (this.lastRunPage > this.currentPage && this.lastRunPage <= this.pages) {
