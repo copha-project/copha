@@ -19,13 +19,14 @@ copha config
 
 ### 3. Configuration item explanation
 
+
 - Editor
 - DataPath
 
     store all data of project.
     > the value can keep blank if [COPHA_DATA_PATH](/env#COPHA_DATA_PATH) was set
-
-- DefaultMaxPages
-- ListTimeInterval
+- Language
+- Driver
+- Proxy
 - Storage
 - Server
