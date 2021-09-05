@@ -127,7 +127,7 @@ class Core extends Base{
         return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
     }
 
-    async #genTpl(name,type) {
+    async #genTpl(name,job) {
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -161,14 +161,21 @@ class Core extends Base{
             this.AppConfigTpl.custom_exec_code,
             Task.getPath(name,'custom_exec_code')
         )
-        await Utils.saveFile('1', Task.getPath(name,'last_page'))
-        await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
+        // await Utils.saveFile('1', Task.getPath(name,'last_page'))
+        // await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
 
+        await Utils.copyDir(
+            path.resolve(this.constData.AppUserJobsDir,job),
+            path.resolve(taskConfigPath,'job')
+        )
+        
         const taskConf = await this.getTaskConf(name)
         taskConf.main.name = name
         taskConf.main.type = type
         taskConf.main.dataPath = Task.getPath(name,'data_dir')
         taskConf.main.createTime = Utils.getTodayDate()
+
+        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'config.json'))
         await this.saveTaskConf(name, taskConf)
     }
 }

@@ -5,6 +5,8 @@ const pkg = require('../../package')
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 // store dir on install
 const AppConfigUserDir = path.resolve(os.homedir(),'.copha')
+// store jobs at local settings
+const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
 // app config file path on user disk
 const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
@@ -66,5 +68,6 @@ module.exports = {
     AppTaskPathSet,
     BugLink,
     AppInstalledLockFile,
-    AppTaskTypeMap
+    AppTaskTypeMap,
+    AppUserJobsDir
 }
