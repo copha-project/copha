@@ -50,6 +50,7 @@
         "mysql2": "^2.1.0",
         "open-in-editor": "^2.2.0",
         "pidusage": "^2.0.20",
+        "puppeteer": "^10.2.0",
         "selenium-webdriver": "^4.0.0-alpha.5",
         "sequelize": "^6.3.3",
         "winston": "^3.2.1"
