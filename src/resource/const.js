@@ -40,12 +40,12 @@ const AppTaskPathSet =  {
     custom_over_write_code:'custom_over_write_code.js',
     custom_export_data:'custom_export_data.js',
     task_state: 'task_state.json',
-    last_page: 'last_page.txt',
-    rework_pages: 'rework_pages.json',
     info_log: 'log/info.log',
     err_log: 'log/err.log',
     pid: 'task.pid',
     state: 'task_state.json'
+    // last_page: 'last_page.txt',
+    // rework_pages: 'rework_pages.json',
 }
 
 const BugLink = pkg?.bugs?.url
