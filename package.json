@@ -1,9 +1,10 @@
 {
     "name": "copha",
-    "version": "0.0.4",
-    "description": "A tool that fetches the web content.",
+    "version": "0.0.5",
+    "description": "A general framework for running automated network tasks.",
     "keywords": [
         "nodejs",
+        "framework",
         "selenium",
         "crawler",
         "puppeteer"

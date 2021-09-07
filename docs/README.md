@@ -1,5 +1,5 @@
 # Copha
-## Copha is a tool that fetches the web content.
+## Copha is a general framework for running automated network tasks.
 
 > ⚠️ [Usage Warning](https://copha.net/usage_warning)
 
@@ -11,31 +11,10 @@ npm i -g copha
 ```
 
 ## How to use
-
-Config
 ```
-copha config
+copha -h
 ```
-
-Create Task
-```
-copha create task-name
-```
-
-Run
-```
-copha run task-name
-```
-
-Run For Test
-```
-copha run task-name -t
-```
-
-Launch a web server of api
-```
-copha server
-```
+more help about command line [here](https://copha.net/cli)
 
 # Resources
 * [Home Page](https://copha.net)
