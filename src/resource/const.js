@@ -1,8 +1,7 @@
 const path = require('path')
 const os = require('os')
 const pkg = require('../../package')
-// code rootPath
-const AppProjectRootPath = path.resolve(__dirname, '../../')
+
 // store dir on install
 const AppConfigUserDir = path.resolve(os.homedir(),'.copha')
 // store jobs at local settings
@@ -10,9 +9,12 @@ const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
 // app config file path on user disk
 const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
-const AppTplConfigPath = path.resolve(AppProjectRootPath, 'config')
+// code rootPath
+const AppProjectRootPath = path.resolve(__dirname, '../../')
 
-const AppDefaultConfigDir = path.resolve(AppProjectRootPath, './config/default')
+const AppTplConfigPath = path.resolve(AppProjectRootPath, 'src/config')
+
+const AppDefaultConfigDir = path.resolve(AppTplConfigPath, './default')
 
 const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
 
