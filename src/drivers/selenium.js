@@ -18,53 +18,61 @@ class Selenium extends Driver {
     // core process
     async init() {
         try {
-            const options = this.configOptions()
-            const driverBuilder = await this.getDriverBuilder(options)
-            this.setProxy(driverBuilder)
+            let driverBuilder = new Builder()
+            this.setBrowser(driverBuilder)
+            // driverBuilder.usingServer('http://127.0.0.1:50011')
+            // console.log(driverBuilder);
+            this.setOptions(driverBuilder)
             this.setPreference(driverBuilder)
-            this.setDriver(driverBuilder.build())
+            this.setProxy(driverBuilder)
+            this.setDriver(await driverBuilder.build())
 
-            if(this.conf.main.driver == 'chrome'){
-                const service = chrome.getDefaultService()
-                this.log.debug(`Chrome driverService on : ${await service.address()}`)
-            }
+            // if(this.conf.main.driver == 'chrome'){
+            //     const service = chrome.getDefaultService()
+            //     this.log.debug(`Chrome driverService on : ${await service.address()}`)
+            // }
 
-            await this.driver.manage().setTimeouts({ pageLoad: 30000, implicit: 10000 })
+            await this.driver.manage().setTimeouts(
+                {
+                    pageLoad: this.appSettings?.Driver?.Time?.PageLoadTimeout || 1000,
+                    implicit: 10000
+                }
+            )
+
+            // console.log('close win');
+            // await this.driver.close()
+            // this.driver.session_.then(e=>{e.id_='2c742797c1e70e04260d1a19efb742ae'})
+
+            // console.log();
+
         } catch (error) {
+            console.log(error);
             throw new Error(`Driver init failed : ${error}`)
         }
         this.log.info('web driver init end')
     }
-    getDriverBuilder(options){
-        let driverBuilder = new Builder()
-        switch (this.conf.main?.driver) {
-            case 'chrome':
-                {
-                    driverBuilder.withCapabilities(webdriver.Capabilities.chrome())
-                        .setChromeOptions(options)
-                }
-                break
-            default:
-                {
-                    driverBuilder.withCapabilities(webdriver.Capabilities.firefox())
-                        .setFirefoxOptions(options)
-                }
-        }
-        return driverBuilder
+    setBrowser(driverBuilder){
+        driverBuilder.forBrowser(this.conf.main?.driver || 'firefox')
     }
-    configOptions(){
+    setOptions(driverBuilder){
         let options = null
         switch (this.conf.main?.driver) {
             case 'chrome':
                 {
                     options = new chrome.Options()
                     // options.setPreference("network.proxy.socks_remote_dns", true)
+                    driverBuilder.withCapabilities(webdriver.Capabilities.chrome())
+                        .setChromeOptions(options)
                 }
                 break;
             default:
                 {
                     options = new firefox.Options()
-                    options.setPreference("network.proxy.socks_remote_dns", true)
+                    if(this.conf.main.useProxy){
+                        options.setPreference("network.proxy.socks_remote_dns", true)
+                    }
+                    driverBuilder.withCapabilities(webdriver.Capabilities.firefox())
+                        .setFirefoxOptions(options)
                 }
         }
         if(this.getEnv("COPHA_SHOW_HEADLESS_GUI")){
@@ -76,7 +84,7 @@ class Selenium extends Driver {
                 options.headless()
             }
         }
-        return options
+
     }
     setProxy(driverBuilder){
         const _setProxy = () => {

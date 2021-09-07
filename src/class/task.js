@@ -216,8 +216,9 @@ class Task extends Base {
                 this.vNeedStop = true
             }else{
                 console.log(exitCount);
-                // this.log.warn('强制关闭!')
-                // process.exit()
+                this.log.warn('强制关闭!')
+                this.#clear()
+                process.exit()
             }
         }
         process.on('SIGINT', exitScript)
@@ -274,7 +275,8 @@ class Task extends Base {
         }
         const jobName = this.constData.AppTaskTypeMap[this.#conf.main?.type] || 'empty'
         try {
-            const jobClass = require(`${this.constData.AppConfigUserDir}/jobs/${jobName}`)
+            const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
+            const jobClass = require(jobClassPath)
             this.#job = new jobClass(this.#conf)
         } catch (error) {
             throw new Error(`can't load job [${jobName}] : ${error}`)
@@ -316,7 +318,9 @@ class Task extends Base {
     get driver(){
         return this.#driver
     }
-
+    get driver_(){
+        return this.#driver?.driver
+    }
     get Driver(){
         return this.#driver?.DriverModule
     }

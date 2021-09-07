@@ -5,7 +5,7 @@
     "Driver": {
         "Time": {
             "LocatingElementsTimeout": 10000,
-            "PageLoadTimeout": 60000,
+            "PageLoadTimeout": 10000,
             "RunScriptTimeout": 30000
         }
     },
