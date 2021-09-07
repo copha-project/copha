@@ -22,7 +22,8 @@ class File {
 
     }
     async findById(id){
-        return Utils.checkFile(this.#getDetailPath(id))
+        const isExist = await Utils.checkFile(this.#getDetailPath(id))
+        return isExist ? Utils.readJson(this.#getDetailPath(id)) : null
     }
     async all(){
         return (await Utils.readDir(this.#getPath('saveDetailDataDir')))
