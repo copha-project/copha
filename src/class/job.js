@@ -1,14 +1,18 @@
+const path = require('path')
 const Base = require('./base')
 const Task = require('./task')
 
 class Job extends Base {
+    // job name
+    #name = null
     #storage = null
     #driver = null
     #custom = null
     #taskConf = null
     #conf = null
-    constructor(taskConf) {
+    constructor(name,taskConf) {
         super()
+        this.#name = name
         this.#taskConf = taskConf
         this.#conf = taskConf?.Job || {}
     }
@@ -39,7 +43,9 @@ class Job extends Base {
     getPath(name){
         return Task.getPath(this.taskName,name)
     }
-
+    getJobFile(name){
+        return path.join(this.getPath('job_file'),name)
+    }
     checkNeedStop(){
 
     }
@@ -69,6 +75,9 @@ class Job extends Base {
     }
     get taskName(){
         return this.#taskConf?.main.name
+    }
+    get name(){
+        return this.#name
     }
 }
 
