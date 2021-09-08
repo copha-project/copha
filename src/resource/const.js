@@ -9,6 +9,8 @@ const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
 // app config file path on user disk
 const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
+const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
+
 // code rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
@@ -20,12 +22,10 @@ const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
 
 const AppConfigTpl = {
     configPath: path.join(AppTplConfigPath, 'task.conf.tpl.json'),
-    statePath: path.join(AppTplConfigPath, 'task_state.json'),
+    statePath: path.join(AppTplConfigPath, 'state.json'),
     custom_exec_code: path.join(AppTplConfigPath, 'custom_exec_code.js'),
     custom_export_data: path.join(AppTplConfigPath, 'custom_export_data.js'),
-    custom_over_write_code: path.join(AppTplConfigPath, 'custom_over_write_code.js'),
-    last_page: path.join(AppTplConfigPath, 'last_page.txt'),
-    rework_pages: path.join(AppTplConfigPath, 'rework_pages.json'),
+    custom_over_write_code: path.join(AppTplConfigPath, 'custom_over_write_code.js')
 }
 
 const AppTaskPathSet =  {
@@ -41,18 +41,14 @@ const AppTaskPathSet =  {
     custom_exec_code:'custom_exec_code.js',
     custom_over_write_code:'custom_over_write_code.js',
     custom_export_data:'custom_export_data.js',
-    task_state: 'task_state.json',
+    state: 'state.json',
     info_log: 'log/info.log',
     err_log: 'log/err.log',
     pid: 'task.pid',
-    state: 'task_state.json'
-    // last_page: 'last_page.txt',
-    // rework_pages: 'rework_pages.json',
+    job_file: 'job/resource'
 }
 
 const BugLink = pkg?.bugs?.url
-
-const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 
 const AppTaskTypeMap = {
     default: 'empty',

@@ -155,7 +155,7 @@ class Core extends Base{
         // state
         await Utils.copyFile(
             this.AppConfigTpl.statePath,
-            Task.getPath(name,'task_state')
+            Task.getPath(name,'state')
         )
         // export data
         await Utils.copyFile(
@@ -172,8 +172,6 @@ class Core extends Base{
             this.AppConfigTpl.custom_exec_code,
             Task.getPath(name,'custom_exec_code')
         )
-        // await Utils.saveFile('1', Task.getPath(name,'last_page'))
-        // await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
 
         // copy job
         await Utils.copyDir(
