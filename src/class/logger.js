@@ -5,10 +5,10 @@ const { format, createLogger } = require('winston')
 const LogBaseConfig = {
     levels: {
         error: 0,
-        debug: 1,
-        warn: 2,
+        warn: 1,
+        info: 2,
         data: 3,
-        info: 4,
+        debug: 4,
         verbose: 5,
         silly: 6,
         custom: 7
@@ -33,6 +33,7 @@ class Logger {
     constructor({infoPath,errPath}={}){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
+            level: IsDev ? 'custom' : 'info',
             levels: LogBaseConfig.levels,
             format: winston.format.json(),
             transports: []
@@ -57,15 +58,13 @@ class Logger {
                 )
             }))
         }
-        if (IsDev) {
-            this.logger.add(new winston.transports.Console({
-                format: format.combine(
-                    LogTimeConfig,
-                    LogTextFormatConfig,
-                    LogColorConfig,
-                )
-            }))
-        }
+        this.logger.add(new winston.transports.Console({
+            format: format.combine(
+                LogTimeConfig,
+                LogTextFormatConfig,
+                LogColorConfig,
+            )
+        }))
     }
     debug(...e){
         this.logger.debug(e)
