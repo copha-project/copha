@@ -50,7 +50,8 @@ class Core extends Base{
     }
 
     async listType(){
-        return Object.keys(this.constData.AppTaskTypeMap)
+        // TODO: 需要把 job list map table 存在 用户配置目录里，然后从里面读
+        return this.taskTypeList
     }
 
     async getTaskName(data){
@@ -59,13 +60,16 @@ class Core extends Base{
         }
         return data
     }
+
     async createTask(name,type){
         // TODO: check type
-        const taskType = type || 'default'
-        this.log.info(`Type of ${taskType} task [${name}] prepare to init`)
+        if(!this.taskTypeList[type]) {
+            throw new Error('the type can\'t be use.')
+        }
+        this.log.info(`Type of ${type} task [${name}] prepare to init`)
         // 复制项目模板文件到新的任务目录
         try {
-            await this.#genTpl(name,taskType)
+            await this.#genTpl(name,type)
         } catch (e) {
             await this.deleteTask(name)
             throw new Error(e)
@@ -94,7 +98,9 @@ class Core extends Base{
             this.log.err(`No task config to use! ${error}`)
             throw new Error(`No task config to use! ${error}`)
         }
-        return new Task(taskConf)
+        const task = new Task(taskConf)
+        task.core = this
+        return task
     }
     async setTaskConfig(name,data){
         const task = await this.getTask(name)
@@ -128,6 +134,7 @@ class Core extends Base{
     }
 
     async #genTpl(name,job) {
+        const jobName = this.taskTypeList[job]
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -145,18 +152,22 @@ class Core extends Base{
             this.AppConfigTpl.configPath,
             taskConfigPath
             )
+        // state
         await Utils.copyFile(
             this.AppConfigTpl.statePath,
             Task.getPath(name,'task_state')
         )
+        // export data
         await Utils.copyFile(
             this.AppConfigTpl.custom_export_data,
             Task.getPath(name,'custom_export_data')
         )
+        // overcode
         await Utils.copyFile(
             this.AppConfigTpl.custom_over_write_code,
             Task.getPath(name,'custom_over_write_code')
         )
+        // custom code
         await Utils.copyFile(
             this.AppConfigTpl.custom_exec_code,
             Task.getPath(name,'custom_exec_code')
@@ -164,19 +175,23 @@ class Core extends Base{
         // await Utils.saveFile('1', Task.getPath(name,'last_page'))
         // await Utils.saveFile('[]', Task.getPath(name,'rework_pages'))
 
+        // copy job
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserJobsDir,job),
-            path.resolve(taskConfigPath,'job')
+            path.resolve(this.constData.AppUserJobsDir,jobName),
+            path.resolve(Task.getPath(name,'root_dir'),'job')
         )
-        
+
         const taskConf = await this.getTaskConf(name)
         taskConf.main.name = name
-        taskConf.main.type = type
+        taskConf.main.type = job
         taskConf.main.dataPath = Task.getPath(name,'data_dir')
         taskConf.main.createTime = Utils.getTodayDate()
 
-        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'config.json'))
+        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,jobName,'config.json'))
         await this.saveTaskConf(name, taskConf)
+    }
+    get taskTypeList(){
+        return this.constData.AppTaskTypeMap
     }
 }
 
