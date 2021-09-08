@@ -8,7 +8,6 @@
         "dataPath": "",
         "debug": false,
         "useProxy": false,
-        "pageTimeInterval": 5,
         "alwaysRestart": false,
         "driver": "firefox",
         "type": ""
