@@ -65,9 +65,10 @@ class Cli extends Base {
         const typeList = await this.core.listType()
         console.log('Task Type List:')
         console.table(
-            typeList.map(data => {
+            Object.keys(typeList).map(data => {
                 return {
                     Name: data,
+                    tplName: typeList[data],
                     Description: ''
                 }
             })
@@ -99,7 +100,7 @@ class Cli extends Base {
             return (await this.core.getTask(name)).exportData()
         } else if (options.test) {
             return (await this.core.getTask(name)).test()
-        } else if (options.runcode) {
+        } else if (options.custom) {
             return (await this.core.getTask(name)).execCode()
         } else if (options.daemon) {
             // TODO: 重写后台运行功能

@@ -20,7 +20,7 @@ function createCommander(program,cli) {
         .option('-e, --export', 'export data only')
         .option('-t, --test', 'custom test only')
         .option('-d, --daemon', 'run with daemon mode')
-        .option('-c','run custom code after the task finished')
+        .option('-c, --custom','run custom code after the task finished')
         .action(cli.getMethod('runTask'))
 
     program.command('stop <name>')
