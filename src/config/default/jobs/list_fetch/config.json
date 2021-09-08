@@ -1,4 +1,5 @@
 {
+    "PageTimeInterval": 5,
     "DefaultMaxPages": 999999,
     "ListTimeInterval": 2000,
     "Test": {

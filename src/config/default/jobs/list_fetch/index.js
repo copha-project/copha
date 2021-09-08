@@ -3,11 +3,11 @@ const { Job } = require('copha')
 
 class ListJob extends Job {
     constructor(taskConf) {
-        super(taskConf)
+        super('list_fetch',taskConf)
         this.#initValue()
     }
     #initValue() {
-        this.processConfig = this.conf.Process
+        this.processConfig = this.conf
 
         this.currentPage = 1
         this.pages = 1
@@ -29,41 +29,42 @@ class ListJob extends Job {
         this.custom = null
     }
     async runTest(){
-        let currentPage = 1
-        if (this.conf?.Test?.GetCurrentPage) {
-            this.log.info('run test for getCurrentPage:')
-            currentPage = await this.getCurrentPage()
-            this.log.info(`GetCurrentPage done: ${currentPage}`)
-        }
-
-        if (this.conf?.Test?.GoPage) {
-            this.log.info('run test for goPage:')
-            await this.goPage(currentPage+2)
-            this.log.info(`goPage ok\n`)
-        }
-
-        if (this.conf?.Test?.GetPages) {
-            this.log.info('run test for GetPages:')
-            const pages = await this.getPages()
-            this.log.info(`getPages ok: ${pages}\n`)
-        }
-
-        let list = []
-        if (this.conf?.Test?.GetListData) {
-            this.log.info('run test for getListData:')
-            list = await this.getListData()
-            this.log.info(`getListData ok : ${list.length}\n`)
-        }
-        if (this.conf?.Test?.GetItemId) {
-            this.log.info('run test for getItemId:')
-            const itemId = await this.getItemId(list[0])
-            this.log.info(`getItemId ok : ${itemId}\n`)
-        }
-        if (this.conf?.Test?.GetItemData) {
-            this.log.info('run test for getItemData:')
-            const itemData = await this.getItemData(list[0])
-            this.log.info(`getItemData ok : ${itemData}\n`)
-        }
+        console.log(this.getJobFile('rework_pages.json'));
+        // let currentPage = 1
+        // if (this.conf?.Test?.GetCurrentPage) {
+        //     this.log.info('run test for getCurrentPage:')
+        //     currentPage = await this.getCurrentPage()
+        //     this.log.info(`GetCurrentPage done: ${currentPage}`)
+        // }
+        //
+        // if (this.conf?.Test?.GoPage) {
+        //     this.log.info('run test for goPage:')
+        //     await this.goPage(currentPage+2)
+        //     this.log.info(`goPage ok\n`)
+        // }
+        //
+        // if (this.conf?.Test?.GetPages) {
+        //     this.log.info('run test for GetPages:')
+        //     const pages = await this.getPages()
+        //     this.log.info(`getPages ok: ${pages}\n`)
+        // }
+        //
+        // let list = []
+        // if (this.conf?.Test?.GetListData) {
+        //     this.log.info('run test for getListData:')
+        //     list = await this.getListData()
+        //     this.log.info(`getListData ok : ${list.length}\n`)
+        // }
+        // if (this.conf?.Test?.GetItemId) {
+        //     this.log.info('run test for getItemId:')
+        //     const itemId = await this.getItemId(list[0])
+        //     this.log.info(`getItemId ok : ${itemId}\n`)
+        // }
+        // if (this.conf?.Test?.GetItemData) {
+        //     this.log.info('run test for getItemData:')
+        //     const itemData = await this.getItemData(list[0])
+        //     this.log.info(`getItemData ok : ${itemData}\n`)
+        // }
 
         this.log.info(`test end.`)
     }
@@ -153,7 +154,7 @@ class ListJob extends Job {
                 notDoneList.push(id)
                 continue
             }
-            await Utils.sleep(this.conf.main.pageTimeInterval * 1000 || 500)
+            await Utils.sleep(this.conf?.pageTimeInterval * 1000 || 500)
         }
         if (notDoneList.length === list.length) {
             this.vItemsErrIndex += 1
@@ -175,7 +176,7 @@ class ListJob extends Job {
     }
 
     async importReworkPages() {
-        const pagesString = await Utils.readFile(this.getPath('rework_pages'))
+        const pagesString = await Utils.readFile(this.getJobFile('rework_pages.json'))
         try {
             const pages = JSON.parse(pagesString)
             if (pages?.length > 0) {
@@ -198,7 +199,7 @@ class ListJob extends Job {
         }
     }
     async #getLastPage() {
-        const page = await Utils.readFile(this.getPath('last_page'))
+        const page = await Utils.readFile(this.getJobFile('last_page.txt'))
         return parseInt(page) || 1
     }
     async #goNext() {
