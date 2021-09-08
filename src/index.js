@@ -4,6 +4,13 @@ const commander = require('commander')
 const Cli = require('./class/cli')
 
 function createCommander(program,cli) {
+    program.configureHelp({
+      sortSubcommands: true,
+      subcommandTerm: (cmd) => cmd.name()
+    })
+
+    program.name(pkg.name)
+
     program.version(pkg.version, '-v, --version', 'output the current version')
 
     program.command('create <name>')
@@ -57,9 +64,7 @@ function createCommander(program,cli) {
 async function main(cli){
     const program = new commander.Command()
     createCommander(program,cli)
-    // if(await cli.checkRun()){
-        await program.parseAsync(process.argv)
-    // }
+    await program.parseAsync(process.argv)
 }
 
 module.exports = async () => {
