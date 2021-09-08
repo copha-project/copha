@@ -54,7 +54,7 @@ function createCommander(program,cli) {
         .action(cli.getMethod('setConfig'))
 
     program.command('server')
-        .description('launch a web server')
+        .description('launch a api server')
         .option('-H, --host', 'server address, default use 127.0.0.1')
         .option('-p, --port', 'server port, default use 7000')
         .option('-d, --daemon', 'run with daemon')
