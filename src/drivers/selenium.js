@@ -23,14 +23,14 @@ class Selenium extends Driver {
             // driverBuilder.usingServer('http://127.0.0.1:50011')
             // console.log(driverBuilder);
             this.setOptions(driverBuilder)
-            this.setPreference(driverBuilder)
-            this.setProxy(driverBuilder)
+            // this.setPreference(driverBuilder)
+            // this.setProxy(driverBuilder)
             this.setDriver(await driverBuilder.build())
 
-            // if(this.conf.main.driver == 'chrome'){
-            //     const service = chrome.getDefaultService()
-            //     this.log.debug(`Chrome driverService on : ${await service.address()}`)
-            // }
+            if(this.conf.main.driver == 'chrome'){
+                const service = chrome.getDefaultService()
+                this.log.debug(`Chrome driverService on : ${await service.address()}`)
+            }
 
             await this.driver.manage().setTimeouts(
                 {
@@ -39,9 +39,9 @@ class Selenium extends Driver {
                 }
             )
 
-            // console.log('close win');
+            console.log('close win');
             // await this.driver.close()
-            // this.driver.session_.then(e=>{e.id_='2c742797c1e70e04260d1a19efb742ae'})
+            // this.driver.session_.then(e=>{e.id_='45464456981325fe775059d49db180ce'})
 
             // console.log();
 
@@ -60,6 +60,9 @@ class Selenium extends Driver {
             case 'chrome':
                 {
                     options = new chrome.Options()
+                    if(this.conf.main?.browserProfile){
+                        options.addArguments(this.conf.main.browserProfile)
+                    }
                     // options.setPreference("network.proxy.socks_remote_dns", true)
                     driverBuilder.withCapabilities(webdriver.Capabilities.chrome())
                         .setChromeOptions(options)
@@ -103,16 +106,17 @@ class Selenium extends Driver {
 
     }
     async open(url, ignoreErr=false) {
+        url = url || this.conf.main?.targetUrl
         // 3次重试
         const maxCount = 3
         let count = 1
         try {
-            await this.driver.get(url || this.conf.main?.targetUrl)
+            await this.driver.get(url)
         } catch (error) {
             while (count <= maxCount && !ignoreErr) {
                 this.log.warn(`refresh it again ${count}/${maxCount}`)
                 try {
-                    await this.driver.navigate().refresh()
+                    await this.driver.get(url)
                     break
                 } catch (error) {
                     this.log.err(`open url err: ${error}`)
@@ -196,7 +200,7 @@ class Selenium extends Driver {
         await this.driver.close()
         await this.driver.switchTo().window(whs[0])
     }
-    async _clearTab(){
+    async clearTab(){
         const whs = await this.driver.getAllWindowHandles()
         for (let i = 1; i < whs.length; i++) {
             await this.driver.switchTo().window(whs[i])

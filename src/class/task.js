@@ -3,8 +3,10 @@ const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./base')
 const Storage = require('../storage')
+const helper = require('../helper')
 
 class Task extends Base {
+    #core = null
     #conf = null
     #storage = null
     #event = null
@@ -17,6 +19,7 @@ class Task extends Base {
         this.#initValue()
         this.#initLogger()
     }
+
     static getPath(name,key){
         if(!name) throw new Error(`task name cannot be empty`)
         if(!this.AppTaskPathSet.hasOwnProperty(key)) throw new Error(`path about '${key}' not exist`)
@@ -51,7 +54,7 @@ class Task extends Base {
     async exportData() {
         this.log.info('Prepare to export data')
         // TODO: 使用用户自定义的导出函数
-        if(this.#conf.process?.CustomStage?.ExportData){
+        if(this.#conf.Job?.CustomStage?.ExportData){
             if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
@@ -127,7 +130,7 @@ class Task extends Base {
             await this.#startPrepare()
             await this.#runBefore()
             await this.#job.runTest()
-            await Utils.sleep(this.#conf.process.Test.WaitExitTime * 1000)
+            await Utils.sleep(this.#conf.Job.Test.WaitExitTime * 1000)
         } catch (e) {
             this.log.err(e)
         } finally {
@@ -138,7 +141,7 @@ class Task extends Base {
     //interface of job
 
     async #runBefore() {
-        if (this.#conf.process?.CustomStage?.RunBefore) {
+        if (this.#conf.Job?.CustomStage?.RunBefore) {
             await this.#custom?.runBefore.call(this)
         } else {
             await this.#job?.runBefore()
@@ -217,7 +220,7 @@ class Task extends Base {
             }else{
                 console.log(exitCount);
                 this.log.warn('强制关闭!')
-                this.#clear()
+                await this.#clear()
                 process.exit()
             }
         }
@@ -270,14 +273,17 @@ class Task extends Base {
     }
 
     #loadJob(){
+        // console.log(path.resolve('../config/default',`jobs/${jobName}`));
         if(!this.#conf.main?.type){
             throw new Error(`Task not has a type, please set it.`)
         }
-        const jobName = this.constData.AppTaskTypeMap[this.#conf.main?.type] || 'empty'
+        const jobName = this.#core.taskTypeList[this.#conf.main?.type]
         try {
-            const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
+            // const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
+            const jobClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}`)
             const jobClass = require(jobClassPath)
             this.#job = new jobClass(this.#conf)
+            this.#job.helper = this.helper
         } catch (error) {
             throw new Error(`can't load job [${jobName}] : ${error}`)
         }
@@ -331,6 +337,7 @@ class Task extends Base {
 
     get helper(){
     	return {
+            uni: Utils,
             getDedailList : async () => {
         		const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
         		return files.filter(e => e.endsWith('.json'))
@@ -340,6 +347,9 @@ class Task extends Base {
         	},
         	download : Utils.listDownload
         }
+    }
+    set core(v){
+        this.#core = v
     }
 }
 
