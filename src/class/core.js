@@ -62,9 +62,9 @@ class Core extends Base{
     }
 
     async createTask(name,type){
-        // TODO: check type
+        type = type || 'default'
         if(!this.taskTypeList[type]) {
-            throw new Error('the type can\'t be use.')
+            throw new Error('The type can\'t be use.')
         }
         this.log.info(`Type of ${type} task [${name}] prepare to init`)
         // 复制项目模板文件到新的任务目录

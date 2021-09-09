@@ -169,7 +169,7 @@ class Cli extends Base {
         openInEditor.configure({
             editor: editorBinName
         }, error => {
-            throw new Error(error)
+            throw error
         })?.open(configPath)
     }
 

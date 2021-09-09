@@ -80,8 +80,10 @@ class Base {
     async getEditor(){
         const editorList = ['atom','vim','vi','nano']
         for (const cmd of editorList) {
-            if(await commandExists(cmd)){
-                return cmd
+            try {
+                return await commandExists(cmd)
+            } catch {
+                continue
             }
         }
         return ''

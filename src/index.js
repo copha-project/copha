@@ -82,7 +82,7 @@ module.exports = async () => {
         if(cli.getEnv('COPHA_DEBUG')){
             console.log(e)
         }else{
-            cli.log.err(e.message)
+            cli.log.err(e)
         }
     }
 }
