@@ -49,9 +49,8 @@ class Core extends Base{
         return data
     }
 
-    async listType(){
-        // TODO: 需要把 job list map table 存在 用户配置目录里，然后从里面读
-        return this.taskTypeList
+    async listJob(){
+        return Utils.readJson(this.getPathFor('AppUserJobsDataPath'))
     }
 
     async getTaskName(data){
@@ -61,15 +60,22 @@ class Core extends Base{
         return data
     }
 
-    async createTask(name,type){
-        type = type || 'default'
-        if(!this.taskTypeList[type]) {
-            throw new Error('The type can\'t be use.')
+    async createTask(name,job){
+        const jobListData = await this.listJob()
+        if(!job) {
+            job = jobListData.default
+        }else{
+            if(jobListData.list.find(e=>e.name==job)) {
+
+            }else{
+                throw new Error(`The job: [ ${job} ] can't be use.`)
+            }
         }
-        this.log.info(`Type of ${type} task [${name}] prepare to init`)
+
+        this.log.info(`Type of ${job} task [${name}] prepare to init`)
         // 复制项目模板文件到新的任务目录
         try {
-            await this.#genTpl(name,type)
+            await this.#genTpl(name,job)
         } catch (e) {
             await this.deleteTask(name)
             throw new Error(e)
@@ -134,7 +140,6 @@ class Core extends Base{
     }
 
     async #genTpl(name,job) {
-        const jobName = this.taskTypeList[job]
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -175,21 +180,18 @@ class Core extends Base{
 
         // copy job
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserJobsDir,jobName),
+            path.resolve(this.constData.AppUserJobsDir,job,`resource`),
             path.resolve(Task.getPath(name,'root_dir'),'job')
         )
 
         const taskConf = await this.getTaskConf(name)
         taskConf.main.name = name
-        taskConf.main.type = job
+        taskConf.main.job = job
         taskConf.main.dataPath = Task.getPath(name,'data_dir')
         taskConf.main.createTime = Utils.getTodayDate()
 
-        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,jobName,'config.json'))
+        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'config.json'))
         await this.saveTaskConf(name, taskConf)
-    }
-    get taskTypeList(){
-        return this.constData.AppTaskTypeMap
     }
 }
 

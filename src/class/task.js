@@ -210,7 +210,7 @@ class Task extends Base {
     #setExitHandle() {
         this.log.debug('set setExitHandle()')
         let exitCount = 0 // 防抖，多次按退出
-        const exitScript = async (args) => {
+        const exitScript = async (...args) => {
             this.log.warn(`get exit signal by ${args}`)
             if (!exitCount) {
                 exitCount = 1
@@ -218,7 +218,6 @@ class Task extends Base {
                 this.log.warn('检测到关闭操作，通知业务暂停。')
                 this.vNeedStop = true
             }else{
-                console.log(exitCount);
                 this.log.warn('强制关闭!')
                 await this.#clear()
                 process.exit()
@@ -274,10 +273,11 @@ class Task extends Base {
 
     #loadJob(){
         // console.log(path.resolve('../config/default',`jobs/${jobName}`));
-        if(!this.#conf.main?.type){
+        if(!this.#conf.main?.job){
             throw new Error(`Task not has a type, please set it.`)
         }
-        const jobName = this.#core.taskTypeList[this.#conf.main?.type]
+
+        const jobName = this.#conf.main?.job
         try {
             // const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
             const jobClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}`)

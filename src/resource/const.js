@@ -11,7 +11,8 @@ const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
 const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 
-// code rootPath
+const AppUserJobsDataPath = path.resolve(AppConfigUserDir,'job.data')
+// app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
 const AppTplConfigPath = path.resolve(AppProjectRootPath, 'src/config')
@@ -45,15 +46,10 @@ const AppTaskPathSet =  {
     info_log: 'log/info.log',
     err_log: 'log/err.log',
     pid: 'task.pid',
-    job_file: 'job/resource'
+    job_file: 'job'
 }
 
 const BugLink = pkg?.bugs?.url
-
-const AppTaskTypeMap = {
-    default: 'empty',
-    list: 'list_fetch'
-}
 
 module.exports = {
     AppProjectRootPath,
@@ -66,6 +62,6 @@ module.exports = {
     AppTaskPathSet,
     BugLink,
     AppInstalledLockFile,
-    AppTaskTypeMap,
-    AppUserJobsDir
+    AppUserJobsDir,
+    AppUserJobsDataPath
 }

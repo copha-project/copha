@@ -21,6 +21,7 @@ class Selenium extends Driver {
             let driverBuilder = new Builder()
             this.setBrowser(driverBuilder)
             // driverBuilder.usingServer('http://127.0.0.1:50011')
+            // SELENIUM_REMOTE_URL=http://127.0.0.1:50011
             // console.log(driverBuilder);
             this.setOptions(driverBuilder)
             // this.setPreference(driverBuilder)
@@ -39,7 +40,6 @@ class Selenium extends Driver {
                 }
             )
 
-            console.log('close win');
             // await this.driver.close()
             // this.driver.session_.then(e=>{e.id_='45464456981325fe775059d49db180ce'})
 
@@ -61,9 +61,12 @@ class Selenium extends Driver {
                 {
                     options = new chrome.Options()
                     if(this.conf.main?.browserProfile){
-                        options.addArguments(this.conf.main.browserProfile)
+                        options.addArguments(`user-data-dir=${this.conf.main.browserProfile}`)
                     }
                     // options.setPreference("network.proxy.socks_remote_dns", true)
+                    options.setUserPreferences({
+                        'download.default_directory': path.resolve(this.conf.main.dataPath,'download')
+                    })
                     driverBuilder.withCapabilities(webdriver.Capabilities.chrome())
                         .setChromeOptions(options)
                 }

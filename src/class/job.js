@@ -10,9 +10,9 @@ class Job extends Base {
     #custom = null
     #taskConf = null
     #conf = null
-    constructor(name,taskConf) {
+    constructor(taskConf) {
         super()
-        this.#name = name
+        this.#name = taskConf.main.job
         this.#taskConf = taskConf
         this.#conf = taskConf?.Job || {}
     }

@@ -1,0 +1,17 @@
+{
+    "default": "empty",
+    "list": [
+        {
+            "name": "empty",
+            "desc": "default job",
+            "repository": "",
+            "version": 1
+        },
+        {
+            "name": "list_fetch",
+            "desc": "fetch web list data",
+            "repository": "https://github.com/copha-project/list-fetch-job",
+            "version": 1
+        }
+    ]
+}

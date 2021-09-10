@@ -40,8 +40,8 @@ class Cli extends Base {
     async listInfo(options) {
         if(!options.type) return this.listTask()
         switch (options.type) {
-            case 'type':
-                return this.listType()
+            case 'job':
+                return this.listJob()
             case 'task':
                 return this.listTask()
             default:
@@ -61,25 +61,27 @@ class Cli extends Base {
             })
         )
     }
-    async listType(){
-        const typeList = await this.core.listType()
-        console.log('Task Type List:')
+    async listJob(){
+        const jobList = await this.core.listJob()
+        console.log('Job List:')
         console.table(
-            Object.keys(typeList).map(data => {
+            jobList.list.map(job => {
                 return {
-                    Name: data,
-                    tplName: typeList[data],
-                    Description: ''
+                    Name: job.name,
+                    Description: job.desc,
+                    Ver: job.version,
+                    Repository: job.repository || '',
+                    Default: jobList.default === job.name ? 'Y' : '-'
                 }
             })
         )
     }
 
     @preCheck()
-    async createTask(name, {type}) {
+    async createTask(name, {job}) {
         this.log.info(`prepare to create a new task named ${name}`)
         await this.core.checkName(name)
-        return this.core.createTask(name,type)
+        return this.core.createTask(name,job)
     }
 
     @preCheck()

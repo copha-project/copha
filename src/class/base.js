@@ -54,10 +54,7 @@ class Base {
     }
 
     getPathFor(key){
-        return this.#pathData[key]
-    }
-    get #pathData(){
-        return ConstData
+        return this.constData[key]
     }
     get appSettings() {
         return Base.appSettings

@@ -3,7 +3,7 @@ const { Job } = require('copha')
 
 class ListJob extends Job {
     constructor(taskConf) {
-        super('list_fetch',taskConf)
+        super(taskConf)
         this.#initValue()
     }
     #initValue() {
@@ -401,7 +401,7 @@ class ListJob extends Job {
     }
     async getItemData(item) {
         if(this.conf.CustomStage?.GetItemData){
-            return  this.custom.getItemData.call(this,item)
+            return this.custom.getItemData.call(this,item)
         }
         let itemData = []
         // 处理特殊情况下的 item
@@ -423,8 +423,6 @@ class ListJob extends Job {
             text = text.trim().replace(/[\n]/g,'\\n')
             itemData.push(text||'')
         }
-        await this.getExtraContent(itemData)
-
 
         // download ?
         // if(itemData.length==8){

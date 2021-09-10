@@ -15,7 +15,7 @@ function createCommander(program,cli) {
 
     program.command('create <name>')
         .description('create a new task')
-        .option('-t, --type <value>', 'choose task type')
+        .option('-j, --job <value>', 'choose a job, default with a empty job')
         .action(cli.getMethod('createTask'))
 
     program.command('delete <name>')
@@ -42,7 +42,7 @@ function createCommander(program,cli) {
 
     program.command('list')
         .description('list task info')
-        .option('-t, --type <value>', 'show all available task types')
+        .option('-t, --type <value>', 'show list info about task')
         .action(cli.getMethod('listInfo'))
 
     program.command('config [name]')
