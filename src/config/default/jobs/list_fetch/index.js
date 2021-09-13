@@ -136,11 +136,12 @@ class ListJob extends Job {
                 continue
             }
             //是否已经保存过该页面数据
-            const hasExist = await this.#find(id)
-            if (hasExist) {
+            const queryData = await this.#find(id)
+            if (queryData && await this.itemCompleteCheck(queryData)) {
                 this.log.warn(`item data has saved : ${id}`)
                 continue
             }
+
             try {
                 const itemData = await this.getItemData(item)
                 const contentTest = JSON.stringify(itemData)
@@ -536,6 +537,10 @@ class ListJob extends Job {
         }
     }
     async getItemId(item) {
+        if(this.conf.CustomStage?.GetItemId){
+            return this.custom.getItemId.call(this,item)
+        }
+
         let id = ''
         if(Array.isArray(item)){
             const itemData = []
@@ -581,7 +586,12 @@ class ListJob extends Job {
         }
         return id
     }
-
+    async itemCompleteCheck(item){
+        if(this.conf.CustomStage?.ItemCompleteCheck){
+            return this.custom.itemCompleteCheck.call(this,item)
+        }
+        return true
+    }
     getItemSelector() {
         const locValue = this.processConfig.GetItemData?.selector?.value
         let selector = this.driver.buildSelectorForXpath(locValue)
