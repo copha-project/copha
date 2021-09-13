@@ -1,3 +1,6 @@
 [submodule "src/config/default/jobs/empty"]
 	path = src/config/default/jobs/empty
 	url = https://github.com/copha-project/copha-job-template
+[submodule "src/config/default/jobs/list_fetch"]
+	path = src/config/default/jobs/list_fetch
+	url = https://github.com/copha-project/list-fetch-job
