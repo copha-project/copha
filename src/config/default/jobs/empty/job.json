@@ -1,0 +1,6 @@
+{
+    "name": "empty",
+    "description": "this is a empty job, used for copha default job",
+    "version": 1,
+    "repository": "https://github.com/copha-project/copha-job-template"
+}

@@ -129,8 +129,7 @@ class Task extends Base {
         try {
             await this.#startPrepare()
             await this.#runBefore()
-            await this.#job.runTest()
-            await Utils.sleep(this.#conf.Job.Test.WaitExitTime * 1000)
+            await this.#job.runTest.call(this)
         } catch (e) {
             this.log.err(e)
         } finally {
@@ -280,7 +279,7 @@ class Task extends Base {
         const jobName = this.#conf.main?.job
         try {
             // const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
-            const jobClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}`)
+            const jobClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
             const jobClass = require(jobClassPath)
             this.#job = new jobClass(this.#conf)
             this.#job.helper = this.helper

@@ -180,7 +180,7 @@ class Core extends Base{
 
         // copy job
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserJobsDir,job,`resource`),
+            path.resolve(this.constData.AppUserJobsDir,job,`src/resource`),
             path.resolve(Task.getPath(name,'root_dir'),'job')
         )
 
@@ -190,7 +190,7 @@ class Core extends Base{
         taskConf.main.dataPath = Task.getPath(name,'data_dir')
         taskConf.main.createTime = Utils.getTodayDate()
 
-        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'config.json'))
+        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'src/config.json'))
         await this.saveTaskConf(name, taskConf)
     }
 }

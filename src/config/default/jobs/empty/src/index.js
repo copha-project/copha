@@ -1,5 +1,4 @@
-const Utils = require('uni-utils')
-const {Job} = require('copha')
+const {Job, Utils} = require('copha')
 
 class EmptyJob extends Job {
     constructor(taskConf) {
@@ -8,6 +7,8 @@ class EmptyJob extends Job {
 
     async runTest() {
         this.log.info(`run test:`)
+        await this.driver.open('https://baidu.com')
+        this.log.info(`open web title is : ${await this.driver_.getTitle()}`)
         await Utils.countdown(5)
         this.log.info(`test end.`)
     }
