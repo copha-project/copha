@@ -34,5 +34,4 @@ yarn start
 * [Examples](https://copha.net/examples)
 
 # License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha.svg?type=large)]
-(https://app.fossa.com/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha.svg?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fyxwzaxns%2Fcopha.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha?ref=badge_large)
