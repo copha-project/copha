@@ -1,18 +1,18 @@
-const Base = require("./base");
+const Base = require("./base")
 
-class Driver extends Base{
+class Driver extends Base {
+    DriverModule = this
     #conf = null
     #driver = null
     constructor(conf){
         super()
         this.#conf = conf
     }
-    setDriver(v){
-        this.#driver = v
-    }
     async init(){}
     async clear(){}
-    async open(){}
+    async open(){
+        throw new Error('must implement open()')
+    }
     async closeTab(){}
     async quit(){}
 
