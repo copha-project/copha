@@ -1,14 +1,19 @@
-// eslint-disable-next-line no-unused-vars
 const path = require('path')
 const Utils = require('uni-utils')
-// eslint-disable-next-line no-unused-vars
 const { By, until, Key } = require('selenium-webdriver')
+const browserDriver = require('browser-driver')
 const Driver = require('../class/driver')
 const webdriver = require('selenium-webdriver')
 const proxy = require('selenium-webdriver/proxy')
 const firefox = require('selenium-webdriver/firefox')
 const chrome = require('selenium-webdriver/chrome')
 const { Builder } = require('selenium-webdriver')
+
+const SeleniumConfig = {
+    Browser: 'chrome',
+    BrowserProfile: '',
+    RemoteServer: ''
+}
 
 class Selenium extends Driver {
     DriverModule = require('selenium-webdriver')
@@ -20,18 +25,17 @@ class Selenium extends Driver {
         try {
             let driverBuilder = new Builder()
             this.setBrowser(driverBuilder)
-            // driverBuilder.usingServer('http://127.0.0.1:50011')
-            // SELENIUM_REMOTE_URL=http://127.0.0.1:50011
-            // console.log(driverBuilder);
-            this.setOptions(driverBuilder)
-            // this.setPreference(driverBuilder)
-            // this.setProxy(driverBuilder)
-            this.setDriver(await driverBuilder.build())
+            this.setDriverServer(driverBuilder)
 
-            if(this.conf.main.driver == 'chrome'){
-                const service = chrome.getDefaultService()
-                this.log.debug(`Chrome driverService on : ${await service.address()}`)
-            }
+            this.setOptions(driverBuilder)
+            this.setPreference(driverBuilder)
+            this.setProxy(driverBuilder)
+            this.driver = await driverBuilder.build()
+
+            // if(this.conf.main.driver == 'chrome'){
+            //     const service = chrome.getDefaultService()
+            //     this.log.debug(`Chrome driverService on : ${await service.address()}`)
+            // }
 
             await this.driver.manage().setTimeouts(
                 {
@@ -40,10 +44,9 @@ class Selenium extends Driver {
                 }
             )
 
+            // TODO: connect a session existed
             // await this.driver.close()
             // this.driver.session_.then(e=>{e.id_='45464456981325fe775059d49db180ce'})
-
-            // console.log();
 
         } catch (error) {
             console.log(error);
@@ -52,18 +55,35 @@ class Selenium extends Driver {
         this.log.info('web driver init end')
     }
     setBrowser(driverBuilder){
-        driverBuilder.forBrowser(this.conf.main?.driver || 'firefox')
+        driverBuilder.forBrowser(this.conf?.Driver?.Browser)
+
+    }
+    setDriverServer(driverBuilder){
+        if(this.conf?.Driver?.RemoteServer){
+            driverBuilder.usingServer(this.conf.Driver.RemoteServer)
+            // SELENIUM_REMOTE_URL=http://127.0.0.1:50011
+            return
+        }
+        switch (this.conf?.Driver?.Browser) {
+            case 'firefox':
+                driverBuilder.setFirefoxService(new firefox.ServiceBuilder(browserDriver.firefox))
+                break;
+            case 'chrome':
+                driverBuilder.setChromeService(new chrome.ServiceBuilder(browserDriver.chrome))
+                break
+            default:
+                throw Error('not support driver!')
+        }
     }
     setOptions(driverBuilder){
         let options = null
-        switch (this.conf.main?.driver) {
+        switch (this.conf?.Driver?.Browser) {
             case 'chrome':
                 {
                     options = new chrome.Options()
-                    if(this.conf.main?.browserProfile){
-                        options.addArguments(`user-data-dir=${this.conf.main.browserProfile}`)
+                    if(this.conf?.Driver?.browserProfile){
+                        options.addArguments(`user-data-dir=${this.conf?.Driver.browserProfile}`)
                     }
-                    // options.setPreference("network.proxy.socks_remote_dns", true)
                     options.setUserPreferences({
                         'download.default_directory': path.resolve(this.conf.main.dataPath,'download')
                     })
@@ -229,4 +249,5 @@ class Selenium extends Driver {
     }
 }
 
-module.exports = Selenium
+exports.Driver = Selenium
+exports.Config = SeleniumConfig

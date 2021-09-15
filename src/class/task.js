@@ -101,8 +101,7 @@ class Task extends Base {
     //public end
 
     async init(){
-        // 初始化 web-driver
-        this.#loadWebDriver()
+        this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
         this.#loadJob()
         // 初始化 用户自定义操作
@@ -251,22 +250,16 @@ class Task extends Base {
         }
     }
 
-    #loadWebDriver() {
+    #loadBrowserDriver() {
         try {
-            const driverClass = require(`../drivers/${this.#conf.main?.useDriver || 'selenium'}`)
+            if(! this.appSettings.Driver.Default){
+                throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
+            }
+            const driverName = this.#conf.main?.driver || this.appSettings.Driver.Default
+            const {Driver:driverClass} = require(`../drivers/${driverName}`)
             this.#driver = new driverClass(this.#conf)
-            // BUG: 使用代理后，类内部的私有变量就无法使用
-            // this.#driver = new Proxy(new driverClass(this.#conf), {
-            //     get: (target,propKey) => {
-            //         if(propKey in target){
-            //             return target[propKey]
-            //         }else{
-            //             return target.driver[propKey]
-            //         }
-            //     }
-            // })
         } catch (error) {
-            throw new Error(`Can't load web driver : ${error}`)
+            throw new Error(`Can't load browser driver : ${error}`)
         }
     }
 

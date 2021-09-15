@@ -9,9 +9,10 @@
         "debug": false,
         "useProxy": false,
         "alwaysRestart": false,
-        "driver": "firefox",
-        "type": ""
+        "driver": "",
+        "job": ""
     },
+    "Driver": {},
     "Job": {},
     "Storage":{
         "Type": "file",

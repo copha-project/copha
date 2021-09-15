@@ -9,7 +9,7 @@
         "crawler",
         "puppeteer"
     ],
-    "repository": "https://github.com/yxwzaxns/copha.git",
+    "repository": "github.com:yxwzaxns/copha",
     "homepage": "https://copha.net",
     "bugs": {
         "url": "https://github.com/yxwzaxns/copha/issues",
