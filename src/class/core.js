@@ -63,9 +63,9 @@ class Core extends Base{
     async createTask(name,job){
         const jobListData = await this.listJob()
         if(!job) {
-            job = jobListData.default
+            job = this.appSettings?.Job?.Default
         }else{
-            if(jobListData.list.find(e=>e.name==job)) {
+            if(jobListData.find(e=>e.name==job)) {
 
             }else{
                 throw new Error(`The job: [ ${job} ] can't be use.`)

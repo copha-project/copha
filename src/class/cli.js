@@ -65,13 +65,13 @@ class Cli extends Base {
         const jobList = await this.core.listJob()
         console.log('Job List:')
         console.table(
-            jobList.list.map(job => {
+            jobList.map(job => {
                 return {
                     Name: job.name,
                     Description: job.desc,
                     Ver: job.version,
                     Repository: job.repository || '',
-                    Default: jobList.default === job.name ? 'Y' : '-'
+                    Default: this.appSettings?.Job?.Default === job.name ? 'Y' : '-'
                 }
             })
         )
