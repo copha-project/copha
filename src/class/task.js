@@ -256,7 +256,8 @@ class Task extends Base {
                 throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
             }
             const driverName = this.#conf.main?.driver || this.appSettings.Driver.Default
-            const {Driver:driverClass} = require(`../drivers/${driverName}`)
+            const driverClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`drivers/${driverName}`)
+            const driverClass = require(driverClassPath)
             this.#driver = new driverClass(this.#conf)
         } catch (error) {
             throw new Error(`Can't load browser driver : ${error}`)
@@ -264,7 +265,6 @@ class Task extends Base {
     }
 
     #loadJob(){
-        // console.log(path.resolve('../config/default',`jobs/${jobName}`));
         if(!this.#conf.main?.job){
             throw new Error(`Task not has a type, please set it.`)
         }
