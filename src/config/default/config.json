@@ -10,6 +10,9 @@
             "RunScriptTimeout": 30000
         }
     },
+    "Job": {
+        "Default": "empty"
+    },
     "Storage":{
         "Type":["file","mongodb","mysql"],
         "AdapterList":{
