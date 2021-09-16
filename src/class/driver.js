@@ -3,7 +3,7 @@ const Base = require("./base")
 class Driver extends Base {
     DriverModule = this
     #conf = null
-    #driver = null
+    #driver = this
     constructor(conf){
         super()
         this.#conf = conf
