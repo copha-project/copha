@@ -3,7 +3,7 @@
     "Editor": "",
     "Language": "en",
     "Driver": {
-        "Default": "selenium",
+        "Default": "simple-driver",
         "Time": {
             "LocatingElementsTimeout": 10000,
             "PageLoadTimeout": 10000,
