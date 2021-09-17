@@ -6,12 +6,16 @@ const pkg = require('../../package')
 const AppConfigUserDir = path.resolve(os.homedir(),'.copha')
 // store jobs at local settings
 const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
+// store drivers at local settings
+const AppUserDriversDir = path.resolve(AppConfigUserDir,'./drivers')
 // app config file path on user disk
 const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
 const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 
 const AppUserJobsDataPath = path.resolve(AppConfigUserDir,'job.data')
+
+const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
@@ -63,5 +67,7 @@ module.exports = {
     BugLink,
     AppInstalledLockFile,
     AppUserJobsDir,
-    AppUserJobsDataPath
+    AppUserDriversDir,
+    AppUserJobsDataPath,
+    AppUserDriversDataPath
 }

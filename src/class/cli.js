@@ -44,6 +44,8 @@ class Cli extends Base {
                 return this.listJob()
             case 'task':
                 return this.listTask()
+            case 'driver':
+                return this.listDriver()
             default:
                 throw new Error('unknow type of list')
         }
@@ -68,12 +70,27 @@ class Cli extends Base {
             jobList.map(job => {
                 return {
                     Name: job.name,
-                    Description: job.desc,
                     Ver: job.version,
-                    Repository: job.repository || '',
                     Default: this.appSettings?.Job?.Default === job.name ? 'Y' : '-'
                 }
             })
+        )
+    }
+
+    async listDriver(){
+        const driverList = await this.core.listDriver()
+        console.log('Browser Driver List:')
+        console.table(
+            await Promise.all(
+                driverList.map(async driver => {
+                    return {
+                        Name: driver.name,
+                        Ver: driver.version,
+                        Default: this.appSettings?.Driver?.Default === driver.name ? 'Y' : '-',
+                        Loaded: await Utils.checkFile(path.join(this.getPathFor('AppUserDriversDir'),driver.name))
+                    }
+                })
+            )
         )
     }
 

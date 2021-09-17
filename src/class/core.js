@@ -53,6 +53,10 @@ class Core extends Base{
         return Utils.readJson(this.getPathFor('AppUserJobsDataPath'))
     }
 
+    async listDriver(){
+        return Utils.readJson(this.getPathFor('AppUserDriversDataPath'))
+    }
+
     async getTaskName(data){
         if(parseInt(data, 10)>=0){
             return (await this.listTask())[data].name
