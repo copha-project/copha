@@ -8,6 +8,7 @@ class Driver extends Base {
         super()
         this.#conf = conf
     }
+    static CONFIG = {}
     async init(){}
     async clear(){}
     async open(){
@@ -31,6 +32,10 @@ class Driver extends Base {
     // k is css xpath id js ...
     buildSelector(k,v){
         throw new Error('must implement buildSelector()')
+    }
+
+    async getTitle(){
+        throw new Error(this.getMsg(10,'getTitle()'))
     }
 
     async findElements(){
