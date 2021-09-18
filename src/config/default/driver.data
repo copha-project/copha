@@ -3,12 +3,14 @@
         "name": "simple-driver",
         "desc": "default browser driver",
         "repository": "https://github.com/copha-project/simple-driver",
-        "version": 1
+        "version": 1,
+        "active": true
     },
     {
         "name": "selenium",
         "desc": "browser driver with selenium",
         "repository": "https://github.com/copha-project/selenium-driver",
-        "version": 1
+        "version": 1,
+        "active": false
     }
 ]
