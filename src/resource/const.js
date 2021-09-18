@@ -2,8 +2,10 @@ const path = require('path')
 const os = require('os')
 const pkg = require('../../package')
 
+const Common = require('../common.js')
+
 // store dir on install
-const AppConfigUserDir = path.resolve(os.homedir(),'.copha')
+const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')
 // store jobs at local settings
 const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
 // store drivers at local settings

@@ -46,7 +46,7 @@ function createCommander(program,cli) {
         .action(cli.getMethod('listInfo'))
 
     program.command('config [name]')
-        .description('set global or task config or custom code')
+        .description('edit global or task config')
         .option('-s, --set <key=value>', 'set config')
         .option('-c, --custom', 'edit custom exec code')
         .option('-o, --overwrite', 'edit overwrite code of task')
@@ -59,6 +59,11 @@ function createCommander(program,cli) {
         .option('-p, --port', 'server port, default use 7000')
         .option('-d, --daemon', 'run with daemon')
         .action(cli.getMethod('server'))
+
+    program.command('load <data>')
+        .description('load resource from tar, url, name')
+        .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['job', 'driver', 'storage']))
+        .action(cli.getMethod('load'))
 }
 
 async function main(cli){

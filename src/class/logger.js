@@ -1,5 +1,5 @@
 const winston = require('winston')
-const { IsDev } = require('../helper')
+const { isDev } = require('../common.js')
 const { format, createLogger } = require('winston')
 
 const LogBaseConfig = {
@@ -33,7 +33,7 @@ class Logger {
     constructor({infoPath,errPath}={}){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
-            level: IsDev ? 'custom' : 'info',
+            level: isDev ? 'custom' : 'info',
             levels: LogBaseConfig.levels,
             format: winston.format.json(),
             transports: []

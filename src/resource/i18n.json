@@ -31,5 +31,8 @@
     ],
     [
         "Run for the first time, app need to init global config.(9)"
+    ],
+    [
+        "The method [ # ] has not yet been implemented.(10)"
     ]
 ]

@@ -3,7 +3,7 @@ const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./base')
 const Storage = require('../storage')
-const helper = require('../helper')
+const Common = require('../common.js')
 
 class Task extends Base {
     #core = null
@@ -15,7 +15,7 @@ class Task extends Base {
     #job = null
     constructor(conf) {
         super()
-        this.#conf = conf
+        this.#setConf(conf)
         this.#initValue()
         this.#initLogger()
     }
@@ -30,15 +30,12 @@ class Task extends Base {
     getPath(key) {
         return Task.getPath(this.#name,key)
     }
+
     async test(){
         return this.#test()
     }
     async start(){
         return this.#start()
-    }
-    async updateConf(kv) {
-        // TODO: 直接更新任务数据
-        return
     }
     async reset(options){
         await this.#job?.reset()
@@ -54,7 +51,7 @@ class Task extends Base {
     async exportData() {
         this.log.info('Prepare to export data')
         // TODO: 使用用户自定义的导出函数
-        if(this.#conf.Job?.CustomStage?.ExportData){
+        if(this.conf.Job?.CustomStage?.ExportData){
             if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
@@ -101,7 +98,7 @@ class Task extends Base {
     //public end
 
     async init(){
-        this.#loadBrowserDriver()
+        await this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
         this.#loadJob()
         // 初始化 用户自定义操作
@@ -139,7 +136,7 @@ class Task extends Base {
     //interface of job
 
     async #runBefore() {
-        if (this.#conf.Job?.CustomStage?.RunBefore) {
+        if (this.conf.Job?.CustomStage?.RunBefore) {
             await this.#custom?.runBefore.call(this)
         } else {
             await this.#job?.runBefore()
@@ -158,8 +155,8 @@ class Task extends Base {
             this.log.err(`Task start error: ${error}`)
             // 遇到错误退出程序，有可能的话重启进程
             await this.#saveContext()
-            this.log.info(`check need to restart: ${this.#conf?.main?.alwaysRestart}`)
-            if (this.#conf?.main?.alwaysRestart) {
+            this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
+            if (this.conf?.main?.alwaysRestart) {
                 // must delay some time to restart
                 this.#restart()
             }
@@ -227,12 +224,12 @@ class Task extends Base {
     }
 
     #initValue() {
-        // 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
+        // TODO: 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
         this.vNeedStop = false
     }
 
     #initLogger(){
-        if (this.#conf){
+        if (this.conf){
             this.setLog({
                 'infoPath': this.getPath('info_log'),
                 'errPath': this.getPath('err_log')
@@ -243,38 +240,33 @@ class Task extends Base {
     #initStorage() {
         this.log.debug('Task: init storage')
         try {
-            this.#storage = new Storage(this.#conf)
+            this.#storage = new Storage(this.conf)
             this.#storage.init()
         } catch (e) {
             throw new Error(`init storage error: ${e}`)
         }
     }
 
-    #loadBrowserDriver() {
+    async #loadBrowserDriver() {
         try {
-            if(! this.appSettings.Driver.Default){
-                throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
-            }
-            const driverName = this.#conf.main?.driver || this.appSettings.Driver.Default
-            const driverClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`drivers/${driverName}`)
-            const driverClass = require(driverClassPath)
-            this.#driver = new driverClass(this.#conf)
+            const driverClass = await this.core.getDriver(this.conf.main?.driver)
+            this.#driver = new driverClass(this.conf)
         } catch (error) {
             throw new Error(`Can't load browser driver : ${error}`)
         }
     }
 
     #loadJob(){
-        if(!this.#conf.main?.job){
+        if(!this.conf.main?.job){
             throw new Error(`Task not has a type, please set it.`)
         }
 
-        const jobName = this.#conf.main?.job
+        const jobName = this.conf.main?.job
         try {
             // const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
-            const jobClassPath = path.resolve(helper.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
+            const jobClassPath = path.resolve(Common.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
             const jobClass = require(jobClassPath)
-            this.#job = new jobClass(this.#conf)
+            this.#job = new jobClass(this.conf)
             this.#job.helper = this.helper
         } catch (error) {
             throw new Error(`can't load job [${jobName}] : ${error}`)
@@ -306,6 +298,18 @@ class Task extends Base {
         // Utils.restartProcess()
     }
 
+    setCore(v){
+        this.#core = v
+    }
+
+    #setConf(v){
+        this.#conf = v
+    }
+
+    get conf(){
+        return this.#conf
+    }
+
     get storage(){
         if(!this.#storage){
             this.#initStorage()
@@ -316,15 +320,17 @@ class Task extends Base {
     get driver(){
         return this.#driver
     }
+
     get driver_(){
         return this.#driver?.driver
     }
+
     get Driver(){
         return this.#driver?.DriverModule
     }
 
     get #name(){
-        return this.#conf?.main?.name
+        return this.conf?.main?.name
     }
 
     get helper(){
@@ -340,8 +346,9 @@ class Task extends Base {
         	download : Utils.listDownload
         }
     }
-    set core(v){
-        this.#core = v
+
+    get core(){
+        return this.#core
     }
 }
 

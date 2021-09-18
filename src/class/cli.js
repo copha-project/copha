@@ -50,6 +50,7 @@ class Cli extends Base {
                 throw new Error('unknow type of list')
         }
     }
+
     async listTask(){
         const tasksData = await this.core.listTask()
         console.log('Task List:')
@@ -63,6 +64,7 @@ class Cli extends Base {
             })
         )
     }
+
     async listJob(){
         const jobList = await this.core.listJob()
         console.log('Job List:')
@@ -81,17 +83,20 @@ class Cli extends Base {
         const driverList = await this.core.listDriver()
         console.log('Browser Driver List:')
         console.table(
-            await Promise.all(
-                driverList.map(async driver => {
-                    return {
-                        Name: driver.name,
-                        Ver: driver.version,
-                        Default: this.appSettings?.Driver?.Default === driver.name ? 'Y' : '-',
-                        Loaded: await Utils.checkFile(path.join(this.getPathFor('AppUserDriversDir'),driver.name))
-                    }
-                })
-            )
+            driverList.map(driver => {
+                return {
+                    Name: driver.name,
+                    Ver: driver.version,
+                    Default: this.appSettings?.Driver?.Default === driver.name ? 'Y' : '-',
+                    Loaded: driver.active
+                }
+            })
         )
+    }
+
+    @preCheck()
+    async load(name, options){
+        return this.core.load(name, options)
     }
 
     @preCheck()

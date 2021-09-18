@@ -2,6 +2,7 @@ const path = require('path')
 const Utils = require('uni-utils')
 const Task = require('./task')
 const Base = require('./base')
+const Common = require('../common.js')
 
 class Core extends Base{
     static instance = null
@@ -97,30 +98,30 @@ class Core extends Base{
         await Utils.rm(taskPath)
     }
     async getTask(name){
-        const taskConfigPath = Task.getPath(name,'config')
-        if(!name || await Utils.checkFile(taskConfigPath) !== true){
-            throw new Error(`Task [${name}] not exist`)
-        }
-        let taskConf
-        try {
-            taskConf = await Utils.readJson(taskConfigPath)
-        } catch (error) {
-            this.log.err(`No task config to use! ${error}`)
-            throw new Error(`No task config to use! ${error}`)
-        }
+        const taskConf = await this.getTaskConf(name)
         const task = new Task(taskConf)
-        task.core = this
+        task.setCore(this)
         return task
     }
+
     async setTaskConfig(name,data){
         const task = await this.getTask(name)
         const kv = data.split('=')
+        const [key,value] = kv
         if(kv.length!=2) {
-            this.log.err('The data was formatted incorrectly')
-            return
+            throw Error('The data was formatted incorrectly, eg: key=value')
         }
-        return task.updateConf(kv)
+
+        // TODO: set value with k1.k2.k3 = value
+        // if(!taskConf[key]){
+        //     throw Error(`config field [ ${key} ] not existed!`)
+        // }
+        // taskConf[key] = value
+        if(key.toLowerCase() === 'driver'){
+            return this.changeTaskDriver(name,value)
+        }
     }
+
     async stopTask(name){
         const task = await this.getTask(name)
         const pid = parseInt(await Utils.readFile(task.getPath('pid')))
@@ -136,13 +137,63 @@ class Core extends Base{
         return task.reset(options)
     }
 
+    async load(value,options){
+        // local file
+        if(await Utils.fileExist(value)){
+            const ext = path.extname(value)
+            if(!ext || ext !== '.zip'){
+                throw Error('file format is invalid, support .zip only.')
+            }
+            console.log('file ok')
+        }
+        // git
+        if(value.includes('http') && value.includes('github.com')){
+            console.log('github ok')
+        }
+        // official name
+        if(options.type){
+            console.log(`load ${options.type} ${value}`)
+        }else{
+            throw Error(`you must declare type use -t option if you wan to load official resource.`)
+        }
+    }
+
+    async changeTaskDriver(name, driverName){
+        const taskConf = await this.getTaskConf(name)
+        const drivers = await this.listDriver()
+        const queryDriver = drivers.find( item => item.name === driverName)
+        if(!queryDriver){
+            throw Error(`The driver [ ${driverName} ] is invalid!`)
+        }
+        if(!queryDriver.active){
+            throw Error(`The driver [ ${driverName} ] is not load, use 'copha load ${driverName} -t driver' to load it` )
+        }
+        const driver = await this.getDriver(driverName)
+        taskConf.main.driver = driverName
+        taskConf.Driver = driver.CONFIG
+        return this.saveTaskConf(name, taskConf)
+    }
+
     async getTaskConf(name){
-        return Utils.readJson(Task.getPath(name,'config'))
+        try {
+            return Utils.readJson(Task.getPath(name,'config'))
+        } catch (error) {
+            throw Error(`Not find the task config! ${error}`)
+        }
     }
     async saveTaskConf(name, config){
         return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
     }
 
+    async getDriver(name){
+        if(!this.appSettings.Driver.Default){
+            throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
+        }
+        const driverName = name || this.appSettings.Driver.Default
+        // const driverClassPath = path.resolve(Common.IsDev ? `${this.getPathFor('AppProjectRootPath')}/src/config/default` : this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
+        const driverClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
+        return require(driverClassPath)
+    }
     async #genTpl(name,job) {
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
