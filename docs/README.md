@@ -25,7 +25,9 @@ git clone https://github.com/yxwzaxns/copha
 cd copha
 git submodule update --init
 yarn install
-yarn start
+ln -s "$PWD" "$HOME/.node_modules/copha" # for work with require('copha')
+. dev.env.sh
+copha
 ```
 
 # Resources
