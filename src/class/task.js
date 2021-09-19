@@ -100,7 +100,7 @@ class Task extends Base {
     async init(){
         await this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
-        this.#loadJob()
+        await this.#loadJob()
         // 初始化 用户自定义操作
         this.#loadCustomCode()
         // 初始化相关任务事件
@@ -256,20 +256,18 @@ class Task extends Base {
         }
     }
 
-    #loadJob(){
+    async #loadJob(){
         if(!this.conf.main?.job){
-            throw new Error(`Task not has a type, please set it.`)
+            throw Error(`Task not has a type, please set it.`)
         }
 
         const jobName = this.conf.main?.job
         try {
-            // const jobClassPath = `${this.constData.AppConfigUserDir }/jobs/${jobName}`
-            const jobClassPath = path.resolve(Common.IsDev ? `${this.constData.AppProjectRootPath}/src/config/default` : this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
-            const jobClass = require(jobClassPath)
+            const jobClass = await this.core.getJob(jobName)
             this.#job = new jobClass(this.conf)
             this.#job.helper = this.helper
         } catch (error) {
-            throw new Error(`can't load job [${jobName}] : ${error}`)
+            throw Error(`can't load job [${jobName}] : ${error}`)
         }
     }
 

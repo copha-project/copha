@@ -87,16 +87,19 @@ class Core extends Base{
         }
         this.log.info(`Task [${name}] created successfully!`)
     }
+    
     async checkName(name){
         if(name && await Utils.fileExist(Task.getPath(name,'root_dir'))){
             throw new Error(`Task [${name}] exist!`)
         }
     }
+    
     async deleteTask(name){
         const taskPath = Task.getPath(name,'root_dir')
         // 删除数据文件
         await Utils.rm(taskPath)
     }
+    
     async getTask(name){
         const taskConf = await this.getTaskConf(name)
         const task = new Task(taskConf)
@@ -129,9 +132,11 @@ class Core extends Base{
             process.kill(pid,'SIGINT')
         }
     }
+    
     async restartTask(name){
         return Utils.createProcess(this.AppExecutableCommandPath, ['run', name])
     }
+    
     async resetTask(name,options){
         const task = await this.getTask(name)
         return task.reset(options)
@@ -193,6 +198,15 @@ class Core extends Base{
         // const driverClassPath = path.resolve(Common.IsDev ? `${this.getPathFor('AppProjectRootPath')}/src/config/default` : this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         const driverClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         return require(driverClassPath)
+    }
+
+    async getJob(name){
+        if(!this.appSettings.Job.Default){
+            throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
+        }
+        const jobName = name || this.appSettings.Job.Default
+        const jobClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`jobs/${jobName}/src`)
+        return require(jobClassPath)
     }
 
     async #genTpl(name,job) {
