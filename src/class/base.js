@@ -27,6 +27,7 @@ class Base {
             Base.appSettings = this.#getAppSettings()
         }
     }
+
     static getMsg(code,options){
         let text = Msgs[code || 0][0]
         if(options){
@@ -35,7 +36,7 @@ class Base {
                 text = text.replace('#',options)
             }
         }
-        return text.slice(0,-3)
+        return text.replace(/\(\d*\)$/,'')
     }
 
     static async installCheck(){
