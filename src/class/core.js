@@ -83,7 +83,7 @@ class Core extends Base{
             await this.#genTpl(name,job)
         } catch (e) {
             await this.deleteTask(name)
-            throw new Error(e)
+            throw e
         }
         this.log.info(`Task [${name}] created successfully!`)
     }
@@ -194,6 +194,7 @@ class Core extends Base{
         const driverClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         return require(driverClassPath)
     }
+
     async #genTpl(name,job) {
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
@@ -232,6 +233,11 @@ class Core extends Base{
             this.AppConfigTpl.custom_exec_code,
             Task.getPath(name,'custom_exec_code')
         )
+        
+        // check job tpl exist
+        if(!await Utils.fileExist(path.join(this.constData.AppUserJobsDir,job,'job.json'))){
+            throw Error(this.getMsg(11))
+        }
 
         // copy job
         await Utils.copyDir(
