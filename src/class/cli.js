@@ -210,6 +210,13 @@ class Cli extends Base {
         server.launch()
     }
 
+    @preCheck()
+    async export(name, options){
+        name = await this.core.getTaskName(name)
+        const exportFile = await this.core.exportTask(name,options)
+        this.log.info(`export data at : ${exportFile}`)
+    }
+
     // get method bind this
     getMethod(name){
         return this[name].bind(this)

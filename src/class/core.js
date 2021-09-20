@@ -1,4 +1,5 @@
 const path = require('path')
+const os = require('os')
 const Utils = require('uni-utils')
 const Task = require('./task')
 const Base = require('./base')
@@ -172,6 +173,15 @@ class Core extends Base{
         this.log.stream(task.getPath('info_log'))
     }
 
+    async exportTask(name, options){
+        this.log.info(`start export task ${name},; ${options.data}`)
+        const task = await this.getTask(name)
+        //todo support declare save path and exclude data dir
+        const exportFile = options?.savePath || this.#getExportFileName(task.name)
+        await Common.zipDir(task.getPath('root_dir'),exportFile)
+        return exportFile
+    }
+
     async changeTaskDriver(name, driverName){
         const taskConf = await this.getTaskConf(name)
         const drivers = await this.listDriver()
@@ -190,9 +200,10 @@ class Core extends Base{
 
     async getTaskConf(name){
         try {
-            return Utils.readJson(Task.getPath(name,'config'))
+            return await Utils.readJson(Task.getPath(name,'config'))
         } catch (error) {
-            throw Error(`Not find the task config! ${error}`)
+            this.log.err(`${error.message}`)
+            throw Error(`Not find the task config!`)
         }
     }
     
@@ -277,6 +288,10 @@ class Core extends Base{
 
         taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'src/config.json'))
         await this.saveTaskConf(name, taskConf)
+    }
+
+    #getExportFileName(name){
+        return path.join(os.tmpdir(),`copha_task_${name}_export_data.zip`)
     }
 }
 

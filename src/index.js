@@ -11,7 +11,8 @@ function createCommander(program,cli) {
 
     program.name(pkg.name)
 
-    program.version(pkg.version, '-v, --version', 'output the current version')
+    program
+        .version(pkg.version, '-v, --version', 'output the current version')
 
     program.command('create <name>')
         .description('create a new task')
@@ -68,6 +69,12 @@ function createCommander(program,cli) {
     program.command('logs [task]')
         .description('stream logs file. Default stream all logs')
         .action(cli.getMethod('logs'))
+    
+    program.command('export <task>')
+        .description('export task data')
+        .option('-f --save-path <path>','absolute path of saved data')
+        .option('-d, --data', 'export with data dir')
+        .action(cli.getMethod('export'))
 }
 
 async function main(cli){
