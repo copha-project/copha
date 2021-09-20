@@ -64,6 +64,10 @@ function createCommander(program,cli) {
         .description('load resource from tar, url, name')
         .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['job', 'driver', 'storage']))
         .action(cli.getMethod('load'))
+
+    program.command('logs [task]')
+        .description('stream logs file. Default stream all logs')
+        .action(cli.getMethod('logs'))
 }
 
 async function main(cli){
@@ -87,7 +91,7 @@ module.exports = async () => {
         if(cli.getEnv('COPHA_DEBUG')){
             console.log(e)
         }else{
-            cli.log.err(e)
+            cli.log.err(e.message)
         }
     }
 }

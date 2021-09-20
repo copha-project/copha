@@ -60,7 +60,11 @@ class Core extends Base{
 
     async getTaskName(data){
         if(parseInt(data, 10)>=0){
-            return (await this.listTask())[data].name
+            const tasks = await this.listTask()
+            if(!tasks[data]){
+                throw Error(`can't find a task with delcare index`)
+            }
+            return tasks[data].name
         }
         return data
     }
@@ -142,7 +146,7 @@ class Core extends Base{
         return task.reset(options)
     }
 
-    async load(value,options){
+    async load(value, options){
         // local file
         if(await Utils.fileExist(value)){
             const ext = path.extname(value)
@@ -161,6 +165,11 @@ class Core extends Base{
         }else{
             throw Error(`you must declare type use -t option if you wan to load official resource.`)
         }
+    }
+
+    async logs(name, options){
+        const task = await this.getTask(name)
+        this.log.stream(task.getPath('info_log'))
     }
 
     async changeTaskDriver(name, driverName){
@@ -186,6 +195,7 @@ class Core extends Base{
             throw Error(`Not find the task config! ${error}`)
         }
     }
+    
     async saveTaskConf(name, config){
         return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
     }

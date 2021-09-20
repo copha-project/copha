@@ -1,6 +1,9 @@
+const { spawn } = require('child_process')
+
 const winston = require('winston')
 const { isDev } = require('../common.js')
 const { format, createLogger } = require('winston')
+const Utils = require('uni-utils')
 
 const LogBaseConfig = {
     levels: {
@@ -66,6 +69,20 @@ class Logger {
             )
         }))
     }
+    static async stream(logPath){
+        const tailProc = spawn('tail', ['-f',logPath])
+        tailProc.stdout.on('data', (data) => {
+            console.log(`${data}`)
+        })
+        
+        tailProc.stderr.on('data', (data) => {
+            throw Error(`${data}`)
+        })
+    }
+    async stream(logPath){
+        return Logger.stream(logPath)
+    }
+
     debug(...e){
         this.logger.debug(e)
     }

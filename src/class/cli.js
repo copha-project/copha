@@ -100,6 +100,12 @@ class Cli extends Base {
     }
 
     @preCheck()
+    async logs(name, options){
+        name = await this.core.getTaskName(name)
+        return this.core.logs(name, options)
+    }
+
+    @preCheck()
     async createTask(name, {job}) {
         this.log.info(`prepare to create a new task named ${name}`)
         await this.core.checkName(name)
