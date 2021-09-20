@@ -330,6 +330,10 @@ class Task extends Base {
     get #name(){
         return this.conf?.main?.name
     }
+    
+    get name(){
+        return this.#name
+    }
 
     get helper(){
     	return {
