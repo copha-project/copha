@@ -230,6 +230,11 @@ class Core extends Base{
         return require(jobClassPath)
     }
 
+    async startTaskByDaemon(name){
+        const task = await this.getTask(name)
+        return Utils.createProcess(this.getPathFor('AppExecutableCommandPath'),['run',name])
+    }
+
     async #genTpl(name,job) {
         const taskConfigPath = Task.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量

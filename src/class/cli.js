@@ -133,6 +133,9 @@ class Cli extends Base {
         } else if (options.custom) {
             return (await this.core.getTask(name)).execCode()
         } else if (options.daemon) {
+            const sp = await this.core.startTaskByDaemon(name)
+            this.log.info(`[${name}] is running with daemon. pid: ${sp.pid}`)
+            return
             // TODO: 重写后台运行功能
             // try {
             //     const pid = await Utils.readFile(path.join(this.core.config.DataPath, name, 'task.pid'))
