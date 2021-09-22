@@ -30,9 +30,9 @@ class Job extends Base {
     async runTest(){}
 
     async loadState(){}
-    // default open blank page.
+
     async runBefore(){
-        return this.driver.open()
+    
     }
     async run(){}
     async saveContext(){}
