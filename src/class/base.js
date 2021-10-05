@@ -54,6 +54,10 @@ class Base {
         return false
     }
 
+    static getEnv(key){
+        return process.env[key]
+    }
+
     getPathFor(key){
         return this.constData[key]
     }
@@ -72,8 +76,8 @@ class Base {
     getMsg(...p){
         return Base.getMsg(...p)
     }
-    getEnv(key){
-        return process.env[key]
+    getEnv(...args){
+        return Base.getEnv(...args)
     }
     async getEditor(){
         const editorList = ['atom','vim','vi','nano']
