@@ -1,5 +1,5 @@
 # Copha
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha?ref=badge_shield)
 
 ## Copha is a general framework for running automated network tasks.
 
@@ -21,7 +21,7 @@ more help about command line [here](https://copha.net/cli)
 ## How to develop
 
 ```
-git clone https://github.com/yxwzaxns/copha
+git clone https://github.com/copha-project/copha
 cd copha
 git submodule update --init
 yarn install
@@ -39,4 +39,4 @@ copha
 
 
 ## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fyxwzaxns%2Fcopha?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha?ref=badge_large)

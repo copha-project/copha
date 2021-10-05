@@ -16,10 +16,10 @@
         "crawler",
         "puppeteer"
     ],
-    "repository": "github.com:yxwzaxns/copha",
+    "repository": "https://github.com/copha-project/copha.git",
     "homepage": "https://copha.net",
     "bugs": {
-        "url": "https://github.com/yxwzaxns/copha/issues",
+        "url": "https://github.com/copha-project/copha/issues",
         "email": "i@aong.cn"
     },
     "bin": {
