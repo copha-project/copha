@@ -14,15 +14,11 @@
         "Default": "empty"
     },
     "Storage":{
-        "Type":["file","mongodb","mysql"],
-        "AdapterList":{
-            "mongodb":{
-                "host": "localhost",
-                "port": 27017,
-                "user": "",
-                "pass": ""
+        "List": [
+            {
+                "name": "file"
             }
-        }
+        ]
     },
     "Proxy": [
         {

@@ -15,7 +15,6 @@
     "Driver": {},
     "Job": {},
     "Storage":{
-        "Type": "file",
-        "Database": ""
+        "name": "file"
     }
 }
