@@ -7,3 +7,6 @@
 [submodule "src/config/default/drivers/simple-driver"]
 	path = src/config/default/drivers/simple-driver
 	url = https://github.com/copha-project/simple-driver
+[submodule "src/config/default/storages/file"]
+	path = src/config/default/storages/file
+	url = https://github.com/copha-project/file-storage.git
