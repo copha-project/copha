@@ -109,6 +109,7 @@ class Core extends Base{
         const taskConf = await this.getTaskConf(name)
         const task = new Task(taskConf)
         task.setCore(this)
+        await task.init()
         return task
     }
 
@@ -209,6 +210,17 @@ class Core extends Base{
     
     async saveTaskConf(name, config){
         return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
+    }
+
+    getStorage(name){
+        const storage = this.appSettings?.Storage?.List.find(e=>e.name===name)
+        if(!storage){
+            throw `not find storage with delare name [${name}].
+            for more help, please visit the website: ${this.getPathFor('storage_help_link')}}`
+        }
+        // const driverClassPath = path.resolve(Common.IsDev ? `${this.getPathFor('AppProjectRootPath')}/src/config/default` : this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
+        const storageClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`storage/${storage.name}`)
+        return require(storageClassPath)
     }
 
     async getDriver(name){
