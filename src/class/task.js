@@ -2,10 +2,9 @@ const path = require('path')
 const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./base')
-const Storage = require('../storage')
-const Common = require('../common.js')
 
 class Task extends Base {
+    static instance = null
     #core = null
     #conf = null
     #storage = null
@@ -20,6 +19,15 @@ class Task extends Base {
         this.#initLogger()
     }
 
+    static async getInstance(core,...args){
+        if(!this.instance){
+            this.instance = new Task(...args)
+            this.instance.setCore(core)
+            await this.instance.init()
+        }
+        return this.instance
+    }
+
     static getPath(name,key){
         if(!name) throw new Error(`task name cannot be empty`)
         if(!this.AppTaskPathSet.hasOwnProperty(key)) throw new Error(`path about '${key}' not exist`)
@@ -27,6 +35,11 @@ class Task extends Base {
     }
 
     //public 方法
+    
+    setCore(v){
+        this.#core = v
+    }
+
     getPath(key) {
         return Task.getPath(this.#name,key)
     }
@@ -50,7 +63,6 @@ class Task extends Base {
     }
     async exportData() {
         this.log.info('Prepare to export data')
-        // TODO: 使用用户自定义的导出函数
         if(this.conf.Job?.CustomStage?.ExportData){
             if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
@@ -59,14 +71,6 @@ class Task extends Base {
         }
 
         let files = await this.storage.all()
-        // if (this.storage.type == "file") {
-            // files = (await Utils.readDir(this.getPath('saveDetailDataDir')))
-            //     .filter(f => f.endsWith('.json'))
-            //     .map(f => path.join(this.getPath('saveDetailDataDir'), f))
-        // } else {
-            // TODO: 不要一次性导出所有数据
-
-        // }
 
         if (files.length == 0) {
             throw new Error('0 files, not need save.')
@@ -90,7 +94,6 @@ class Task extends Base {
             this.log.err(`export data failed:`, error.message)
         }
         this.log.info('data export success.')
-        await this.storage.close()
     }
     async execCode() {
         return this.#execCode()
@@ -98,17 +101,17 @@ class Task extends Base {
     //public end
 
     async init(){
+        // 加载存储模块
+        await this.#initStorage()
+    
         await this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
         await this.#loadJob()
         // 初始化 用户自定义操作
-        this.#loadCustomCode()
-        // 初始化相关任务事件
-        this.#loadEvent()
+        await this.#loadCustomCode()
     }
 
     async #startPrepare(){
-        await this.init()
         this.#setExitHandle()
         await this.#setRunPid()
 
@@ -118,6 +121,9 @@ class Task extends Base {
         this.#job.setDriver(this.#driver)
         this.#job.setCustom(this.#custom)
         this.#job.setStorage(this.storage)
+
+        // 初始化相关任务事件
+        this.#loadEvent()
     }
 
     async #test() {
@@ -237,13 +243,13 @@ class Task extends Base {
         }
     }
 
-    #initStorage() {
-        this.log.debug('Task: init storage')
+    async #initStorage() {
+        const storageInfo = this.conf?.Storage
         try {
-            this.#storage = new Storage(this.conf)
-            this.#storage.init()
-        } catch (e) {
-            throw new Error(`init storage error: ${e}`)
+            const storageClass = await this.core.getStorage(storageInfo?.Name)
+            this.#storage = new storageClass(this.conf)
+        } catch (error) {
+            throw new Error(`initStorage error: ${error.message}`)
         }
     }
 
@@ -296,10 +302,6 @@ class Task extends Base {
         // Utils.restartProcess()
     }
 
-    setCore(v){
-        this.#core = v
-    }
-
     #setConf(v){
         this.#conf = v
     }
@@ -309,9 +311,6 @@ class Task extends Base {
     }
 
     get storage(){
-        if(!this.#storage){
-            this.#initStorage()
-        }
         return this.#storage
     }
 
