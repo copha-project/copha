@@ -1,4 +1,5 @@
 const Base = require("./base")
+const Utils = require('uni-utils')
 
 class Driver extends Base {
     DriverModule = this
@@ -16,6 +17,10 @@ class Driver extends Base {
     }
     async closeTab(){}
     async quit(){}
+
+    async sleep(n){
+        return Utils.sleep(n)
+    }
 
     get conf(){
         return this.#conf
@@ -36,6 +41,10 @@ class Driver extends Base {
 
     async getTitle(){
         throw new Error(this.getMsg(10,'getTitle()'))
+    }
+
+    async getCurrentUrl(){
+        throw new Error(this.getMsg(10,'getCurrentUrl()'))
     }
 
     async findElements(){
