@@ -1,3 +1,5 @@
+exports.Core = require('./src/class/core')
+exports.Task = require('./src/class/task')
 exports.Job = require('./src/class/job')
 exports.Driver = require('./src/class/driver')
 exports.Storage = require('./src/class/storage')
