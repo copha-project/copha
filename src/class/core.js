@@ -4,18 +4,22 @@ const Utils = require('uni-utils')
 const Task = require('./task')
 const Base = require('./base')
 const Common = require('../common.js')
+const Proxy = require('./proxy')
 
 class Core extends Base{
-    static instance = null
+    static #instance = null
     constructor(){
         super()
     }
+
     static getInstance(){
-        if(!Core.instance){
-            Core.instance = new Core()
+        if(!this.#instance){
+            this.#instance = new this()
+            this.#instance.proxy = Proxy.getInstance()
         }
-        return Core.instance
+        return this.#instance
     }
+
     static async preCheck(){
         await this.rootDataPathAvailabilityCheck()
     }
@@ -40,6 +44,10 @@ class Core extends Base{
         if(stat !== true){
             throw new Error(stat)
         }
+    }
+
+    async getProxy(...args){
+        return this.proxy.getProxy(...args)
     }
 
     // TODO: 现在是扫描数据目录获取task list，需要重构成把task信息记录在文件了里
@@ -92,22 +100,22 @@ class Core extends Base{
         }
         this.log.info(`Task [${name}] created successfully!`)
     }
-    
+
     async checkName(name){
         if(name && await Utils.fileExist(Task.getPath(name,'root_dir'))){
             throw new Error(`Task [${name}] exist!`)
         }
     }
-    
+
     async deleteTask(name){
         const taskPath = Task.getPath(name,'root_dir')
         // 删除数据文件
         await Utils.rm(taskPath)
     }
-    
-    async getTask(name){
+
+    async getTask(name, singleton = false){
         const taskConf = await this.getTaskConf(name)
-        const task = await Task.getInstance(this, taskConf)
+        const task = singleton ? await Task.getInstance(this, taskConf) : new Task(taskConf)
         return task
     }
 
@@ -136,11 +144,11 @@ class Core extends Base{
             process.kill(pid,'SIGINT')
         }
     }
-    
+
     async restartTask(name){
         return Utils.createProcess(this.AppExecutableCommandPath, ['run', name])
     }
-    
+
     async resetTask(name,options){
         const task = await this.getTask(name)
         return task.reset(options)
@@ -205,7 +213,7 @@ class Core extends Base{
             throw Error(`Not find the task config!`)
         }
     }
-    
+
     async saveTaskConf(name, config){
         return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
     }
@@ -284,7 +292,7 @@ class Core extends Base{
             this.AppConfigTpl.custom_exec_code,
             Task.getPath(name,'custom_exec_code')
         )
-        
+
         // check job tpl exist
         if(!await Utils.fileExist(path.join(this.constData.AppUserJobsDir,job,'job.json'))){
             throw Error(this.getMsg(11))
