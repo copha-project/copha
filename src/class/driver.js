@@ -1,5 +1,6 @@
 const Base = require("./base")
 const Utils = require('uni-utils')
+const { Core } = require('copha')
 
 class Driver extends Base {
     DriverModule = this
@@ -11,6 +12,11 @@ class Driver extends Base {
     }
     static CONFIG = {}
     async init(){}
+
+    async getProxy(){
+        return Core.getInstance().getProxy(this.#conf?.Proxy?.SelectIndex || 0)
+    }
+
     async clear(){}
     async open(){
         throw new Error('must implement open()')
