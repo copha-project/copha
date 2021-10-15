@@ -20,15 +20,17 @@
             }
         ]
     },
-    "Proxy": [
-        {
-            "type": "http",
-            "host": "127.0.0.1",
-            "port": 1087,
-            "user": "",
-            "pass": ""
-        }
-    ],
+    "Proxy": {
+        "List": [
+            {
+                "type": "socks",
+                "host": "127.0.0.1",
+                "port": 7890,
+                "user": "",
+                "pass": ""
+            }
+        ]
+    },
     "Server":{
         "Host": "127.0.0.1",
         "Port": 7000

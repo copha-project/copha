@@ -16,5 +16,8 @@
     "Job": {},
     "Storage":{
         "name": "file"
+    },
+    "Proxy":{
+        "SelectIndex": 0
     }
 }
