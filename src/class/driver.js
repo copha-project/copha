@@ -1,6 +1,6 @@
 const Base = require("./base")
 const Utils = require('uni-utils')
-const { Core } = require('copha')
+const Core = require('./core')
 
 class Driver extends Base {
     DriverModule = this
