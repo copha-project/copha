@@ -37,5 +37,14 @@
     ],
     [
         "The job template does not exist.(11)"
+    ],
+    [
+        "Task name cannot be empty.(12)"
+    ],
+    [
+        "The path about [ # ] not exist.(13)"
+    ],
+    [
+        "Can't find a task with delcare index.(14)"
     ]
 ]

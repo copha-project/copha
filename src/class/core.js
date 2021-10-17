@@ -71,7 +71,7 @@ class Core extends Base{
         if(parseInt(data, 10)>=0){
             const tasks = await this.listTask()
             if(!tasks[data]){
-                throw Error(`can't find a task with delcare index`)
+                throw Error(this.getMsg(14))
             }
             return tasks[data].name
         }

@@ -29,8 +29,8 @@ class Task extends Base {
     }
 
     static getPath(name,key){
-        if(!name) throw new Error(`task name cannot be empty`)
-        if(!this.AppTaskPathSet.hasOwnProperty(key)) throw new Error(`path about '${key}' not exist`)
+        if(!name) throw new Error(this.getMsg(12))
+        if(!this.AppTaskPathSet.hasOwnProperty(key)) throw new Error(this.getMsg(13, key))
         return path.join(this.appSettings.DataPath,name,this.AppTaskPathSet[key])
     }
 
