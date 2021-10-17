@@ -28,13 +28,10 @@ class Base {
         }
     }
 
-    static getMsg(code,options){
+    static getMsg(code, ...replaces){
         let text = Msgs[code || 0][0]
-        if(options){
-            if (text.includes('#')) {
-                // TODO: 要支持多个数据替换
-                text = text.replace('#',options)
-            }
+        for (let index = 0; index < replaces.length; index++) {
+            text = text.replace('#',replaces[index])
         }
         return text.replace(/\(\d*\)$/,'')
     }
