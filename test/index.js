@@ -1,5 +1,5 @@
 const main = async () => {
-    console.log('start test...');
+    console.log('no test plan');
 }
 
 ;(async ()=>{
