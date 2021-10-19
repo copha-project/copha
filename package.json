@@ -1,7 +1,7 @@
 {
     "name": "copha",
     "version": "0.0.6",
-    "description": "A general framework for running automated network tasks.",
+    "description": "a general framework for running custom network tasks.",
     "keywords": [
         "copha",
         "cli",
