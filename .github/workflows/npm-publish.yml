@@ -24,6 +24,7 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org/
       - run: git fetch --all -t
+      - run: npm i -g npm
       - run: yarn
       - run: yarn run build
       - run: cp ./docs/README.md .
