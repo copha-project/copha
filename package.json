@@ -1,6 +1,6 @@
 {
     "name": "copha",
-    "version": "0.0.6",
+    "version": "0.0.1",
     "description": "a general framework for running custom network tasks.",
     "keywords": [
         "copha",
