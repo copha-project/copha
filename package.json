@@ -20,7 +20,7 @@
     "homepage": "https://copha.net",
     "bugs": {
         "url": "https://github.com/copha-project/copha/issues",
-        "email": "bugs@copha.net"
+        "email": "contacts@copha.net"
     },
     "bin": {
         "copha": "./bin/index.js"

@@ -5,7 +5,7 @@
 
 > ⚠️ [使用警告](https://copha.net/usage_warning)
 
-> 可使用其他语言阅读: [English](./README.md) | 简体中文
+> 可使用其他语言阅读: [English](./README.md) ｜ 简体中文
 
 ## 使用指南
 ### 1. 安装 Copha

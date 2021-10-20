@@ -5,7 +5,7 @@
 
 > ⚠️ [Usage Warning](https://copha.net/usage_warning)
 
-> Read this in other languages: English | [简体中文](./README_zh.md)
+> Read this in other languages: English ｜ [简体中文](./README_zh.md)
 
 ## Getting Started
 ### 1. Installation
