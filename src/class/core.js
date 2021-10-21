@@ -225,7 +225,6 @@ class Core extends Base{
             throw new Error(`not find storage with delare name [${name}].
             for more help, please visit the website: ${this.getPathFor('storage_help_link')}}`)
         }
-        // const driverClassPath = path.resolve(Common.IsDev ? `${this.getPathFor('AppProjectRootPath')}/src/config/default` : this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         const storageClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`storages/${storage.name}`)
         return require(storageClassPath)
     }
@@ -235,7 +234,6 @@ class Core extends Base{
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
         const driverName = name || this.appSettings.Driver.Default
-        // const driverClassPath = path.resolve(Common.IsDev ? `${this.getPathFor('AppProjectRootPath')}/src/config/default` : this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         const driverClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
         return require(driverClassPath)
     }

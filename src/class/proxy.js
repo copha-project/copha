@@ -11,7 +11,7 @@ class Proxy extends Base {
 			this.log.debug('new proxy instance')
             this.#instance = new this
         }else{
-			this.log.debug('reuse config')
+			this.log.warn('reuse config')
 		}
         return this.#instance
     }
