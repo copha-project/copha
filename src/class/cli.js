@@ -20,7 +20,7 @@ class Cli extends Base {
         super()
     }
 
-    static createCommander(cli) {
+    createCommander() {
         const program = new commander.Command()
 
         program.configureHelp({
@@ -36,11 +36,11 @@ class Cli extends Base {
         program.command('create <name>')
             .description('create a new task')
             .option('-j, --job <value>', 'choose a job, default with a empty job')
-            .action(cli.getMethod('createTask'))
+            .action(this.getMethod('createTask'))
 
         program.command('delete <name>')
             .description('delete a task')
-            .action(cli.getMethod('deleteTask'))
+            .action(this.getMethod('deleteTask'))
 
         program.command('run <name>')
             .description('run a task')
@@ -48,22 +48,22 @@ class Cli extends Base {
             .option('-t, --test', 'custom test only')
             .option('-d, --daemon', 'run with daemon mode')
             .option('-c, --custom','run custom code after the task finished')
-            .action(cli.getMethod('runTask'))
+            .action(this.getMethod('runTask'))
 
         program.command('stop <name>')
             .description('stop a task')
             .option('-r, --restart', 'stop and restart task')
-            .action(cli.getMethod('stopTask'))
+            .action(this.getMethod('stopTask'))
 
         program.command('reset <name>')
             .description('reset a task')
             .option('--hard', 'delete all data of task')
-            .action(cli.getMethod('resetTask'))
+            .action(this.getMethod('resetTask'))
 
         program.command('list')
             .description('list task info')
             .option('-t, --type <value>', 'show list info about task')
-            .action(cli.getMethod('listInfo'))
+            .action(this.getMethod('listInfo'))
 
         program.command('config [name]')
             .description('edit global or task config')
@@ -71,39 +71,35 @@ class Cli extends Base {
             .option('-c, --custom', 'edit custom exec code')
             .option('-o, --overwrite', 'edit overwrite code of task')
             .option('-e, --export-data', 'edit custom export data code')
-            .action(cli.getMethod('setConfig'))
+            .action(this.getMethod('setConfig'))
 
         program.command('server')
             .description('launch a api server')
             .option('-H, --host', 'server address, default use 127.0.0.1')
             .option('-p, --port', 'server port, default use 7000')
             .option('-d, --daemon', 'run with daemon')
-            .action(cli.getMethod('server'))
+            .action(this.getMethod('server'))
 
         program.command('load <data>')
             .description('load resource from tar, url, name')
             .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['job', 'driver', 'storage']))
-            .action(cli.getMethod('load'))
+            .action(this.getMethod('load'))
 
         program.command('logs [task]')
             .description('stream logs file. Default stream all logs')
-            .action(cli.getMethod('logs'))
+            .action(this.getMethod('logs'))
 
         program.command('export <task>')
             .description('export task data')
             .option('-f --save-path <path>','absolute path of saved data')
             .option('-d, --data', 'export with data dir')
-            .action(cli.getMethod('export'))
+            .action(this.getMethod('export'))
 
         return program.parseAsync()
     }
 
     static getInstance() {
-        try {
-            return new Cli()
-        } catch (e) {
-            Base.log.err(e.message)
-        }
+        return new Cli()
     }
 
     get core() {
