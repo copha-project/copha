@@ -2,6 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 const isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
+const isDev = process.env.NODE_ENV !== "production"
 
 function homedir () {
   const env = process.env
@@ -88,5 +89,6 @@ function zip (inPath,outPath) {
 module.exports = {
   isDebug,
   homedir,
-  zipDir
+  zipDir,
+  isDev
 }

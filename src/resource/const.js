@@ -21,7 +21,7 @@ const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
-const AppTplConfigPath = path.resolve(AppProjectRootPath, `${Common.isDebug? 'src' : 'dist'}/config`)
+const AppTplConfigPath = path.resolve(AppProjectRootPath, `${Common.isDev? 'src' : 'dist'}/config`)
 
 const AppDefaultConfigDir = path.resolve(AppTplConfigPath, './default')
 
