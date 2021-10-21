@@ -1,18 +1,15 @@
 const Cli = require('./class/cli')
+const { isDebug } = require('./common')
 
 module.exports = async () => {
     try {
-        if(!await Cli.installCheck()) {
-            process.exit(1)
-        }
-        
-        let cli = Cli.getInstance()
-    
-        if(!cli) process.exit(1)
+        await Cli.installCheck()
 
-        await Cli.createCommander(cli)
+        let cli = Cli.getInstance()
+
+        await cli.createCommander()
     } catch (e) {
-        if(Cli.getEnv('COPHA_DEBUG')){
+        if(isDebug){
             console.log(e)
         }else{
             Cli.log.err(e.message)

@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const isDev = process.env.NODE_ENV && process.env.NODE_ENV === "development" || process.env.COPHA_DEBUG
+const isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
 
 function homedir () {
   const env = process.env
@@ -25,7 +25,7 @@ function homedir () {
 
 async function zipDir(dirPath,outPath){
   const dirStat = await fs.promises.stat(dirPath)
-  
+
   if(!path.isAbsolute(outPath)){
     throw Error(`outPath [ ${outPath} ] not exist.`)
   }
@@ -46,20 +46,20 @@ function zip (inPath,outPath) {
     const archive = archiver('zip', {
       zlib: { level: 9 } // Sets the compression level.
     })
-  
+
     archive.on('error', function(err) {
       reject(err)
     })
-  
+
     archive.pipe(output)
-  
+
     output.on('close', function() {
       resolve(archive.pointer())
     })
-  
+
     // append files from a sub-directory and naming it `new-subdir` within the archive
     archive.directory(inPath, false)
-  
+
     archive.finalize()
   })
 
@@ -86,7 +86,7 @@ function zip (inPath,outPath) {
 }
 
 module.exports = {
-  isDev,
+  isDebug,
   homedir,
   zipDir
 }

@@ -1,7 +1,7 @@
 const { spawn } = require('child_process')
 
 const winston = require('winston')
-const { isDev } = require('../common.js')
+const { isDebug } = require('../common.js')
 const { format, createLogger } = require('winston')
 const Utils = require('uni-utils')
 
@@ -36,7 +36,7 @@ class Logger {
     constructor({infoPath,errPath}={}){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
-            level: isDev ? 'custom' : 'info',
+            level: isDebug ? 'custom' : 'info',
             levels: LogBaseConfig.levels,
             format: winston.format.json(),
             transports: []
@@ -74,7 +74,7 @@ class Logger {
         tailProc.stdout.on('data', (data) => {
             console.log(`${data}`)
         })
-        
+
         tailProc.stderr.on('data', (data) => {
             throw Error(`${data}`)
         })
