@@ -2,7 +2,7 @@ const path = require('path')
 const os = require('os')
 const pkg = require('../../package')
 
-const Common = require('../common.js')
+const Common = require('../common')
 
 // store dir on install
 const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')
@@ -21,7 +21,7 @@ const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
-const AppTplConfigPath = path.resolve(AppProjectRootPath, 'src/config')
+const AppTplConfigPath = path.resolve(AppProjectRootPath, `${Common.isDebug? 'src' : 'dist'}/config`)
 
 const AppDefaultConfigDir = path.resolve(AppTplConfigPath, './default')
 
