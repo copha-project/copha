@@ -9,7 +9,7 @@
 /docs
 /example
 /test
-/babel.config.json
+/babel.config.js
 /yarn-error.log
 /CHANGELOG.md
 /.gitmodules
