@@ -15,7 +15,7 @@
     "Driver": {},
     "Job": {},
     "Storage":{
-        "name": "file"
+        "Name": "file"
     },
     "Proxy":{
         "SelectIndex": 0
