@@ -120,13 +120,13 @@ class Cli extends Base {
             case 'driver':
                 return this.listDriver()
             default:
-                throw new Error('unknow type of list')
+                throw new Error(this.getMsg(22))
         }
     }
 
     async listTask(){
         const tasksData = await this.core.listTask()
-        console.log('Task List:')
+        console.log(this.getMsg(21))
         console.table(
             tasksData.map(task => {
                 return {
@@ -140,7 +140,7 @@ class Cli extends Base {
 
     async listJob(){
         const jobList = await this.core.listJob()
-        console.log('Job List:')
+        console.log(this.getMsg(20))
         console.table(
             jobList.map(job => {
                 return {
@@ -154,7 +154,7 @@ class Cli extends Base {
 
     async listDriver(){
         const driverList = await this.core.listDriver()
-        console.log('Browser Driver List:')
+        console.log(this.getMsg(23))
         console.table(
             driverList.map(driver => {
                 return {
@@ -180,7 +180,7 @@ class Cli extends Base {
 
     @preCheck()
     async createTask(name, {job}) {
-        this.log.info(`prepare to create a new task named ${name}`)
+        this.log.info(this.getMsg(15,name))
         await this.core.checkName(name)
         return this.core.createTask(name,job)
     }
@@ -190,7 +190,7 @@ class Cli extends Base {
         name = await this.core.getTaskName(name)
         try {
             await this.core.deleteTask(name)
-            this.log.info(`task delete success.`)
+            this.log.info(this.getMsg(16))
         } catch (e) {
             this.log.err(e)
         }
@@ -207,7 +207,7 @@ class Cli extends Base {
             return (await this.core.getTask(name, true)).execCode()
         } else if (options.daemon) {
             const sp = await this.core.startTaskByDaemon(name)
-            this.log.info(`[${name}] is running with daemon. pid: ${sp.pid}`)
+            this.log.info(this.getMsg(17,name,sp.pid))
             return
             // TODO: 重写后台运行功能
             // try {
@@ -225,10 +225,10 @@ class Cli extends Base {
     @preCheck()
     async stopTask(name, options) {
         name = await this.core.getTaskName(name)
-        this.log.info(`Task [${name}] ready to stop`)
+        this.log.info(this.getMsg(19,name))
         await this.core.stopTask(name)
         if (options.restart) {
-            this.log.info(`Task [${name}] ready to restart`)
+            this.log.info(this.getMsg(18,name))
             await this.core.restartTask(name)
         }
     }

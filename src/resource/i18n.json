@@ -46,5 +46,34 @@
     ],
     [
         "Can't find a task with delcare index.(14)"
+    ],
+    [
+        "Prepare to create a new task named [ # ].(15)"
+    ],
+    [
+        "Delete task success.(16)"
+    ],
+    [
+        "[#] is running with daemon. pid: #.(17)"
+    ],
+    [
+        "Task [ # ] ready to restart.(18)"
+    ],
+    [
+        "Task [ # ] ready to stop.(19)"
+    ],
+    [
+        "Job List:(20)",
+        "任务列表:"
+    ],
+    [
+        "Task List:(21)",
+        "工作列表:"
+    ],
+    [
+        "Unknown display list type.(22)"
+    ],
+    [
+        "Browser Driver List:(23)"
     ]
 ]
