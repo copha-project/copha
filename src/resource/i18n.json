@@ -75,5 +75,26 @@
     ],
     [
         "Browser Driver List:(23)"
+    ],
+    [
+        "The job: [ # ] can't be use.(24)"
+    ],
+    [
+        "Type of # task [ # ] prepare to init.(25)"
+    ],
+    [
+        "Task [ # ] created successfully!(26)"
+    ],
+    [
+        "Task [ # ] exist!(27)"
+    ],
+    [
+        "The data was formatted incorrectly, eg: key=value.(28)"
+    ],
+    [
+        "File format is invalid, support .zip only.(29)"
+    ],
+    [
+        "You must declare type use -t option if you wan to load official resource.(30)"
     ]
 ]

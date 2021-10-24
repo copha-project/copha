@@ -71,7 +71,7 @@ class Core extends Base{
         if(parseInt(data, 10)>=0){
             const tasks = await this.listTask()
             if(!tasks[data]){
-                throw Error(this.getMsg(14))
+                throw Error(this.getMsg(14 ))
             }
             return tasks[data].name
         }
@@ -86,11 +86,11 @@ class Core extends Base{
             if(jobListData.find(e=>e.name==job)) {
 
             }else{
-                throw new Error(`The job: [ ${job} ] can't be use.`)
+                throw new Error(this.getMsg(24, job))
             }
         }
 
-        this.log.info(`Type of ${job} task [${name}] prepare to init`)
+        this.log.info(this.getMsg(25, job, name))
         // 复制项目模板文件到新的任务目录
         try {
             await this.#genTpl(name,job)
@@ -98,12 +98,12 @@ class Core extends Base{
             await this.deleteTask(name)
             throw e
         }
-        this.log.info(`Task [${name}] created successfully!`)
+        this.log.info(this.getMsg(26, name))
     }
 
     async checkName(name){
         if(name && await Utils.fileExist(Task.getPath(name,'root_dir'))){
-            throw new Error(`Task [${name}] exist!`)
+            throw new Error(this.getMsg(27, name))
         }
     }
 
@@ -124,7 +124,7 @@ class Core extends Base{
         const kv = data.split('=')
         const [key,value] = kv
         if(kv.length!=2) {
-            throw Error('The data was formatted incorrectly, eg: key=value')
+            throw Error(this.getMsg(28))
         }
 
         // TODO: set value with k1.k2.k3 = value
@@ -159,7 +159,7 @@ class Core extends Base{
         if(await Utils.fileExist(value)){
             const ext = path.extname(value)
             if(!ext || ext !== '.zip'){
-                throw Error('file format is invalid, support .zip only.')
+                throw Error(this.getMsg(29))
             }
             console.log('file ok')
         }
@@ -171,7 +171,7 @@ class Core extends Base{
         if(options.type){
             console.log(`load ${options.type} ${value}`)
         }else{
-            throw Error(`you must declare type use -t option if you wan to load official resource.`)
+            throw Error(this.getMsg(30))
         }
     }
 
