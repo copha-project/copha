@@ -39,10 +39,7 @@ const AppConfigTpl = {
     custom_over_write_code: path.join(AppTplConfigPath, 'custom_over_write_code.js')
 }
 
-const LangConf = {
-    en: 0,
-    cn: 1
-}
+const LangList = ["en","cn"]
 
 const AppTaskPathSet =  {
     root_dir: '',
@@ -81,5 +78,5 @@ module.exports = {
     AppUserDriversDir,
     AppUserJobsDataPath,
     AppUserDriversDataPath,
-    LangConf
+    LangList
 }

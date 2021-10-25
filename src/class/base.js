@@ -29,7 +29,7 @@ class Base {
     }
 
     static getMsg(code, ...replaces){
-        const index = this.constData.LangConf[this.appSettings.Language]
+        const index = this.constData.LangList.indexOf(this.appSettings.Language)
         let text = Msgs[code][index] || Msgs[code][0]
         for (let index = 0; index < replaces.length; index++) {
             text = text.replace('#',replaces[index])
@@ -96,7 +96,7 @@ class Base {
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')
             }
         }
-        if(this.getEnv('COPHA_LANG') && this.getEnv('COPHA_LANG') in this.constData.LangConf){
+        if(this.getEnv('COPHA_LANG') && this.constData.LangList.indexOf(this.getEnv('COPHA_LANG')) != -1){
             config.Language = this.getEnv('COPHA_LANG')
         }
         return config
