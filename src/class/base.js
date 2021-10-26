@@ -14,7 +14,7 @@ class Base {
     constructor() {
         this.#initValues()
         this.#initConfig()
-        Base.log.debug(`Base class init for : ${new.target.name}`)
+        Base.log.debug(this.getMsg(31, this.constructor.name))
     }
     #initValues(){
         this.RootPath = ConstData.AppProjectRootPath

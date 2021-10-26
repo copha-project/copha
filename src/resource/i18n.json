@@ -96,5 +96,9 @@
     ],
     [
         "You must declare type use -t option if you wan to load official resource.(30)"
+    ],
+    [
+        "Base class init for : #.(31)",
+        "创建 # 类继承 Base 类"
     ]
 ]
