@@ -100,5 +100,13 @@
     [
         "Base class init for : #.(31)",
         "创建 # 类继承 Base 类"
+    ],
+    [
+        "Failed to open the editor use [ # ].(32)",
+        "打开 [ # ] 编辑器失败."
+    ],
+    [
+        "No available text editors are found, you can open and edit the file yourself: # (33)",
+        "未找到可用的文本编辑器，请自行打开修改文件: [ # ]"
     ]
 ]

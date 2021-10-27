@@ -245,11 +245,7 @@ class Cli extends Base {
             return this.setTaskConfig(name, options)
         }
         const editorBinName = await this.getEditor()
-        openInEditor.configure({
-            editor: editorBinName
-        }, error => {
-            throw new Error(error)
-        })?.open(this.AppConfigPath)
+        return this.openEditor(editorBinName, this.AppConfigPath)
     }
 
     @preCheck()
@@ -272,11 +268,8 @@ class Cli extends Base {
             configPath = task.getPath('custom_export_data')
         }
         const editorBinName = await this.getEditor()
-        openInEditor.configure({
-            editor: editorBinName
-        }, error => {
-            throw error
-        })?.open(configPath)
+
+        return this.openEditor(editorBinName, configPath)
     }
 
     @preCheck()
@@ -296,6 +289,17 @@ class Cli extends Base {
     // get method bind this
     getMethod(name){
         return this[name].bind(this)
+    }
+
+    async openEditor(cmd, filePath){
+        if(!cmd){
+            throw new Error(this.getMsg(33, filePath))
+        }
+        openInEditor.configure({
+            editor: cmd
+        }, error => {
+            throw new Error(this.getMsg(32, cmd))
+        })?.open(filePath)
     }
 }
 

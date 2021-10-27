@@ -61,6 +61,8 @@ const AppTaskPathSet =  {
     job_file: 'job'
 }
 
+const DefaultEditorList = ['vim','vi','nano']
+
 const BugLink = pkg?.bugs?.url
 
 module.exports = {
@@ -78,5 +80,6 @@ module.exports = {
     AppUserDriversDir,
     AppUserJobsDataPath,
     AppUserDriversDataPath,
-    LangList
+    LangList,
+    DefaultEditorList
 }

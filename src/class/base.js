@@ -56,30 +56,32 @@ class Base {
         return process.env[key]
     }
 
-    getPathFor(key){
-        return this.constData[key]
-    }
     get appSettings() {
         return Base.appSettings
     }
+
     get constData(){
         return Base.constData
     }
+
     get log(){
         return Base.log
     }
+
     setLog(conf){
         Base.log = new Logger(conf)
     }
+
     getMsg(...p){
         return Base.getMsg(...p)
     }
+
     getEnv(...args){
         return Base.getEnv(...args)
     }
+
     async getEditor(){
-        const editorList = ['atom','vim','vi','nano']
-        for (const cmd of editorList) {
+        for (const cmd of [this.appSettings.Editor,...this.constData.DefaultEditorList]) {
             try {
                 return await commandExists(cmd)
             } catch {
@@ -88,6 +90,7 @@ class Base {
         }
         return ''
     }
+
     #getAppSettings(){
         if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
         const config = Utils.readJsonSync(ConstData.AppConfigUserPath)
@@ -96,9 +99,15 @@ class Base {
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')
             }
         }
+
         if(this.getEnv('COPHA_LANG') && this.constData.LangList.indexOf(this.getEnv('COPHA_LANG')) != -1){
             config.Language = this.getEnv('COPHA_LANG')
         }
+
+        if(!config.Editor && this.getEnv('COPHA_EDITOR')){
+            config.Editor = this.getEnv('COPHA_EDITOR')
+        }
+
         return config
     }
 }

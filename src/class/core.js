@@ -60,11 +60,11 @@ class Core extends Base{
     }
 
     async listJob(){
-        return Utils.readJson(this.getPathFor('AppUserJobsDataPath'))
+        return Utils.readJson(this.constData('AppUserJobsDataPath'))
     }
 
     async listDriver(){
-        return Utils.readJson(this.getPathFor('AppUserDriversDataPath'))
+        return Utils.readJson(this.constData('AppUserDriversDataPath'))
     }
 
     async getTaskName(data){
@@ -223,9 +223,9 @@ class Core extends Base{
         const storage = this.appSettings?.Storage?.List.find(e=>e.name===name)
         if(!storage){
             throw new Error(`not find storage with delare name [${name}].
-            for more help, please visit the website: ${this.getPathFor('storage_help_link')}}`)
+            for more help, please visit the website: ${this.constData('storage_help_link')}}`)
         }
-        const storageClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`storages/${storage.name}`)
+        const storageClassPath = path.resolve(this.constData('AppConfigUserDir'),`storages/${storage.name}`)
         return require(storageClassPath)
     }
 
@@ -234,7 +234,7 @@ class Core extends Base{
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
         const driverName = name || this.appSettings.Driver.Default
-        const driverClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`drivers/${driverName}`)
+        const driverClassPath = path.resolve(this.constData('AppConfigUserDir'),`drivers/${driverName}`)
         return require(driverClassPath)
     }
 
@@ -243,13 +243,13 @@ class Core extends Base{
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
         const jobName = name || this.appSettings.Job.Default
-        const jobClassPath = path.resolve(this.getPathFor('AppConfigUserDir'),`jobs/${jobName}/src`)
+        const jobClassPath = path.resolve(this.constData('AppConfigUserDir'),`jobs/${jobName}/src`)
         return require(jobClassPath)
     }
 
     async startTaskByDaemon(name){
         const task = await this.getTask(name)
-        return Utils.createProcess(this.getPathFor('AppExecutableCommandPath'),['run',name])
+        return Utils.createProcess(this.constData('AppExecutableCommandPath'),['run',name])
     }
 
     async #genTpl(name,job) {
