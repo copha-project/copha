@@ -35,7 +35,7 @@ class Task extends Base {
     }
 
     //public 方法
-    
+
     setCore(v){
         this.#core = v
     }
@@ -103,7 +103,7 @@ class Task extends Base {
     async init(){
         // 加载存储模块
         await this.#initStorage()
-    
+
         await this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
         await this.#loadJob()
@@ -245,21 +245,13 @@ class Task extends Base {
 
     async #initStorage() {
         const storageInfo = this.conf?.Storage
-        try {
-            const storageClass = await this.core.getStorage(storageInfo?.Name)
-            this.#storage = new storageClass(this.conf)
-        } catch (error) {
-            throw new Error(`initStorage error: ${error.message}`)
-        }
+        const storageClass = await this.core.getStorage(storageInfo?.Name)
+        this.#storage = new storageClass(this.conf)
     }
 
     async #loadBrowserDriver() {
-        try {
-            const driverClass = await this.core.getDriver(this.conf.main?.driver)
-            this.#driver = new driverClass(this.conf)
-        } catch (error) {
-            throw new Error(`Can't load browser driver : ${error}`)
-        }
+        const driverClass = await this.core.getDriver(this.conf.main?.driver)
+        this.#driver = new driverClass(this.conf)
     }
 
     async #loadJob(){
@@ -329,7 +321,7 @@ class Task extends Base {
     get #name(){
         return this.conf?.main?.name
     }
-    
+
     get name(){
         return this.#name
     }

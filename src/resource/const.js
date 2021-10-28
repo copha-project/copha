@@ -41,6 +41,13 @@ const AppConfigTpl = {
 
 const LangList = ["en","cn"]
 
+const DocsLinks = {
+    StorageHelpLink: pkg.homepage + "/storage",
+    JobHelpLink: pkg.homepage + "/job",
+    TaskHelpLink: pkg.homepage + "/task",
+    DriverHelpLink: pkg.homepage + "/driver"
+}
+
 const AppTaskPathSet =  {
     root_dir: '',
     config_dir: 'config',
@@ -81,5 +88,6 @@ module.exports = {
     AppUserJobsDataPath,
     AppUserDriversDataPath,
     LangList,
-    DefaultEditorList
+    DefaultEditorList,
+    DocsLinks
 }

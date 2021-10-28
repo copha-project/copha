@@ -268,7 +268,6 @@ class Cli extends Base {
             configPath = task.getPath('custom_export_data')
         }
         const editorBinName = await this.getEditor()
-
         return this.openEditor(editorBinName, configPath)
     }
 

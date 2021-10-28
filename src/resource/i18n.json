@@ -107,6 +107,30 @@
     ],
     [
         "No available text editors are found, you can open and edit the file yourself: # (33)",
-        "未找到可用的文本编辑器，请自行打开修改文件: [ # ]"
+        "未找到可用的文本编辑器，请自行修改如下文件: [ # ]"
+    ],
+    [
+        "The driver [ # ] is invalid!.(34)",
+        "指定的驱动 [ # ] 不可用."
+    ],
+    [
+        "The driver [ # ] is not load, use `copha load # -t driver` to load it.(35)",
+        "驱动 [ # ] 未加载，运行命令 `copha load # -t driver` 加载后可使用."
+    ],
+    [
+        "Not find storage module with delare name [ # ]. for more help, please visit the website: \n #(36)",
+        "未能加载存储模块 [ # ]. 需要帮助请访问以下网页: \n #"
+    ],
+    [
+        "Please set [Driver.Default] value on the app settings, you can run `copha config` to open it.(37)",
+        "请在软件全局配置文件里设置 [Driver.Default] 值，你可以使用 `copha config` 来打开该配置文件."
+    ],
+    [
+        "Not find browser driver module with delare name [ # ]. for more help, please visit the website: \n #(38)",
+        "未能加载浏览器驱动模块 [ # ]. 需要帮助请访问以下网页: \n #"
+    ],
+    [
+        "Empty names of storage module are not allowed.(39)",
+        "存储模块的命名不能为空."
     ]
 ]

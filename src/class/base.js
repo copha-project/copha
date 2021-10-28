@@ -83,7 +83,7 @@ class Base {
     async getEditor(){
         for (const cmd of [this.appSettings.Editor,...this.constData.DefaultEditorList]) {
             try {
-                return await commandExists(cmd)
+                if(await commandExists(cmd)) return cmd
             } catch {
                 continue
             }
