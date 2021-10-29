@@ -132,5 +132,8 @@
     [
         "Empty names of storage module are not allowed.(39)",
         "存储模块的命名不能为空."
+    ],
+    [
+        "no projects here, you can create a project use `copha create -h`.(40)"
     ]
 ]

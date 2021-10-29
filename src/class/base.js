@@ -29,7 +29,7 @@ class Base {
     }
 
     static getMsg(code, ...replaces){
-        const index = this.constData.LangList.indexOf(this.appSettings.Language)
+        const index = this.constData.LangList.indexOf(this.appSettings?.Language)
         let text = Msgs[code][index] || Msgs[code][0]
         for (let index = 0; index < replaces.length; index++) {
             text = text.replace('#',replaces[index])

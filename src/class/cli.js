@@ -15,6 +15,7 @@ function preCheck() {
 }
 
 class Cli extends Base {
+    static #instance = null
     static core = null
     constructor() {
         super()
@@ -32,6 +33,13 @@ class Cli extends Base {
 
         program
             .version(pkg.version, '-v, --version', 'output the current version')
+
+        program.command('list')
+            .description('list task info')
+            .option('-a, --all','show all list data')
+            .option('-t, --type <value>', 'show list info about task')
+            // .action(this.getMethod('listInfo'))
+            .action(this.listInfo)
 
         program.command('create <name>')
             .description('create a new task')
@@ -59,11 +67,6 @@ class Cli extends Base {
             .description('reset a task')
             .option('--hard', 'delete all data of task')
             .action(this.getMethod('resetTask'))
-
-        program.command('list')
-            .description('list task info')
-            .option('-t, --type <value>', 'show list info about task')
-            .action(this.getMethod('listInfo'))
 
         program.command('config [name]')
             .description('edit global or task config')
@@ -99,7 +102,10 @@ class Cli extends Base {
     }
 
     static getInstance() {
-        return new Cli()
+        if(!this.#instance){
+            this.#instance = new this
+        }
+        return this.#instance
     }
 
     get core() {
@@ -110,7 +116,13 @@ class Cli extends Base {
     }
 
     @preCheck()
-    async listInfo(options) {
+    listInfo = async (options) => {
+        if(options.all) {
+            this.listJob()
+            this.listDriver()
+            this.listTask()
+            return
+        }
         if(!options.type) return this.listTask()
         switch (options.type) {
             case 'job':
@@ -127,6 +139,11 @@ class Cli extends Base {
     async listTask(){
         const tasksData = await this.core.listTask()
         console.log(this.getMsg(21))
+        if(tasksData.length == 0){
+            console.log('  ',this.getMsg(40))
+            return
+        }
+
         console.table(
             tasksData.map(task => {
                 return {
@@ -294,11 +311,17 @@ class Cli extends Base {
         if(!cmd){
             throw new Error(this.getMsg(33, filePath))
         }
-        openInEditor.configure({
-            editor: cmd
-        }, error => {
-            throw new Error(this.getMsg(32, cmd))
-        })?.open(filePath)
+        return new Promise((resolve,reject)=>{
+            const dealErr = (error)=>{
+                this.log.debug(`open editor error: ${error?.message || error}`)
+                reject(new Error(this.getMsg(32, cmd)))
+            }
+            openInEditor.configure({
+                editor: cmd
+            }, dealErr)?.open(filePath)
+            .then(resolve)
+            .catch(dealErr)
+        })
     }
 }
 
