@@ -1,3 +1,9 @@
+---
+title: "Project"
+description: "Project Docs"
+show_home: true
+---
+
 # 项目
 项目是 copha 中的最高层的管理形式，项目管理用户定义的工作流程和数据，通过 copha 能够创建，运行，删除项目。
 项目包含特定的任务，任务通过创建项目时指定。一个项目有且包含一个任务。更多关于 **任务** 的介绍请访问：[copha.net/task](https://copha.net/task)
