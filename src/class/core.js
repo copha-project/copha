@@ -1,7 +1,7 @@
 const path = require('path')
 const os = require('os')
 const Utils = require('uni-utils')
-const Task = require('./task')
+const Project = require('./project')
 const Base = require('./base')
 const Common = require('../common.js')
 const Proxy = require('./proxy')
@@ -50,11 +50,11 @@ class Core extends Base{
         return this.proxy.getProxy(...args)
     }
 
-    // TODO: 现在是扫描数据目录获取task list，需要重构成把task信息记录在文件了里
-    async listTask (){
+    // TODO: 现在是扫描数据目录获取project list，需要重构成把project信息记录在文件了里
+    async listProject (){
         const files = await Utils.readDir(this.appSettings.DataPath)
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
-            return (await Utils.readJson(Task.getPath(name,'config'))).main
+            return (await Utils.readJson(Project.getPath(name,'config'))).main
         }))
         return data
     }
@@ -67,18 +67,18 @@ class Core extends Base{
         return Utils.readJson(this.constData.AppUserDriversDataPath)
     }
 
-    async getTaskName(data){
+    async getProjectName(data){
         if(parseInt(data, 10)>=0){
-            const tasks = await this.listTask()
-            if(!tasks[data]){
+            const projects = await this.listProject()
+            if(!projects[data]){
                 throw Error(this.getMsg(14 ))
             }
-            return tasks[data].name
+            return projects[data].name
         }
         return data
     }
 
-    async createTask(name,job){
+    async createProject(name,job){
         const jobListData = await this.listJob()
         if(!job) {
             job = this.appSettings?.Job?.Default
@@ -95,32 +95,32 @@ class Core extends Base{
         try {
             await this.#genTpl(name,job)
         } catch (e) {
-            await this.deleteTask(name)
+            await this.deleteProject(name)
             throw e
         }
         this.log.info(this.getMsg(26, name))
     }
 
     async checkName(name){
-        if(name && await Utils.fileExist(Task.getPath(name,'root_dir'))){
+        if(name && await Utils.fileExist(Project.getPath(name,'root_dir'))){
             throw new Error(this.getMsg(27, name))
         }
     }
 
-    async deleteTask(name){
-        const taskPath = Task.getPath(name,'root_dir')
+    async deleteProject(name){
+        const projectPath = Project.getPath(name,'root_dir')
         // 删除数据文件
-        await Utils.rm(taskPath)
+        await Utils.rm(projectPath)
     }
 
-    async getTask(name, singleton = false){
-        const taskConf = await this.getTaskConf(name)
-        const task = singleton ? await Task.getInstance(this, taskConf) : new Task(taskConf)
-        return task
+    async getProject(name, singleton = false){
+        const projectConfig = await this.getProjectConf(name)
+        const project = singleton ? await Project.getInstance(this, projectConfig) : new Project(projectConfig)
+        return project
     }
 
-    async setTaskConfig(name,data){
-        const task = await this.getTask(name)
+    async setProjectConfig(name,data){
+        await this.getProject(name)
         const kv = data.split('=')
         const [key,value] = kv
         if(kv.length!=2) {
@@ -128,30 +128,30 @@ class Core extends Base{
         }
 
         // TODO: set value with k1.k2.k3 = value
-        // if(!taskConf[key]){
+        // if(!projectConfig[key]){
         //     throw Error(`config field [ ${key} ] not existed!`)
         // }
-        // taskConf[key] = value
+        // projectConfig[key] = value
         if(key.toLowerCase() === 'driver'){
-            return this.changeTaskDriver(name,value)
+            return this.changeProjectDriver(name,value)
         }
     }
 
-    async stopTask(name){
-        const task = await this.getTask(name)
-        const pid = parseInt(await Utils.readFile(task.getPath('pid')))
+    async stopProject(name){
+        const project = await this.getProject(name)
+        const pid = parseInt(await Utils.readFile(project.getPath('pid')))
         if(pid>0) {
             process.kill(pid,'SIGINT')
         }
     }
 
-    async restartTask(name){
+    async restartProject(name){
         return Utils.createProcess(this.AppExecutableCommandPath, ['run', name])
     }
 
-    async resetTask(name,options){
-        const task = await this.getTask(name)
-        return task.reset(options)
+    async resetProject(name,options){
+        const project = await this.getProject(name)
+        return project.reset(options)
     }
 
     async load(value, options){
@@ -176,21 +176,21 @@ class Core extends Base{
     }
 
     async logs(name, options){
-        const task = await this.getTask(name)
-        this.log.stream(task.getPath('info_log'))
+        const project = await this.getProject(name)
+        this.log.stream(project.getPath('info_log'))
     }
 
-    async exportTask(name, options){
-        this.log.info(`start export task ${name},; ${options.data}`)
-        const task = await this.getTask(name)
+    async exportProject(name, options){
+        this.log.info(`start export project ${name},; ${options.data}`)
+        const project = await this.getProject(name)
         //todo support declare save path and exclude data dir
-        const exportFile = options?.savePath || this.#getExportFileName(task.name)
-        await Common.zipDir(task.getPath('root_dir'),exportFile)
+        const exportFile = options?.savePath || this.#getExportFileName(project.name)
+        await Common.zipDir(project.getPath('root_dir'),exportFile)
         return exportFile
     }
 
-    async changeTaskDriver(name, driverName){
-        const taskConf = await this.getTaskConf(name)
+    async changeProjectDriver(name, driverName){
+        const projectConfig = await this.getProjectConf(name)
         const drivers = await this.listDriver()
         const queryDriver = drivers.find( item => item.name === driverName)
         if(!queryDriver){
@@ -200,22 +200,22 @@ class Core extends Base{
             throw new Error(this.getMsg(35,driverName,driverName))
         }
         const driver = await this.getDriver(driverName)
-        taskConf.main.driver = driverName
-        taskConf.Driver = driver.CONFIG
-        return this.saveTaskConf(name, taskConf)
+        projectConfig.main.driver = driverName
+        projectConfig.Driver = driver.CONFIG
+        return this.saveProjectConf(name, projectConfig)
     }
 
-    async getTaskConf(name){
+    async getProjectConf(name){
         try {
-            return await Utils.readJson(Task.getPath(name,'config'))
+            return await Utils.readJson(Project.getPath(name,'config'))
         } catch (error) {
             this.log.err(`${error.message}`)
-            throw Error(`Not find the task config!`)
+            throw Error(`Not find the project config!`)
         }
     }
 
-    async saveTaskConf(name, config){
-        return Utils.saveFile(JSON.stringify(config, null, 4), Task.getPath(name,'config'))
+    async saveProjectConf(name, config){
+        return Utils.saveFile(JSON.stringify(config, null, 4), Project.getPath(name,'config'))
     }
 
     async getStorage(name){
@@ -246,48 +246,48 @@ class Core extends Base{
         return require(jobClassPath)
     }
 
-    async startTaskByDaemon(name){
-        const task = await this.getTask(name)
+    async startProjectByDaemon(name){
+        await this.getProject(name)
         return Utils.createProcess(this.constData.AppExecutableCommandPath,['run',name])
     }
 
     async #genTpl(name,job) {
-        const taskConfigPath = Task.getPath(name,'config')
+        const projectConfigPath = Project.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
-            Task.getPath(name,'root_dir'),
-            Task.getPath(name,'config_dir'),
-            Task.getPath(name,'data_dir'),
-            Task.getPath(name,'download_dir'),
-            Task.getPath(name,'page_dir'),
-            Task.getPath(name,'detail_dir'),
-            Task.getPath(name,'export_dir'),
-            Task.getPath(name,'log_dir')
+            Project.getPath(name,'root_dir'),
+            Project.getPath(name,'config_dir'),
+            Project.getPath(name,'data_dir'),
+            Project.getPath(name,'download_dir'),
+            Project.getPath(name,'page_dir'),
+            Project.getPath(name,'detail_dir'),
+            Project.getPath(name,'export_dir'),
+            Project.getPath(name,'log_dir')
         ])
         // config file
         await Utils.copyFile(
             this.AppConfigTpl.configPath,
-            taskConfigPath
+            projectConfigPath
             )
         // state
         await Utils.copyFile(
             this.AppConfigTpl.statePath,
-            Task.getPath(name,'state')
+            Project.getPath(name,'state')
         )
         // export data
         await Utils.copyFile(
             this.AppConfigTpl.custom_export_data,
-            Task.getPath(name,'custom_export_data')
+            Project.getPath(name,'custom_export_data')
         )
         // overcode
         await Utils.copyFile(
             this.AppConfigTpl.custom_over_write_code,
-            Task.getPath(name,'custom_over_write_code')
+            Project.getPath(name,'custom_over_write_code')
         )
         // custom code
         await Utils.copyFile(
             this.AppConfigTpl.custom_exec_code,
-            Task.getPath(name,'custom_exec_code')
+            Project.getPath(name,'custom_exec_code')
         )
 
         // check job tpl exist
@@ -298,21 +298,21 @@ class Core extends Base{
         // copy job
         await Utils.copyDir(
             path.resolve(this.constData.AppUserJobsDir,job,`src/resource`),
-            path.resolve(Task.getPath(name,'root_dir'),'job')
+            path.resolve(Project.getPath(name,'root_dir'),'job')
         )
 
-        const taskConf = await this.getTaskConf(name)
-        taskConf.main.name = name
-        taskConf.main.job = job
-        taskConf.main.dataPath = Task.getPath(name,'data_dir')
-        taskConf.main.createTime = Utils.getTodayDate()
+        const projectConfig = await this.getProjectConf(name)
+        projectConfig.main.name = name
+        projectConfig.main.job = job
+        projectConfig.main.dataPath = Project.getPath(name,'data_dir')
+        projectConfig.main.createTime = Utils.getTodayDate()
 
-        taskConf.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'src/config.json'))
-        await this.saveTaskConf(name, taskConf)
+        projectConfig.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'src/config.json'))
+        await this.saveProjectConf(name, projectConfig)
     }
 
     #getExportFileName(name){
-        return path.join(os.tmpdir(),`copha_task_${name}_export_data.zip`)
+        return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
     }
 }
 
