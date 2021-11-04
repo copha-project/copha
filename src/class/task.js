@@ -2,8 +2,8 @@ const path = require('path')
 const Base = require('./base')
 const Task = require('./task')
 
-class Job extends Base {
-    // job name
+class Task extends Base {
+    // task name
     #name = null
     #storage = null
     #driver = null
@@ -12,9 +12,9 @@ class Job extends Base {
     #conf = null
     constructor(taskConf) {
         super()
-        this.#name = taskConf.main.job
+        this.#name = taskConf.main.task
         this.#taskConf = taskConf
-        this.#conf = taskConf?.Job || {}
+        this.#conf = taskConf?.Task || {}
     }
     setStorage(storage){
         this.#storage = storage
@@ -43,8 +43,8 @@ class Job extends Base {
     getPath(name){
         return Task.getPath(this.taskName,name)
     }
-    getJobFile(name){
-        return path.join(this.getPath('job_file'),name)
+    getTaskFile(name){
+        return path.join(this.getPath('task_file'),name)
     }
     checkNeedStop(){
 
@@ -81,4 +81,4 @@ class Job extends Base {
     }
 }
 
-module.exports = Job
+module.exports = Task

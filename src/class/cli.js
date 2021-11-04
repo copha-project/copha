@@ -43,7 +43,7 @@ class Cli extends Base {
 
         program.command('create <name>')
             .description('create a new project')
-            .option('-j, --job <value>', 'choose a job, default with a empty job')
+            .option('-t, --task <value>', 'choose a task, default with a empty task')
             .action(this.getMethod('createProject'))
 
         program.command('delete <name>')
@@ -85,7 +85,7 @@ class Cli extends Base {
 
         program.command('load <data>')
             .description('load resource from tar, url, name')
-            .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['job', 'driver', 'storage']))
+            .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['task', 'driver', 'storage']))
             .action(this.getMethod('load'))
 
         program.command('logs [project]')
@@ -118,15 +118,15 @@ class Cli extends Base {
     @preCheck()
     listInfo = async (options) => {
         if(options.all) {
-            this.listJob()
+            this.listTask()
             this.listDriver()
             this.listProject()
             return
         }
         if(!options.type) return this.listProject()
         switch (options.type) {
-            case 'job':
-                return this.listJob()
+            case 'task':
+                return this.listTask()
             case 'project':
                 return this.listProject()
             case 'driver':
@@ -155,15 +155,15 @@ class Cli extends Base {
         )
     }
 
-    async listJob(){
-        const jobList = await this.core.listJob()
+    async listTask(){
+        const taskList = await this.core.listTask()
         console.log(this.getMsg(20))
         console.table(
-            jobList.map(job => {
+            taskList.map(task => {
                 return {
-                    Name: job.name,
-                    Ver: job.version,
-                    Default: this.appSettings?.Job?.Default === job.name ? 'Y' : '-'
+                    Name: task.name,
+                    Ver: task.version,
+                    Default: this.appSettings?.Task?.Default === task.name ? 'Y' : '-'
                 }
             })
         )
@@ -196,10 +196,10 @@ class Cli extends Base {
     }
 
     @preCheck()
-    async createProject(name, {job}) {
+    async createProject(name, {task}) {
         this.log.info(this.getMsg(15,name))
         await this.core.checkName(name)
-        return this.core.createProject(name,job)
+        return this.core.createProject(name,task)
     }
 
     @preCheck()

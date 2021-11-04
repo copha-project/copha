@@ -6,8 +6,8 @@ const Common = require('../common')
 
 // store dir on install
 const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')
-// store jobs at local settings
-const AppUserJobsDir = path.resolve(AppConfigUserDir,'./jobs')
+// store tasks at local settings
+const AppUserTasksDir = path.resolve(AppConfigUserDir,'./tasks')
 // store drivers at local settings
 const AppUserDriversDir = path.resolve(AppConfigUserDir,'./drivers')
 // app config file path on user disk
@@ -15,7 +15,7 @@ const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
 
 const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 
-const AppUserJobsDataPath = path.resolve(AppConfigUserDir,'job.data')
+const AppUserTasksDataPath = path.resolve(AppConfigUserDir,'task.data')
 
 const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
@@ -43,7 +43,7 @@ const LangList = ["en","cn"]
 
 const DocsLinks = {
     StorageHelpLink: pkg.homepage + "/storage",
-    JobHelpLink: pkg.homepage + "/job",
+    TaskHelpLink: pkg.homepage + "/task",
     TaskHelpLink: pkg.homepage + "/task",
     DriverHelpLink: pkg.homepage + "/driver"
 }
@@ -65,7 +65,7 @@ const AppTaskPathSet =  {
     info_log: 'log/info.log',
     err_log: 'log/err.log',
     pid: 'task.pid',
-    job_file: 'job'
+    task_file: 'task'
 }
 
 const DefaultEditorList = ['vim','vi','nano']
@@ -83,9 +83,9 @@ module.exports = {
     AppTaskPathSet,
     BugLink,
     AppInstalledLockFile,
-    AppUserJobsDir,
+    AppUserTasksDir,
     AppUserDriversDir,
-    AppUserJobsDataPath,
+    AppUserTasksDataPath,
     AppUserDriversDataPath,
     LangList,
     DefaultEditorList,

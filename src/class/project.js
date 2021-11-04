@@ -11,7 +11,7 @@ class Task extends Base {
     #event = null
     #driver = null
     #custom = null
-    #job = null
+    #task = null
     constructor(conf) {
         super()
         this.#setConf(conf)
@@ -51,7 +51,7 @@ class Task extends Base {
         return this.#start()
     }
     async reset(options){
-        await this.#job?.reset()
+        await this.#task?.reset()
         // delete log
         await this.#deleteLog()
         // task.pid set ''
@@ -63,7 +63,7 @@ class Task extends Base {
     }
     async exportData() {
         this.log.info('Prepare to export data')
-        if(this.conf.Job?.CustomStage?.ExportData){
+        if(this.conf.Task?.CustomStage?.ExportData){
             if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
@@ -106,7 +106,7 @@ class Task extends Base {
 
         await this.#loadBrowserDriver()
         // 判断任务类型，加载任务模块
-        await this.#loadJob()
+        await this.#loadTask()
         // 初始化 用户自定义操作
         await this.#loadCustomCode()
     }
@@ -116,11 +116,11 @@ class Task extends Base {
         await this.#setRunPid()
 
         await this.#driver?.init()
-        await this.#job?.init()
+        await this.#task?.init()
 
-        this.#job.setDriver(this.#driver)
-        this.#job.setCustom(this.#custom)
-        this.#job.setStorage(this.storage)
+        this.#task.setDriver(this.#driver)
+        this.#task.setCustom(this.#custom)
+        this.#task.setStorage(this.storage)
 
         // 初始化相关任务事件
         this.#loadEvent()
@@ -131,7 +131,7 @@ class Task extends Base {
         try {
             await this.#startPrepare()
             await this.#runBefore()
-            await this.#job.runTest.call(this)
+            await this.#task.runTest.call(this)
         } catch (e) {
             this.log.err(e)
         } finally {
@@ -139,13 +139,13 @@ class Task extends Base {
         }
     }
 
-    //interface of job
+    //interface of task
 
     async #runBefore() {
-        if (this.conf.Job?.CustomStage?.RunBefore) {
+        if (this.conf.Task?.CustomStage?.RunBefore) {
             await this.#custom?.runBefore.call(this)
         } else {
-            await this.#job?.runBefore()
+            await this.#task?.runBefore()
         }
         this.log.debug('Runbefore in task finished')
     }
@@ -155,7 +155,7 @@ class Task extends Base {
         try {
             await this.#startPrepare()
             await this.#runBefore()
-            await this.#job?.run()
+            await this.#task?.run()
             await this.#execCode()
         } catch (error) {
             this.log.err(`Task start error: ${error}`)
@@ -179,14 +179,14 @@ class Task extends Base {
     }
 
     async #clear() {
-        await this.#job?.clear()
+        await this.#task?.clear()
         await this.#driver?.clear()
         // delete pid file
         await this.#clearPid()
     }
 
     async #saveContext() {
-        await this.#job?.saveContext()
+        await this.#task?.saveContext()
     }
 
     // self method
@@ -254,18 +254,18 @@ class Task extends Base {
         this.#driver = new driverClass(this.conf)
     }
 
-    async #loadJob(){
-        if(!this.conf.main?.job){
+    async #loadTask(){
+        if(!this.conf.main?.task){
             throw Error(`Task not has a type, please set it.`)
         }
 
-        const jobName = this.conf.main?.job
+        const taskName = this.conf.main?.task
         try {
-            const jobClass = await this.core.getJob(jobName)
-            this.#job = new jobClass(this.conf)
-            this.#job.helper = this.helper
+            const taskClass = await this.core.getTask(taskName)
+            this.#task = new taskClass(this.conf)
+            this.#task.helper = this.helper
         } catch (error) {
-            throw Error(`can't load job [${jobName}] : ${error}`)
+            throw Error(`can't load task [${taskName}] : ${error}`)
         }
     }
 

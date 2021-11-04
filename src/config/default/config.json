@@ -10,7 +10,7 @@
             "RunScriptTimeout": 30000
         }
     },
-    "Job": {
+    "Task": {
         "Default": "empty"
     },
     "Storage":{

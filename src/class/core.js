@@ -59,8 +59,8 @@ class Core extends Base{
         return data
     }
 
-    async listJob(){
-        return Utils.readJson(this.constData.AppUserJobsDataPath)
+    async listTask(){
+        return Utils.readJson(this.constData.AppUserTasksDataPath)
     }
 
     async listDriver(){
@@ -79,9 +79,9 @@ class Core extends Base{
     }
 
     async createProject(name,job){
-        const jobListData = await this.listJob()
+        const jobListData = await this.listTask()
         if(!job) {
-            job = this.appSettings?.Job?.Default
+            job = this.appSettings?.Task?.Default
         }else{
             if(jobListData.find(e=>e.name==job)) {
 
@@ -237,11 +237,11 @@ class Core extends Base{
         return require(driverClassPath)
     }
 
-    async getJob(name){
-        if(!this.appSettings.Job.Default){
+    async getTask(name){
+        if(!this.appSettings.Task.Default){
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
-        const jobName = name || this.appSettings.Job.Default
+        const jobName = name || this.appSettings.Task.Default
         const jobClassPath = path.resolve(this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
         return require(jobClassPath)
     }
@@ -291,13 +291,13 @@ class Core extends Base{
         )
 
         // check job tpl exist
-        if(!await Utils.fileExist(path.join(this.constData.AppUserJobsDir,job,'job.json'))){
-            throw Error(this.getMsg(11))
+        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir,job,'job.json'))){
+            throw new Error(this.getMsg(11))
         }
 
         // copy job
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserJobsDir,job,`src/resource`),
+            path.resolve(this.constData.AppUserTasksDir,job,`src/resource`),
             path.resolve(Project.getPath(name,'root_dir'),'job')
         )
 
@@ -307,7 +307,7 @@ class Core extends Base{
         projectConfig.main.dataPath = Project.getPath(name,'data_dir')
         projectConfig.main.createTime = Utils.getTodayDate()
 
-        projectConfig.Job = require(path.resolve(this.constData.AppUserJobsDir,job,'src/config.json'))
+        projectConfig.Task = require(path.resolve(this.constData.AppUserTasksDir,job,'src/config.json'))
         await this.saveProjectConf(name, projectConfig)
     }
 

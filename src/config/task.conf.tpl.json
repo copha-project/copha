@@ -10,10 +10,10 @@
         "useProxy": false,
         "alwaysRestart": false,
         "driver": "",
-        "job": ""
+        "task": ""
     },
     "Driver": {},
-    "Job": {},
+    "Task": {},
     "Storage":{
         "Name": "file"
     },

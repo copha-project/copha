@@ -36,7 +36,7 @@
         "The method [ # ] has not yet been implemented.(10)"
     ],
     [
-        "The job template does not exist.(11)"
+        "The task template does not exist.(11)"
     ],
     [
         "Task name cannot be empty.(12)"
@@ -63,7 +63,7 @@
         "Task [ # ] ready to stop.(19)"
     ],
     [
-        "Job List:(20)",
+        "Task List:(20)",
         "任务列表:"
     ],
     [
@@ -77,7 +77,7 @@
         "Browser Driver List:(23)"
     ],
     [
-        "The job: [ # ] can't be use.(24)"
+        "The task: [ # ] can't be use.(24)"
     ],
     [
         "Type of # task [ # ] prepare to init.(25)"
