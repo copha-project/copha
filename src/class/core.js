@@ -78,22 +78,22 @@ class Core extends Base{
         return data
     }
 
-    async createProject(name,job){
-        const jobListData = await this.listTask()
-        if(!job) {
-            job = this.appSettings?.Task?.Default
+    async createProject(name,task){
+        const taskListData = await this.listTask()
+        if(!task) {
+            task = this.appSettings?.Task?.Default
         }else{
-            if(jobListData.find(e=>e.name==job)) {
+            if(taskListData.find(e=>e.name==task)) {
 
             }else{
-                throw new Error(this.getMsg(24, job))
+                throw new Error(this.getMsg(24, task))
             }
         }
 
-        this.log.info(this.getMsg(25, job, name))
+        this.log.info(this.getMsg(25, task, name))
         // 复制项目模板文件到新的任务目录
         try {
-            await this.#genTpl(name,job)
+            await this.#genTpl(name,task)
         } catch (e) {
             await this.deleteProject(name)
             throw e
@@ -241,9 +241,9 @@ class Core extends Base{
         if(!this.appSettings.Task.Default){
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
-        const jobName = name || this.appSettings.Task.Default
-        const jobClassPath = path.resolve(this.constData.AppConfigUserDir,`jobs/${jobName}/src`)
-        return require(jobClassPath)
+        const taskName = name || this.appSettings.Task.Default
+        const taskClassPath = path.resolve(this.constData.AppConfigUserDir,`tasks/${taskName}/src`)
+        return require(taskClassPath)
     }
 
     async startProjectByDaemon(name){
@@ -251,7 +251,7 @@ class Core extends Base{
         return Utils.createProcess(this.constData.AppExecutableCommandPath,['run',name])
     }
 
-    async #genTpl(name,job) {
+    async #genTpl(name, task) {
         const projectConfigPath = Project.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -290,24 +290,24 @@ class Core extends Base{
             Project.getPath(name,'custom_exec_code')
         )
 
-        // check job tpl exist
-        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir,job,'job.json'))){
+        // check task tpl exist
+        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir, task,'task.json'))){
             throw new Error(this.getMsg(11))
         }
 
-        // copy job
+        // copy task
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserTasksDir,job,`src/resource`),
-            path.resolve(Project.getPath(name,'root_dir'),'job')
+            path.resolve(this.constData.AppUserTasksDir, task ,`src/resource`),
+            path.resolve(Project.getPath(name,'root_dir'),'task')
         )
 
         const projectConfig = await this.getProjectConf(name)
         projectConfig.main.name = name
-        projectConfig.main.job = job
+        projectConfig.main.task = task
         projectConfig.main.dataPath = Project.getPath(name,'data_dir')
         projectConfig.main.createTime = Utils.getTodayDate()
 
-        projectConfig.Task = require(path.resolve(this.constData.AppUserTasksDir,job,'src/config.json'))
+        projectConfig.Task = require(path.resolve(this.constData.AppUserTasksDir, task,'src/config.json'))
         await this.saveProjectConf(name, projectConfig)
     }
 

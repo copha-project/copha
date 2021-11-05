@@ -32,7 +32,7 @@ const AppDefaultConfigDir = path.resolve(AppTplConfigPath, './default')
 const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
 
 const AppConfigTpl = {
-    configPath: path.join(AppTplConfigPath, 'task.conf.tpl.json'),
+    configPath: path.join(AppTplConfigPath, 'project.conf.tpl.json'),
     statePath: path.join(AppTplConfigPath, 'state.json'),
     custom_exec_code: path.join(AppTplConfigPath, 'custom_exec_code.js'),
     custom_export_data: path.join(AppTplConfigPath, 'custom_export_data.js'),
@@ -43,7 +43,7 @@ const LangList = ["en","cn"]
 
 const DocsLinks = {
     StorageHelpLink: pkg.homepage + "/storage",
-    TaskHelpLink: pkg.homepage + "/task",
+    ProjectHelpLink: pkg.homepage + "/project",
     TaskHelpLink: pkg.homepage + "/task",
     DriverHelpLink: pkg.homepage + "/driver"
 }
@@ -64,7 +64,7 @@ const AppTaskPathSet =  {
     state: 'state.json',
     info_log: 'log/info.log',
     err_log: 'log/err.log',
-    pid: 'task.pid',
+    pid: 'project.pid',
     task_file: 'task'
 }
 

@@ -3,8 +3,6 @@
         "name": "",
         "desc": "",
         "createTime": "",
-        "rootPath": "",
-        "configPath": "",
         "dataPath": "",
         "debug": false,
         "useProxy": false,

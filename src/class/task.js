@@ -1,6 +1,6 @@
 const path = require('path')
 const Base = require('./base')
-const Task = require('./task')
+const Project = require('./project')
 
 class Task extends Base {
     // task name
@@ -41,10 +41,10 @@ class Task extends Base {
     async clear(){}
 
     getPath(name){
-        return Task.getPath(this.taskName,name)
+        return Project.getPath(this.taskName, name)
     }
-    getTaskFile(name){
-        return path.join(this.getPath('task_file'),name)
+    getResource(name, type="json"){
+        return path.join(this.getPath('task_file'),`${name}.${type}`)
     }
     checkNeedStop(){
 
