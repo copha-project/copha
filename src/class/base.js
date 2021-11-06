@@ -1,5 +1,3 @@
-const path = require('path')
-const os = require('os')
 const commandExists = require('command-exists')
 const Utils = require('uni-utils')
 const Logger = require('./logger')

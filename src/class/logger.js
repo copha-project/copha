@@ -1,9 +1,7 @@
 const { spawn } = require('child_process')
-
 const winston = require('winston')
 const { isDebug } = require('../common.js')
 const { format, createLogger } = require('winston')
-const Utils = require('uni-utils')
 
 const LogBaseConfig = {
     levels: {

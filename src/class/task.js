@@ -10,18 +10,24 @@ class Task extends Base {
     #custom = null
     #taskConf = null
     #conf = null
-    constructor(taskConf) {
+    constructor() {
         super()
+    }
+
+    setConfig(taskConf){
         this.#name = taskConf.main.task
         this.#taskConf = taskConf
         this.#conf = taskConf?.Task || {}
     }
+
     setStorage(storage){
         this.#storage = storage
     }
+
     setDriver(driver){
         this.#driver = driver
     }
+    
     setCustom(custom){
         this.#custom = custom
     }

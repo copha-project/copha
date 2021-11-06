@@ -262,7 +262,8 @@ class Task extends Base {
         const taskName = this.conf.main?.task
         try {
             const taskClass = await this.core.getTask(taskName)
-            this.#task = new taskClass(this.conf)
+            this.#task = new taskClass()
+            this.#task.setConfig(this.conf)
             this.#task.helper = this.helper
         } catch (error) {
             throw Error(`can't load task [${taskName}] : ${error}`)
