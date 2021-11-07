@@ -4,53 +4,122 @@ description: ""
 show_home: true
 ---
 
-# Command list
+# Command Line tutorial
 
-Show help
+### 1. help
 ```
-copha
-// copha -h
-```
-
-List
-```
-copha list # show a list of task
-
-copha list -t type # show a list of task types that can be used
+copha -h
 ```
 
-Config
+### 2. list
 ```
-copha config  # edit global settings
-
-copha config [task_name] # edit task configure
-
-copha config [-o/d/c] # edit task other configure
-
+copha list [-options]
+-a show all data.
+-t [proejct,task,driver] show list with declare type.
 ```
 
-Create Task
+### 3. config
 ```
-copha create [task_name]
+copha config [project_name] [-options]
 
-copha create [task_name] [-t task_type] # create task with the specified type
+copha config # default edit global settings when no params
+
+copha config project_name # edit project configure
+
+-o # edit overwrite code
+
+-d # edit export data code
+
+-c # custom code 
 
 ```
 
-Run
+### 4. create
 ```
-copha run [task_name]
+copha create [project_name] [-options]
 
-copha run [task_name] -e # export data only
+copha create project_name # create project use name
 
-copha run [task_name] -c # run custom code only
+-t task # create project with the specified task type
 
-copha run [task_name] -t # run task test
-
-copha run [task_name] -d # run with daemon mode
 ```
 
-Api server
+### 5. run
 ```
+copha run [project_name] [-options]
+
+copha run project_name # run project
+
+-e # export data only
+
+-c # run custom code only
+
+-t # run project test
+
+-d # run with daemon mode
+```
+
+### 6. stop
+```
+copha stop [project_name] [-options]
+
+copha stop project_name # stop a running project
+
+-r # stop and restart project
+```
+
+### 7. reset
+```
+copha reset [project_name] [-options]
+
+copha reset project_name # reset a project state
+
+--hard # reset state and delete all data of project
+```
+
+### 8. delete
+```
+copha delete [project_name]
+
+copha delete project_name # delete a project
+```
+
+### 9. server
+```
+copha server [-options]
+
 copha server # launch a web server of api at local
+
+-p <7000> # specify the service port
+
+-H <127.0.0.1> # specify the address bound to the service
+
+-d # run service with deamon
+
+-s # stop API service
+```
+
+### 10. load
+```
+copha load <resource_name> [-options]
+
+-t [project,task,driver,storage] # declare the type of imported resource
+```
+
+### 11. export
+```
+copha export [project_name] [-options]
+
+copha export project_name # export project item
+
+-f # declare the absolute path of saved data
+
+-d # export with data dir
+```
+
+### 12. logs
+```
+copha logs [project_name] [-options]
+
+copha logs project_name # show project run logs
 ```
