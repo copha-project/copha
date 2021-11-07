@@ -7,10 +7,10 @@ const service = new Service()
 
 apiRouter
 .get('/',service.home)
+.get('/project', service.project)
 .get('/task', service.task)
-.get('/task/type', service.taskType)
 .get('/settings', service.settings)
-.get('/task/:name/config',service.taskConf)
+.get('/project/:name/config',service.projectConf)
 
 router.get('/',service.home)
 router.all('(.*)',service.notFind)

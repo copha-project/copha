@@ -19,14 +19,14 @@ class Service extends Base {
     settings(ctx){
         ctx.body = ctx.copha.appSettings
     }
+    async project(ctx){
+        ctx.body = await ctx.copha.listProject()
+    }
     async task(ctx){
         ctx.body = await ctx.copha.listTask()
     }
-    async taskType(ctx){
-        ctx.body = await ctx.copha.listType()
-    }
-    async taskConf(ctx){
-        ctx.body = await ctx.copha.getTaskConf(ctx.params.name)
+    async projectConf(ctx){
+        ctx.body = await ctx.copha.getProjectConf(ctx.params.name)
     }
     async notFind(ctx){
         ctx.status = 404
