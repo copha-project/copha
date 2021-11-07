@@ -246,7 +246,8 @@ class Task extends Base {
     async #initStorage() {
         const storageInfo = this.conf?.Storage
         const storageClass = await this.core.getStorage(storageInfo?.Name)
-        this.#storage = new storageClass(this.conf)
+        this.#storage = new storageClass()
+        this.#storage.setConfig(this.conf)
     }
 
     async #loadBrowserDriver() {

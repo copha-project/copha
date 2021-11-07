@@ -3,7 +3,7 @@ const Compose = require('koa-compose')
 const Base = require('./base')
 const Core = require('./core')
 const {CommonRouter, ApiRouter} = require('../server/router')
-const {errHandler, reqLog, notFind} = require('../server/mid')
+const {errHandler, reqLog } = require('../server/mid')
 
 class Server extends Base {
     constructor() {

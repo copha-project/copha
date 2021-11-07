@@ -2,19 +2,22 @@ const Base = require('./base')
 
 class Storage extends Base {
     db = null
-    #taskConf = null
+    #projectConfig = null
     #conf = null
-    constructor(taskConf) {
+    constructor() {
         super()
-        this.#taskConf = taskConf
-        this.#conf = taskConf?.Storage || {}
-        this.storageType = taskConf?.Storage?.Name
     }
     get conf(){
         return this.#conf
     }
-    get taskConf(){
-        return this.#taskConf
+    get projectConfig(){
+        return this.#projectConfig
+    }
+
+    setConfig(projectConfig){
+        this.#projectConfig = projectConfig
+        this.#conf = projectConfig?.Storage || {}
+        this.storageType = projectConfig?.Storage?.Name
     }
 
     async init(){}

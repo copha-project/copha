@@ -8,16 +8,16 @@ class Task extends Base {
     #storage = null
     #driver = null
     #custom = null
-    #taskConf = null
+    #projectConfig = null
     #conf = null
     constructor() {
         super()
     }
 
-    setConfig(taskConf){
-        this.#name = taskConf.main.task
-        this.#taskConf = taskConf
-        this.#conf = taskConf?.Task || {}
+    setConfig(projectConfig){
+        this.#name = projectConfig.main.task
+        this.#projectConfig = projectConfig
+        this.#conf = projectConfig?.Task || {}
     }
 
     setStorage(storage){
@@ -47,19 +47,21 @@ class Task extends Base {
     async clear(){}
 
     getPath(name){
-        return Project.getPath(this.taskName, name)
+        return Project.getPath(this.projectName, name)
     }
+
     getResource(name, type="json"){
         return path.join(this.getPath('task_file'),`${name}.${type}`)
     }
+
     checkNeedStop(){
 
     }
     get conf(){
         return this.#conf
     }
-    get taskConf(){
-        return this.#taskConf
+    get projectConfig(){
+        return this.#projectConfig
     }
     get custom(){
         return this.#custom
@@ -79,8 +81,8 @@ class Task extends Base {
     set storage(v){
         this.#storage = v
     }
-    get taskName(){
-        return this.#taskConf?.main.name
+    get projectName(){
+        return this.#projectConfig?.main.name
     }
     get name(){
         return this.#name

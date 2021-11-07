@@ -4,17 +4,23 @@ const Core = require('./core')
 
 class Driver extends Base {
     DriverModule = this
-    #conf = null
+    #projectConfig = null
+    #config = null
     #driver = this
-    constructor(conf){
+    constructor(){
         super()
-        this.#conf = conf
     }
+
+    setConfig(projectConfig){
+        this.#projectConfig = projectConfig
+        this.#config = projectConfig.Driver || {}
+    }
+
     static CONFIG = {}
     async init(){}
 
     async getProxy(){
-        return Core.getInstance().getProxy(this.#conf?.Proxy?.SelectIndex || 0)
+        return Core.getInstance().getProxy(this.#projectConfig?.Proxy?.SelectIndex || 0)
     }
 
     async clear(){}
@@ -29,7 +35,7 @@ class Driver extends Base {
     }
 
     get conf(){
-        return this.#conf
+        return this.#config
     }
     get driver(){
         return this.#driver
