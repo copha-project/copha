@@ -3,6 +3,7 @@ const Utils = require('uni-utils')
 const Logger = require('./logger')
 const Msgs = require("../resource/i18n.json")
 const ConstData = require("../resource/const")
+const {cp} = require('../common')
 
 class Base {
     static appSettings = null
@@ -39,15 +40,19 @@ class Base {
         if(await Utils.checkFile(this.constData.AppConfigUserDir)) return true
         this.log.info(this.getMsg(9))
         try {
-            await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+            if(process.platform === 'win32'){
+                await cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+            }else{
+                await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+            }
             await Utils.saveFile("", this.constData.AppInstalledLockFile)
-            return true
         } catch (e) {
-            await Utils.rm(this.constData.AppConfigUserDir)
-            this.log.err(this.getMsg(8,this.constData.BugLink))
-            this.log.err(e)
+            try{
+                await Utils.rm(this.constData.AppConfigUserDir)
+            }catch{}
+            console.log(e.message)
+            throw new Error(this.getMsg(8,this.constData.BugLink))
         }
-        return false
     }
 
     static getEnv(key){

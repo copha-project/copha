@@ -86,9 +86,22 @@ function zip (inPath,outPath) {
   // archive.glob('file*.txt', {cwd:__dirname});
 }
 
+function cp(source,destination){
+  const ncp = require('ncp').ncp
+  ncp.limit = 10
+  return new Promise((resolve,reject)=>{
+    ncp(source, destination, function (err) {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+     })
+  })
+}
 module.exports = {
   isDebug,
   homedir,
   zipDir,
-  isDev
+  isDev,
+  cp
 }
