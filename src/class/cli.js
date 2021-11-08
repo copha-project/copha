@@ -114,9 +114,9 @@ class Cli extends Base {
         }
         return Cli.core
     }
-
+    // xx = xx => (){} 形式的方法会忽略 装饰器方法
     @preCheck()
-    listInfo = async (options) => {
+    async listInfo(options){
         if(options.all) {
             this.listTask()
             this.listDriver()
