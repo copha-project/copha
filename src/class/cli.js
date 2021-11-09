@@ -38,8 +38,7 @@ class Cli extends Base {
             .description('list project info')
             .option('-a, --all','show all list data')
             .option('-t, --type <value>', 'show list info about project')
-            // .action(this.getMethod('listInfo'))
-            .action(this.listInfo)
+            .action(this.getMethod('listInfo'))
 
         program.command('create <name>')
             .description('create a new project')
