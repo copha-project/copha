@@ -1,13 +1,21 @@
+const path = require('path')
 const Cli = require('./class/cli')
 const { isDebug } = require('./common')
-
-module.exports = async () => {
+const loadPackageEnv = () => {
+    const packageDir = path.dirname(path.dirname(__dirname))
+    // module.paths.push(packageDir)
+    if(!process.env.NODE_PATH){
+        process.env.NODE_PATH = packageDir
+    }else{
+        throw new Error("NODE_PATH  has value!")
+    }
+    require('module').Module._initPaths()
+}
+const runCli = async () => {
+    loadPackageEnv()
     try {
         await Cli.installCheck()
-
-        let cli = Cli.getInstance()
-
-        await cli.createCommander()
+        await Cli.getInstance().createCommander()
     } catch (e) {
         if(isDebug){
             console.log(e)
@@ -15,4 +23,8 @@ module.exports = async () => {
             Cli.log.err(e.message)
         }
     }
+}
+
+module.exports = {
+    runCli
 }
