@@ -27,7 +27,7 @@ class Task extends Base {
     setDriver(driver){
         this.#driver = driver
     }
-    
+
     setCustom(custom){
         this.#custom = custom
     }
@@ -38,7 +38,7 @@ class Task extends Base {
     async loadState(){}
 
     async runBefore(){
-    
+
     }
     async run(){}
     async saveContext(){}

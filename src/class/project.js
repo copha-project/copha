@@ -252,7 +252,8 @@ class Project extends Base {
 
     async #loadBrowserDriver() {
         const driverClass = await this.core.getDriver(this.conf.main?.driver)
-        this.#driver = new driverClass(this.conf)
+        this.#driver = new driverClass()
+        this.#driver.setConfig(this.conf)
     }
 
     async #loadTask(){
