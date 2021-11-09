@@ -291,7 +291,7 @@ class Core extends Base{
         )
 
         // check task tpl exist
-        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir, task,'task.json'))){
+        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir, task,'package.json'))){
             throw new Error(this.getMsg(11))
         }
 
