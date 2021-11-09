@@ -3,7 +3,7 @@ const events = require('events')
 const Utils = require('uni-utils')
 const Base = require('./base')
 
-class Task extends Base {
+class Project extends Base {
     static instance = null
     #core = null
     #conf = null
@@ -21,7 +21,7 @@ class Task extends Base {
 
     static async getInstance(core,...args){
         if(!this.instance){
-            this.instance = new Task(...args)
+            this.instance = new Project(...args)
             this.instance.setCore(core)
             await this.instance.init()
         }
@@ -41,7 +41,7 @@ class Task extends Base {
     }
 
     getPath(key) {
-        return Task.getPath(this.#name,key)
+        return Project.getPath(this.#name,key)
     }
 
     async test(){
@@ -259,7 +259,6 @@ class Task extends Base {
         if(!this.conf.main?.task){
             throw Error(`Task not has a type, please set it.`)
         }
-
         const taskName = this.conf.main?.task
         try {
             const taskClass = await this.core.getTask(taskName)
@@ -347,4 +346,4 @@ class Task extends Base {
     }
 }
 
-module.exports = Task
+module.exports = Project
