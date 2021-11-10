@@ -3,7 +3,6 @@ const Base = require('./base')
 const Project = require('./project')
 
 class Task extends Base {
-    // task name
     #name = null
     #storage = null
     #driver = null

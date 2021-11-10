@@ -1,5 +1,6 @@
 const path = require('path')
 const events = require('events')
+const domain = require('domain')
 const Utils = require('uni-utils')
 const Base = require('./base')
 
@@ -152,13 +153,9 @@ class Project extends Base {
 
     async #start() {
         this.log.info(this.getMsg(7,this.#name))
-        try {
-            await this.#startPrepare()
-            await this.#runBefore()
-            await this.#task?.run()
-            await this.#execCode()
-        } catch (error) {
-            this.log.err(`Task start error: ${error}`)
+
+        const errHandle = async (error) => {
+            this.log.err(`Task start error: ${error.message}`)
             // 遇到错误退出程序，有可能的话重启进程
             await this.#saveContext()
             this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
@@ -167,8 +164,25 @@ class Project extends Base {
                 this.#restart()
             }
         }
-        await this.#clear()
-        this.log.info('Task finished')
+
+        const d = domain.create()
+
+        d.on('error',err=>{
+            errHandle(err)
+        })
+
+        d.run(async ()=>{
+            try {
+                await this.#startPrepare()
+                await this.#runBefore()
+                await this.#task?.run()
+                await this.#execCode()
+            } catch (error) {
+                errHandle(error)
+            }
+            await this.#clear()
+            this.log.info('Task finished')
+        })
     }
 
     async #execCode(){

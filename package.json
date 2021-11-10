@@ -1,6 +1,6 @@
 {
     "name": "copha",
-    "version": "0.0.1",
+    "version": "0.0.11",
     "description": "a general framework for running custom network tasks.",
     "keywords": [
         "copha",
@@ -29,7 +29,7 @@
         "dev": "cross-env COPHA_DEBUG=1 NODE_ENV=development ./node_modules/.bin/babel-node -- ./bin/dev.js",
         "start": "cross-env NODE_ENV=development ./node_modules/.bin/babel-node -- ./bin/dev.js",
         "test": "node ./test/index.js",
-        "build": "cross-env NODE_ENV=production ./node_modules/.bin/babel --verbose src/ -d dist -D",
+        "build": "cross-env NODE_ENV=production ./node_modules/.bin/babel --verbose --delete-dir-on-start src/ -d dist -D",
         "clear": "node ./dev/clear.js",
         "np": "npm version from-git --force --no-git-tag-version --no-commit-hooks --allow-same-version"
     },
