@@ -25,7 +25,7 @@ class Driver extends Base {
 
     async clear(){}
     async open(){
-        throw new Error('must implement open()')
+        throw new Error(this.getMsg(10,'must implement open()'))
     }
     async closeTab(){}
     async quit(){}
@@ -48,7 +48,7 @@ class Driver extends Base {
     getKey(name){}
     // k is css xpath id js ...
     buildSelector(k,v){
-        throw new Error('must implement buildSelector()')
+        throw new Error(this.getMsg(10,'must implement buildSelector()'))
     }
 
     async getTitle(){
@@ -60,10 +60,10 @@ class Driver extends Base {
     }
 
     async findElements(){
-        throw new Error('must implement findElements()')
+        throw new Error(this.getMsg(10,'findElements()'))
     }
     async findElement(){
-        throw new Error('must implement findElement()')
+        throw new Error(this.getMsg(10,'findElement()'))
     }
 
     // method not need change, they has be implement by above method
