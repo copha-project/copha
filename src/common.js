@@ -98,10 +98,29 @@ function cp(source,destination){
      })
   })
 }
+
+function domain(func, errHandle, cb){
+    const d = require('domain').create()
+
+    d.on('error', async error => {
+        await errHandle(error)
+    })
+    // 无法保证异步报错出现在cb之前
+    d.run(async ()=>{
+        try {
+            await func()
+        } catch (error) {
+            await errHandle(error)
+        }
+        d.exit()
+        cb && await cb()
+    })
+}
 module.exports = {
   isDebug,
   homedir,
   zipDir,
   isDev,
-  cp
+  cp,
+  domain
 }

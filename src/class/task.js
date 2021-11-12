@@ -36,9 +36,6 @@ class Task extends Base {
 
     async loadState(){}
 
-    async runBefore(){
-
-    }
     async run(){}
     async saveContext(){}
     async recover(){}
@@ -49,7 +46,7 @@ class Task extends Base {
         return Project.getPath(this.projectName, name)
     }
 
-    getResource(name, type="json"){
+    getResourcePath(name, type="json"){
         return path.join(this.getPath('task_file'),`${name}.${type}`)
     }
 

@@ -1,8 +1,8 @@
 const path = require('path')
 const events = require('events')
-const domain = require('domain')
 const Utils = require('uni-utils')
 const Base = require('./base')
+const Common = require('../common')
 
 class Project extends Base {
     static instance = null
@@ -129,67 +129,55 @@ class Project extends Base {
 
     async #test() {
         this.log.info(this.getMsg(6))
-        try {
-            await this.#startPrepare()
-            await this.#runBefore()
-            await this.#task.runTest.call(this)
-        } catch (e) {
-            this.log.err(e)
-        } finally {
-            await this.#clear()
-        }
-    }
 
-    //interface of task
-
-    async #runBefore() {
-        if (this.conf.Task?.CustomStage?.RunBefore) {
-            await this.#custom?.runBefore.call(this)
-        } else {
-            await this.#task?.runBefore()
-        }
-        this.log.debug('Runbefore in task finished')
+        Common.domain(
+            async ()=>{
+                await this.#startPrepare()
+                await this.#task?.runBefore()
+                await this.#task?.runTest()
+            }, async (error)=>{
+                this.log.err('test err:', error)
+            }, async ()=>{
+                await this.#clear()
+                this.log.info('Task test finished')
+            })
     }
 
     async #start() {
         this.log.info(this.getMsg(7,this.#name))
 
-        const errHandle = async (error) => {
-            this.log.err(`Task start error: ${error.message}`)
-            // 遇到错误退出程序，有可能的话重启进程
-            await this.#saveContext()
-            this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
-            if (this.conf?.main?.alwaysRestart) {
-                // must delay some time to restart
-                this.#restart()
-            }
-        }
-
-        const d = domain.create()
-
-        d.on('error',err=>{
-            errHandle(err)
-        })
-
-        d.run(async ()=>{
-            try {
+        Common.domain(
+            async ()=>{
                 await this.#startPrepare()
-                await this.#runBefore()
+                await this.#task?.runBefore()
                 await this.#task?.run()
                 await this.#execCode()
-            } catch (error) {
-                errHandle(error)
-            }
-            await this.#clear()
-            this.log.info('Task finished')
-        })
+            }, async (error)=>{
+                this.log.err(`Task start error: ${error.message}`)
+                // 遇到错误退出程序，有可能的话重启进程
+                await this.#saveContext()
+                this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
+                if (this.conf?.main?.alwaysRestart) {
+                    // must delay some time to restart
+                    this.#restart()
+                }
+            }, async ()=>{
+                await this.#clear()
+                this.log.info('Task finished')
+            })
     }
 
     async #execCode(){
         if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
         const customCode = require(this.getPath('custom_exec_code'))
-        return customCode?.call(this)
+        Common.domain(
+            async ()=>{
+                await customCode?.call(this)
+            }, async (error)=>{
+                console.log('execCode err:',error)
+            }, async ()=>{
+            })
     }
 
     async #clear() {
@@ -347,7 +335,9 @@ class Project extends Base {
             uni: Utils,
             getDedailList : async () => {
         		const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
-        		return files.filter(e => e.endsWith('.json'))
+        		return files
+                .filter(e => e.endsWith('.json'))
+                .map(e=>path.join(this.getPath('data_dir'),'detail',e))
         	},
         	getExportJsonData : async () => {
         		return Utils.readJson(path.join(this.getPath('data_dir'), 'export/export.json'))

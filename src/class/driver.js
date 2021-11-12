@@ -34,12 +34,18 @@ class Driver extends Base {
         return Utils.sleep(n)
     }
 
+    get projectConfig(){
+        return this.#projectConfig
+    }
+
     get conf(){
         return this.#config
     }
+
     get driver(){
         return this.#driver
     }
+
     set driver(v){
         this.#driver = v
     }
