@@ -9,7 +9,7 @@ class Base {
     static appSettings = null
     static constData = ConstData
     static log = new Logger()
-    static AppTaskPathSet = ConstData.AppTaskPathSet
+    static AppProjectPathSet = ConstData.AppProjectPathSet
     constructor() {
         this.#initValues()
         this.#initConfig()

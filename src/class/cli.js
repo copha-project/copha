@@ -306,17 +306,17 @@ class Cli extends Base {
         return this[name].bind(this)
     }
 
-    async openEditor(cmd, filePath){
-        if(!cmd){
+    async openEditor(editorBinName, filePath){
+        if(!editorBinName){
             throw new Error(this.getMsg(33, filePath))
         }
-        return new Promise((resolve,reject)=>{
+        return new Promise((resolve,reject) => {
             const dealErr = (error)=>{
                 this.log.debug(`open editor error: ${error?.message || error}`)
-                reject(new Error(this.getMsg(32, cmd)))
+                reject(new Error(this.getMsg(32, editorBinName)))
             }
             openInEditor.configure({
-                editor: cmd
+                editor: editorBinName
             }, dealErr)?.open(filePath)
             .then(resolve)
             .catch(dealErr)

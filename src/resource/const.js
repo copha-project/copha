@@ -21,18 +21,18 @@ const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../../')
 
-const AppTplConfigPath = path.resolve(AppProjectRootPath, `${Common.isDev ? 'src' : 'dist'}/config`)
+const AppConfigTplPath = path.resolve(AppProjectRootPath, `${Common.isDev ? 'src' : 'dist'}/resource/config`)
 
-const AppDefaultConfigDir = path.resolve(AppTplConfigPath, './default')
+const AppDefaultConfigDir = path.resolve(AppConfigTplPath, './default')
 
 const AppExecutableCommandPath = path.join(AppProjectRootPath, './bin/index.js')
 
 const AppConfigTpl = {
-    configPath: path.join(AppTplConfigPath, 'project.conf.tpl.json'),
-    statePath: path.join(AppTplConfigPath, 'state.json'),
-    custom_exec_code: path.join(AppTplConfigPath, 'custom_exec_code.js'),
-    custom_export_data: path.join(AppTplConfigPath, 'custom_export_data.js'),
-    custom_over_write_code: path.join(AppTplConfigPath, 'custom_over_write_code.js')
+    configPath: path.join(AppConfigTplPath, 'project.conf.tpl.json'),
+    statePath: path.join(AppConfigTplPath, 'state.json'),
+    custom_exec_code: path.join(AppConfigTplPath, 'custom_exec_code.js'),
+    custom_export_data: path.join(AppConfigTplPath, 'custom_export_data.js'),
+    custom_over_write_code: path.join(AppConfigTplPath, 'custom_over_write_code.js')
 }
 
 const LangList = ["en","cn"]
@@ -44,7 +44,7 @@ const DocsLinks = {
     DriverHelpLink: pkg.homepage + "/driver"
 }
 
-const AppTaskPathSet =  {
+const AppProjectPathSet =  {
     root_dir: '',
     config_dir: 'config',
     data_dir: 'data',
@@ -64,7 +64,7 @@ const AppTaskPathSet =  {
     task_file: 'task'
 }
 
-const DefaultEditorList = ['vim','vi','nano']
+const DefaultEditorList = ['code','vim','vi','nano']
 
 const BugLink = pkg?.bugs?.url
 
@@ -72,11 +72,11 @@ module.exports = {
     AppProjectRootPath,
     AppConfigUserDir,
     AppConfigUserPath,
-    AppTplConfigPath,
+    AppConfigTplPath,
     AppDefaultConfigDir,
     AppExecutableCommandPath,
     AppConfigTpl,
-    AppTaskPathSet,
+    AppProjectPathSet,
     BugLink,
     AppInstalledLockFile,
     AppUserTasksDir,
