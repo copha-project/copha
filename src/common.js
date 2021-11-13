@@ -116,11 +116,23 @@ function domain(func, errHandle, cb){
         cb && await cb()
     })
 }
+
+const loadPackageEnv = () => {
+  const packageDir = path.dirname(path.dirname(__dirname))
+  if(!process.env.NODE_PATH){
+      process.env.NODE_PATH = packageDir
+  }else{
+      throw new Error("NODE_PATH  has value!")
+  }
+  require('module').Module._initPaths()
+}
+
 module.exports = {
   isDebug,
+  isDev,
   homedir,
   zipDir,
-  isDev,
   cp,
-  domain
+  domain,
+  loadPackageEnv
 }
