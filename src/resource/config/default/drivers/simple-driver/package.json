@@ -1,0 +1,22 @@
+{
+  "name": "simple-driver",
+  "version": "1.0.0",
+  "description": "you can use it as a template to create your own browser driver class.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/copha-project/simple-driver.git"
+  },
+  "author": "aong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/copha-project/simple-driver/issues"
+  },
+  "homepage": "https://github.com/copha-project/simple-driver#readme"
+}
