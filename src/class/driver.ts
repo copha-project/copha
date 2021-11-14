@@ -4,23 +4,23 @@ const Core = require('./core')
 
 class Driver extends Base {
     DriverModule = this
-    #projectConfig = null
-    #config = null
-    #driver = this
+    private _projectConfig = null
+    private config = null
+    private _driver = this
     constructor(){
         super()
     }
 
     setConfig(projectConfig){
-        this.#projectConfig = projectConfig
-        this.#config = projectConfig.Driver || {}
+        this._projectConfig = projectConfig
+        this.config = projectConfig.Driver || {}
     }
 
     static CONFIG = {}
     async init(){}
 
     async getProxy(){
-        return Core.getInstance().getProxy(this.#projectConfig?.Proxy?.SelectIndex || 0)
+        return Core.getInstance().getProxy(this._projectConfig?.Proxy?.SelectIndex || 0)
     }
 
     async clear(){}
@@ -35,19 +35,19 @@ class Driver extends Base {
     }
 
     get projectConfig(){
-        return this.#projectConfig
+        return this._projectConfig
     }
 
     get conf(){
-        return this.#config
+        return this.config
     }
 
     get driver(){
-        return this.#driver
+        return this._driver
     }
 
     set driver(v){
-        this.#driver = v
+        this._driver = v
     }
 
     // return key of keyboard
@@ -65,10 +65,10 @@ class Driver extends Base {
         throw new Error(this.getMsg(10,'getCurrentUrl()'))
     }
 
-    async findElements(){
+    async findElements(selector){
         throw new Error(this.getMsg(10,'findElements()'))
     }
-    async findElement(){
+    async findElement(selector){
         throw new Error(this.getMsg(10,'findElement()'))
     }
 

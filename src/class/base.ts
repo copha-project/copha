@@ -10,24 +10,28 @@ class Base {
     static constData = ConstData
     static log = new Logger()
     static AppProjectPathSet = ConstData.AppProjectPathSet
+    RootPath: string
+    AppConfigPath: string
+    AppExecutableCommandPath: string
+    AppConfigTpl: string
     constructor() {
-        this.#initValues()
-        this.#initConfig()
+        this.initValues()
+        this.initConfig()
         Base.log.debug(this.getMsg(31, this.constructor.name))
     }
-    #initValues(){
+    private initValues(){
         this.RootPath = ConstData.AppProjectRootPath
         this.AppConfigPath = ConstData.AppConfigUserPath
         this.AppExecutableCommandPath = ConstData.AppExecutableCommandPath
         this.AppConfigTpl = ConstData.AppConfigTpl
     }
-    #initConfig(){
+    private initConfig(){
         if(!Base.appSettings){
-            Base.appSettings = this.#getAppSettings()
+            Base.appSettings = this.getAppSettings()
         }
     }
 
-    static getMsg(code, ...replaces){
+    static getMsg(code: number, ...replaces: string[]){
         const index = this.constData.LangList.indexOf(this.appSettings?.Language)
         let text = Msgs[code][index] || Msgs[code][0]
         for (let index = 0; index < replaces.length; index++) {
@@ -55,7 +59,7 @@ class Base {
         }
     }
 
-    static getEnv(key){
+    static getEnv(key: string){
         return process.env[key]
     }
 
@@ -71,16 +75,16 @@ class Base {
         return Base.log
     }
 
-    setLog(conf){
+    setLog(conf: object){
         Base.log = new Logger(conf)
     }
 
-    getMsg(...p){
-        return Base.getMsg(...p)
+    getMsg(index: number, ...args: string[]){
+        return Base.getMsg(index, ...args)
     }
 
-    getEnv(...args){
-        return Base.getEnv(...args)
+    getEnv(key: string){
+        return Base.getEnv(key)
     }
 
     async getEditor(){
@@ -94,7 +98,7 @@ class Base {
         return ''
     }
 
-    #getAppSettings(){
+    private getAppSettings(){
         if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
         const config = Utils.readJsonSync(ConstData.AppConfigUserPath)
         if (config?.DataPath === ""){
@@ -116,3 +120,5 @@ class Base {
 }
 
 module.exports = Base
+
+export {}

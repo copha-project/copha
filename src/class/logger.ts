@@ -1,6 +1,6 @@
 const { spawn } = require('child_process')
 const winston = require('winston')
-const { isDebug } = require('../common.js')
+const { isDebug } = require('../common')
 const { format, createLogger } = require('winston')
 
 const LogBaseConfig = {
@@ -31,7 +31,8 @@ const LogColorConfig = format.colorize({ all: true })
 
 
 class Logger {
-    constructor({infoPath,errPath}={}){
+    logger: any
+    constructor(logConf){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
             level: isDebug ? 'custom' : 'info',
@@ -39,9 +40,9 @@ class Logger {
             format: winston.format.json(),
             transports: []
         })
-        if(infoPath){
+        if(logConf?.infoPath){
             this.logger.add(new winston.transports.File({
-                filename: infoPath,
+                filename: logConf.infoPath,
                 level: 'info',
                 format: format.combine(
                     LogTimeConfig,
@@ -49,9 +50,9 @@ class Logger {
                 )
             }))
         }
-        if(errPath){
+        if(logConf?.errPath){
             this.logger.add(new winston.transports.File({
-                filename: errPath,
+                filename: logConf.errPath,
                 level: 'error',
                 format: format.combine(
                     LogTimeConfig,
@@ -96,3 +97,5 @@ class Logger {
 }
 
 module.exports = Logger
+
+export {}

@@ -3,21 +3,21 @@ const os = require('os')
 const Utils = require('uni-utils')
 const Project = require('./project')
 const Base = require('./base')
-const Common = require('../common.js')
+const Common = require('../common')
 const Proxy = require('./proxy')
 
 class Core extends Base{
-    static #instance = null
+    static instance = null
     constructor(){
         super()
     }
 
     static getInstance(){
-        if(!this.#instance){
-            this.#instance = new this()
-            this.#instance.proxy = Proxy.getInstance()
+        if(!this.instance){
+            this.instance = new this()
+            this.instance.proxy = Proxy.getInstance()
         }
-        return this.#instance
+        return this.instance
     }
 
     static async preCheck(){
@@ -42,7 +42,7 @@ class Core extends Base{
             stat = e.message
         }
         if(stat !== true){
-            throw new Error(stat)
+            throw new Error(stat.toString())
         }
     }
 
@@ -51,7 +51,7 @@ class Core extends Base{
     }
 
     // TODO: 现在是扫描数据目录获取project list，需要重构成把project信息记录在文件了里
-    async listProject (){
+    async listProject(): Promise<any[]> {
         const files = await Utils.readDir(this.appSettings.DataPath)
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
             return (await Utils.readJson(Project.getPath(name,'config'))).main
@@ -93,7 +93,7 @@ class Core extends Base{
         this.log.info(this.getMsg(25, task, name))
         // 复制项目模板文件到新的任务目录
         try {
-            await this.#genTpl(name,task)
+            await this.genTpl(name,task)
         } catch (e) {
             await this.deleteProject(name)
             throw e
@@ -184,7 +184,7 @@ class Core extends Base{
         this.log.info(`start export project ${name},; ${options.data}`)
         const project = await this.getProject(name)
         //todo support declare save path and exclude data dir
-        const exportFile = options?.savePath || this.#getExportFileName(project.name)
+        const exportFile = options?.savePath || this.getExportFileName(project.name)
         await Common.zipDir(project.getPath('root_dir'),exportFile)
         return exportFile
     }
@@ -251,7 +251,7 @@ class Core extends Base{
         return Utils.createProcess(this.constData.AppExecutableCommandPath,['run',name])
     }
 
-    async #genTpl(name, task) {
+    private async genTpl(name, task) {
         const projectConfigPath = Project.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -311,9 +311,11 @@ class Core extends Base{
         await this.saveProjectConf(name, projectConfig)
     }
 
-    #getExportFileName(name){
+    private getExportFileName(name){
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
     }
 }
 
 module.exports = Core
+
+export {}

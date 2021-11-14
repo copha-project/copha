@@ -94,7 +94,7 @@ function cp(source,destination){
       if (err) {
         return reject(err)
       }
-      resolve()
+      resolve(null)
      })
   })
 }
@@ -136,3 +136,5 @@ module.exports = {
   domain,
   loadPackageEnv
 }
+
+export {}

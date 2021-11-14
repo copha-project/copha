@@ -15,7 +15,7 @@ function preCheck() {
 }
 
 class Cli extends Base {
-    static #instance = null
+    static instance = null
     static core = null
     constructor() {
         super()
@@ -101,10 +101,10 @@ class Cli extends Base {
     }
 
     static getInstance() {
-        if(!this.#instance){
-            this.#instance = new this
+        if(!this.instance){
+            this.instance = new this
         }
-        return this.#instance
+        return this.instance
     }
 
     get core() {
@@ -326,3 +326,5 @@ class Cli extends Base {
 
 
 module.exports = Cli
+
+export {}

@@ -6,23 +6,23 @@ const Common = require('../common')
 
 class Project extends Base {
     static instance = null
-    #core = null
-    #conf = null
-    #storage = null
-    #event = null
-    #driver = null
-    #custom = null
-    #task = null
+    private _core = null
+    private _conf = null
+    private _storage = null
+    private _event = null
+    private _driver = null
+    private _custom = null
+    private task = null
     constructor(conf) {
         super()
-        this.#setConf(conf)
-        this.#initValue()
-        this.#initLogger()
+        this.setConf(conf)
+        this.initValue()
+        this.initLogger()
     }
 
-    static async getInstance(core,...args){
+    static async getInstance(core, projectConfig){
         if(!this.instance){
-            this.instance = new Project(...args)
+            this.instance = new Project(projectConfig)
             this.instance.setCore(core)
             await this.instance.init()
         }
@@ -38,28 +38,22 @@ class Project extends Base {
     //public 方法
 
     setCore(v){
-        this.#core = v
+        this._core = v
     }
 
     getPath(key) {
-        return Project.getPath(this.#name,key)
+        return Project.getPath(this.name,key)
     }
 
-    async test(){
-        return this.#test()
-    }
-    async start(){
-        return this.#start()
-    }
     async reset(options){
-        await this.#task?.reset()
+        await this.task?.reset()
         // delete log
-        await this.#deleteLog()
+        await this.deleteLog()
         // task.pid set ''
-        await this.#clearPid()
+        await this.clearPid()
         // delete data of cache
         if(options.hard){
-            await this.#deleteData()
+            await this.deleteData()
         }
     }
     async exportData() {
@@ -96,78 +90,76 @@ class Project extends Base {
         }
         this.log.info('data export success.')
     }
-    async execCode() {
-        return this.#execCode()
-    }
+
     //public end
 
     async init(){
         // 加载存储模块
-        await this.#initStorage()
+        await this.initStorage()
 
-        await this.#loadBrowserDriver()
+        await this.loadBrowserDriver()
         // 判断任务类型，加载任务模块
-        await this.#loadTask()
+        await this.loadTask()
         // 初始化 用户自定义操作
-        await this.#loadCustomCode()
+        await this.loadCustomCode()
     }
 
-    async #startPrepare(){
-        this.#setExitHandle()
-        await this.#setRunPid()
+    private async startPrepare(){
+        this.setExitHandle()
+        await this.setRunPid()
 
-        await this.#driver?.init()
-        await this.#task?.init()
+        await this.driver?.init()
+        await this.task?.init()
 
-        this.#task.setDriver(this.#driver)
-        this.#task.setCustom(this.#custom)
-        this.#task.setStorage(this.storage)
+        this.task.setDriver(this.driver)
+        this.task.setCustom(this.custom)
+        this.task.setStorage(this.storage)
 
         // 初始化相关任务事件
-        this.#loadEvent()
+        this.loadEvent()
     }
 
-    async #test() {
+    async test() {
         this.log.info(this.getMsg(6))
 
         Common.domain(
             async ()=>{
-                await this.#startPrepare()
-                await this.#task?.runBefore()
-                await this.#task?.runTest()
+                await this.startPrepare()
+                await this.task?.runBefore()
+                await this.task?.runTest()
             }, async (error)=>{
                 this.log.err('test err:', error)
             }, async ()=>{
-                await this.#clear()
+                await this.clear()
                 this.log.info('Task test finished')
             })
     }
 
-    async #start() {
-        this.log.info(this.getMsg(7,this.#name))
+    async start() {
+        this.log.info(this.getMsg(7,this.name))
 
         Common.domain(
             async ()=>{
-                await this.#startPrepare()
-                await this.#task?.runBefore()
-                await this.#task?.run()
-                await this.#execCode()
+                await this.startPrepare()
+                await this.task?.runBefore()
+                await this.task?.run()
+                await this.execCode()
             }, async (error)=>{
                 this.log.err(`Task start error: ${error.message}`)
                 // 遇到错误退出程序，有可能的话重启进程
-                await this.#saveContext()
+                await this.saveContext()
                 this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
                 if (this.conf?.main?.alwaysRestart) {
                     // must delay some time to restart
-                    this.#restart()
+                    this.restart()
                 }
             }, async ()=>{
-                await this.#clear()
+                await this.clear()
                 this.log.info('Task finished')
             })
     }
 
-    async #execCode(){
+    async execCode(){
         if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
         const customCode = require(this.getPath('custom_exec_code'))
@@ -180,37 +172,37 @@ class Project extends Base {
             })
     }
 
-    async #clear() {
-        await this.#task?.clear()
-        await this.#driver?.clear()
+    private async clear() {
+        await this.task?.clear()
+        await this.driver?.clear()
         // delete pid file
-        await this.#clearPid()
+        await this.clearPid()
     }
 
-    async #saveContext() {
-        await this.#task?.saveContext()
+    private async saveContext() {
+        await this.task?.saveContext()
     }
 
     // self method
-    async #setRunPid(){
+    private async setRunPid(){
         this.log.info(`Task run pid on : ${process.pid}`)
         return Utils.saveFile(`${process.pid}`,this.getPath('pid'))
     }
 
-    async #deleteLog() {
+    private async deleteLog() {
         await Utils.rm(this.getPath('info_log'))
         await Utils.rm(this.getPath('err_log'))
     }
 
-    async #clearPid() {
+    private async clearPid() {
         return Utils.saveFile('', this.getPath('pid'))
     }
 
-    async #deleteData() {
+    private async deleteData() {
         await Utils.rm(`${this.getPath('data_dir')}/detail/*`)
     }
 
-    #setExitHandle() {
+    private setExitHandle() {
         this.log.debug('set setExitHandle()')
         let exitCount = 0 // 防抖，多次按退出
         const exitScript = async (...args) => {
@@ -222,7 +214,7 @@ class Project extends Base {
                 this.vNeedStop = true
             }else{
                 this.log.warn('强制关闭!')
-                await this.#clear()
+                await this.clear()
                 process.exit()
             }
         }
@@ -231,12 +223,12 @@ class Project extends Base {
         // process.on('SIGHUP',exitScript)
     }
 
-    #initValue() {
+    private initValue() {
         // TODO: 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
         this.vNeedStop = false
     }
 
-    #initLogger(){
+    private initLogger(){
         if (this.conf){
             this.setLog({
                 'infoPath': this.getPath('info_log'),
@@ -245,89 +237,89 @@ class Project extends Base {
         }
     }
 
-    async #initStorage() {
+    private async initStorage() {
         const storageInfo = this.conf?.Storage
-        const storageClass = await this.core.getStorage(storageInfo?.Name)
-        this.#storage = new storageClass()
-        this.#storage.setConfig(this.conf)
+        const storageClass = await this._core.getStorage(storageInfo?.Name)
+        this._storage = new storageClass()
+        this.storage.setConfig(this.conf)
     }
 
-    async #loadBrowserDriver() {
-        const driverClass = await this.core.getDriver(this.conf.main?.driver)
-        this.#driver = new driverClass()
-        this.#driver.setConfig(this.conf)
+    private async loadBrowserDriver() {
+        const driverClass = await this._core.getDriver(this.conf.main?.driver)
+        this._driver = new driverClass()
+        this.driver.setConfig(this.conf)
     }
 
-    async #loadTask(){
+    private async loadTask(){
         if(!this.conf.main?.task){
             throw Error(`Task not has a type, please set it.`)
         }
         const taskName = this.conf.main?.task
         try {
-            const taskClass = await this.core.getTask(taskName)
-            this.#task = new taskClass()
-            this.#task.setConfig(this.conf)
-            this.#task.helper = this.helper
+            const taskClass = await this._core.getTask(taskName)
+            this.task = new taskClass()
+            this.task.setConfig(this.conf)
+            this.task.helper = this.helper
         } catch (error) {
             throw Error(`can't load task [${taskName}] : ${error}`)
         }
     }
 
-    #loadCustomCode() {
+    private loadCustomCode() {
         try {
-            this.#custom =  require(this.getPath('custom_over_write_code'))
+            this._custom =  require(this.getPath('custom_over_write_code'))
         } catch (e) {
             throw new Error(`loadCustomCode error : ${e}`)
         }
     }
 
-    #loadEvent(){
-        this.#event = new events.EventEmitter()
-        this.#event.on('taskCanStop',async ()=>{
+    private loadEvent(){
+        this._event = new events.EventEmitter()
+        this._event.on('taskCanStop',async ()=>{
             this.log.warn('Ready to stop process, plaese waitting')
-            await this.#saveContext()
+            await this.saveContext()
             process.exit(0)
         })
     }
 
-    async #restart(){
-        const count = 0
-        const waitSecond = 2 ** (parseInt(count) || 1)
+    private async restart(){
+        const count: number = 0
+        const waitSecond = 2 ** (count || 1)
         this.log.warn(`-----wait ${waitSecond}s Restart Process -----`)
         await Utils.sleep(waitSecond * 1000)
         // Utils.restartProcess()
     }
 
-    #setConf(v){
-        this.#conf = v
+    private setConf(v){
+        this._conf = v
     }
 
     get conf(){
-        return this.#conf
+        return this._conf
     }
 
     get storage(){
-        return this.#storage
+        return this._storage
     }
 
     get driver(){
-        return this.#driver
+        return this._driver
+    }
+
+    get custom(){
+        return this._custom
     }
 
     get driver_(){
-        return this.#driver?.driver
+        return this.driver?.driver
     }
 
     get Driver(){
-        return this.#driver?.DriverModule
-    }
-
-    get #name(){
-        return this.conf?.main?.name
+        return this.driver?.DriverModule
     }
 
     get name(){
-        return this.#name
+        return this.conf?.main?.name
     }
 
     get helper(){
@@ -347,8 +339,10 @@ class Project extends Base {
     }
 
     get core(){
-        return this.#core
+        return this._core
     }
 }
 
 module.exports = Project
+
+export {}
