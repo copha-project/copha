@@ -135,5 +135,8 @@
     ],
     [
         "no projects here, you can create a project use `copha create -h`.(40)"
+    ],
+    [
+        "not find delare proxy info.(41)"
     ]
 ]
