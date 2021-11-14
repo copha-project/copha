@@ -15,6 +15,9 @@ const runCli = async () => {
     }
 }
 
-module.exports = {
-    runCli
-}
+exports.runCli = runCli
+exports.Core = require('./class/core')
+exports.Project = require('./class/project')
+exports.Task = require('./class/task')
+exports.Driver = require('./class/driver')
+exports.Storage = require('./class/storage')
