@@ -2,7 +2,7 @@ const commandExists = require('command-exists')
 const Utils = require('uni-utils')
 const Logger = require('./logger')
 const Msgs = require("../resource/i18n.json")
-const ConstData = require("../resource/const")
+const ConstData = require("../const")
 const {cp} = require('../common')
 
 class Base {
