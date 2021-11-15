@@ -2,21 +2,21 @@ const Base = require('./base')
 
 class Storage extends Base {
     db = null
-    #projectConfig = null
-    #conf = null
+    private _projectConfig = null
+    private _config = null
     constructor() {
         super()
     }
     get conf(){
-        return this.#conf
+        return this._config
     }
     get projectConfig(){
-        return this.#projectConfig
+        return this._projectConfig
     }
 
     setConfig(projectConfig){
-        this.#projectConfig = projectConfig
-        this.#conf = projectConfig?.Storage || {}
+        this._projectConfig = projectConfig
+        this._config = projectConfig?.Storage || {}
         this.storageType = projectConfig?.Storage?.Name
     }
 
@@ -36,3 +36,5 @@ class Storage extends Base {
 }
 
 module.exports = Storage
+
+export {}

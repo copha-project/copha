@@ -36,3 +36,5 @@ class Service extends Base {
 }
 
 module.exports = Service
+
+export {}

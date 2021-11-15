@@ -28,3 +28,5 @@ class Server extends Base {
 }
 
 module.exports = Server
+
+export {}

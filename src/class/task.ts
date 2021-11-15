@@ -3,32 +3,32 @@ const Base = require('./base')
 const Project = require('./project')
 
 class Task extends Base {
-    #name = null
-    #storage = null
-    #driver = null
-    #custom = null
-    #projectConfig = null
-    #conf = null
+    private _name = null
+    private _storage = null
+    private _driver = null
+    private _custom = null
+    private _projectConfig = null
+    private _conf = null
     constructor() {
         super()
     }
 
     setConfig(projectConfig){
-        this.#name = projectConfig.main.task
-        this.#projectConfig = projectConfig
-        this.#conf = projectConfig?.Task || {}
+        this._name = projectConfig.main.task
+        this._projectConfig = projectConfig
+        this._conf = projectConfig?.Task || {}
     }
 
     setStorage(storage){
-        this.#storage = storage
+        this._storage = storage
     }
 
     setDriver(driver){
-        this.#driver = driver
+        this._driver = driver
     }
 
     setCustom(custom){
-        this.#custom = custom
+        this._custom = custom
     }
 
     async init(){}
@@ -54,35 +54,34 @@ class Task extends Base {
 
     }
     get conf(){
-        return this.#conf
+        return this._conf
     }
+
     get projectConfig(){
-        return this.#projectConfig
+        return this._projectConfig
     }
+
     get custom(){
-        return this.#custom
+        return this._custom
     }
-    set custom(v){
-        this.#custom = v
-    }
+ 
     get driver(){
-        return this.#driver
+        return this._driver
     }
-    set driver(v){
-        this.#driver = v
-    }
+ 
     get storage(){
-        return this.#storage
+        return this._storage
     }
-    set storage(v){
-        this.#storage = v
-    }
+
     get projectName(){
-        return this.#projectConfig?.main.name
+        return this._projectConfig?.main.name
     }
+
     get name(){
-        return this.#name
+        return this._name
     }
 }
 
 module.exports = Task
+
+export {}
