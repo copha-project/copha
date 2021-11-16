@@ -3,8 +3,6 @@
 
 ## Copha 是一个可以运行自定义网络任务的通用框架
 
-> ⚠️ [使用警告](https://copha.net/usage_warning)
-
 > 可使用其他语言阅读: [English](./README.md) ｜ 简体中文
 
 ## 使用指南
@@ -26,10 +24,8 @@ copha -h
 git clone https://github.com/copha-project/copha
 cd copha
 git submodule update --init
-yarn install
-ln -s "$PWD" "$HOME/.node_modules/copha" # for work with require('copha')
-. dev.env.sh
-copha
+yarn
+yarn start
 ```
 
 ## 相关资源链接

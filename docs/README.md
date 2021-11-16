@@ -3,8 +3,6 @@
 
 ## Copha is a general framework for running custom network tasks.
 
-> ⚠️ [Usage Warning](https://copha.net/usage_warning)
-
 > Read this in other languages: English ｜ [简体中文](./README_zh.md)
 
 ## Getting Started
@@ -26,10 +24,8 @@ more help about command line [copha.net/cli](https://copha.net/cli)
 git clone https://github.com/copha-project/copha
 cd copha
 git submodule update --init
-yarn install
-ln -s "$PWD" "$HOME/.node_modules/copha" # for work with require('copha')
-. dev.env.sh
-copha
+yarn
+yarn start
 ```
 
 ## Resources
