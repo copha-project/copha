@@ -15,11 +15,9 @@ function preCheck() {
 }
 
 class Cli extends Base {
-    static instance = null
-    static core = null
-    constructor() {
-        super()
-    }
+    private static instance: Cli
+    private _core = null
+    constructor() { super() }
 
     createCommander() {
         const program = new commander.Command()
@@ -78,7 +76,7 @@ class Cli extends Base {
         program.command('server')
             .description('launch a api server')
             .option('-H, --host', 'server address, default use 127.0.0.1')
-            .option('-p, --port', 'server port, default use 7000')
+            .option('-p, --port <port>', 'server port, default use 7000')
             .option('-d, --daemon', 'run with daemon')
             .action(this.getMethod('server'))
 
@@ -102,17 +100,18 @@ class Cli extends Base {
 
     static getInstance() {
         if(!this.instance){
-            this.instance = new this
+            this.instance = new Cli
         }
         return this.instance
     }
 
     get core() {
-        if (!Cli.core) {
-            Cli.core = Core.getInstance()
+        if (!this._core) {
+            this._core = Core.getInstance()
         }
-        return Cli.core
+        return this._core
     }
+    
     // xx = xx => (){} 形式的方法会忽略 装饰器方法
     @preCheck()
     async listInfo(options){
@@ -290,7 +289,7 @@ class Cli extends Base {
     @preCheck()
     async server(options) {
         const Server = require('./server')
-        const server = new Server()
+        const server = Server.getInstance(options)
         server.launch()
     }
 
@@ -302,8 +301,8 @@ class Cli extends Base {
     }
 
     // get method bind this
-    getMethod(name){
-        return this[name].bind(this)
+    getMethod(method){
+        return this[method].bind(this)
     }
 
     async openEditor(editorBinName, filePath){
