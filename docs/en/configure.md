@@ -2,6 +2,7 @@
 title: "Configure"
 description: "Global And Project Configure"
 show_home: true
+permalink: /configure
 ---
 
 # Configure Guidance

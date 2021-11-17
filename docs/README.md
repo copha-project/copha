@@ -3,7 +3,7 @@
 
 ## Copha is a general framework for running custom network tasks.
 
-> Read this in other languages: English ｜ [简体中文](./README_zh.md)
+> Read this in other languages: English ｜ [简体中文](./zh/)
 
 ## Getting Started
 ### 1. Installation
@@ -30,10 +30,10 @@ yarn start
 
 ## Resources
 * [Home Page](https://copha.net)
-* [API Documents](https://copha.net/api)
-* [Configure](https://copha.net/configure)
-* [Environment](https://copha.net/env)
-* [Examples](https://copha.net/examples)
+* [API Documents](./en/api)
+* [Configure](./en/configure)
+* [Environment](./en/env)
+* [Example](./en/example)
 
 
 ## License

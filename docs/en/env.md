@@ -2,6 +2,7 @@
 title: "Copha Environment"
 description: ""
 show_home: true
+permalink: /env
 ---
 
 # Environment List
