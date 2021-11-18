@@ -1,5 +1,6 @@
 ---
 title: "Copha"
+permalink: /zh
 ---
 
 
