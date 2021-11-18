@@ -11,14 +11,14 @@ class Proxy extends Base {
 			this.log.debug('new proxy instance')
             this.instance = new this
         }else{
-			this.log.warn('reuse config')
+			this.log.warn('reuse proxy config')
 		}
         return this.instance
     }
 
     getProxy(index: number){
         if(this.appSettings.Proxy?.List?.length < index){
-            throw new Error('not find delare proxy info')
+            throw new Error(this.getMsg(41))
         }
         return this.appSettings.Proxy.List[index]
     }

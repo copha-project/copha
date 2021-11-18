@@ -1,5 +1,5 @@
 ---
-title: "Command line tutorial"
+title: "命令行使用说明"
 description: ""
 show_home: true
 ---
@@ -30,7 +30,7 @@ copha config project_name # edit project configure
 
 -d # edit export data code
 
--c # custom code 
+-c # custom code
 
 ```
 

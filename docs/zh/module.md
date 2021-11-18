@@ -1,7 +1,7 @@
 ---
-title: "Copha examples"
+title: "Copha Module"
 description: ""
 show_home: true
 ---
 
-# Examples
+# Module
