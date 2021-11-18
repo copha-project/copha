@@ -1,5 +1,0 @@
-exports.Core = require('./dist/class/core')
-exports.Project = require('./dist/class/project')
-exports.Task = require('./dist/class/task')
-exports.Driver = require('./dist/class/driver')
-exports.Storage = require('./dist/class/storage')

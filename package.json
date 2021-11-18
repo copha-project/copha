@@ -23,17 +23,17 @@
         "email": "contacts@copha.net"
     },
     "bin": {
-        "copha": "./bin/index.js"
+        "copha": "./dist/bin/index.js"
     },
     "scripts": {
-        "dev": "cross-env COPHA_DEBUG=1 NODE_ENV=development ./node_modules/.bin/babel-node -- ./bin/dev.js",
-        "start": "cross-env NODE_ENV=development ./node_modules/.bin/babel-node -- ./bin/dev.js",
+        "dev": "cross-env COPHA_DEBUG=1 NODE_ENV=development ./node_modules/.bin/ts-node -- ./src/bin/dev.ts",
+        "start": "cross-env NODE_ENV=development ./node_modules/.bin/ts-node -- ./src/bin/dev.ts",
         "test": "node ./test/index.js",
-        "build": "cross-env NODE_ENV=production ./node_modules/.bin/babel --verbose --delete-dir-on-start src/ -d dist -D",
+        "build": "./node_modules/.bin/gulp",
         "clear": "node ./dev/clear.js",
         "np": "npm version from-git --force --no-git-tag-version --no-commit-hooks --allow-same-version"
     },
-    "main": "./index.js",
+    "main": "./dist/index.js",
     "author": "aong",
     "license": "MIT",
     "os": [
@@ -42,13 +42,13 @@
         "win32"
     ],
     "devDependencies": {
-        "@babel/cli": "^7.14.8",
-        "@babel/core": "^7.15.0",
-        "@babel/node": "^7.14.9",
-        "@babel/plugin-proposal-decorators": "^7.14.5",
-        "@babel/preset-env": "^7.15.0",
         "cross-env": "^7.0.3",
-        "typescript": "^4.4.2"
+        "del": "^6.0.0",
+        "gulp": "^4.0.2",
+        "gulp-typescript": "^6.0.0-alpha.1",
+        "merge2": "^1.4.1",
+        "ts-node": "^10.4.0",
+        "typescript": "^4.4.4"
     },
     "dependencies": {
         "archiver": "^5.3.0",

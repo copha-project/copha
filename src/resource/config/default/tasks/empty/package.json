@@ -1,0 +1,9 @@
+{
+  "name": "copha-empty-task",
+  "version": "0.0.1",
+  "description": "copha default empty task",
+  "main": "index.js",
+  "repository": "https://github.com/copha-project/copha-empty-task.git",
+  "author": "yxwzaxns <yxwzaxns@gmail.com>",
+  "license": "MIT"
+}
