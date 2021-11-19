@@ -1,2 +1,0 @@
-# copha storage template
-

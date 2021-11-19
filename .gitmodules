@@ -1,0 +1,9 @@
+[submodule "src/resource/config/default/drivers/simple-driver"]
+	path = src/resource/config/default/drivers/simple-driver
+	url = https://github.com/copha-project/simple-driver
+[submodule "src/resource/config/default/storages/file"]
+	path = src/resource/config/default/storages/file
+	url = https://github.com/copha-project/file-storage
+[submodule "src/resource/config/default/tasks/empty"]
+	path = src/resource/config/default/tasks/empty
+	url = https://github.com/copha-project/copha-empty-task
