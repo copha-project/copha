@@ -17,7 +17,7 @@ const AppUserTasksDataPath = path.resolve(AppConfigUserDir,'task.data')
 
 const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
 // app rootPath
-const AppProjectRootPath = path.resolve(__dirname, '../../')
+const AppProjectRootPath = path.resolve(__dirname, '../')
 
 const AppConfigTplPath = path.resolve(AppProjectRootPath, `${Common.isDev ? 'src' : 'dist'}/resource/config`)
 
