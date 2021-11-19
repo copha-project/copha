@@ -1,6 +1,6 @@
 {
     "name": "copha",
-    "version": "0.0.12",
+    "version": "0.0.15",
     "description": "a general framework for running custom network tasks.",
     "keywords": [
         "copha",
@@ -31,7 +31,8 @@
         "test": "node ./test/index.js",
         "build": "./node_modules/.bin/gulp",
         "clear": "node ./dev/clear.js",
-        "np": "npm version from-git --force --no-git-tag-version --no-commit-hooks --allow-same-version"
+        "np": "npm version from-git --force --no-git-tag-version --no-commit-hooks --allow-same-version",
+        "update-submodule": "git submodule update --remote --merge"
     },
     "main": "./dist/index.js",
     "author": "aong",
