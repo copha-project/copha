@@ -84,4 +84,6 @@ class Task extends Base {
 
 module.exports = Task
 
-export {}
+export {
+    Task
+}

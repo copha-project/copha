@@ -326,4 +326,6 @@ class Cli extends Base {
 
 module.exports = Cli
 
-export {}
+export {
+    Cli
+}

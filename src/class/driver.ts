@@ -108,3 +108,7 @@ class Driver extends Base {
 }
 
 module.exports = Driver
+
+export {
+    Driver
+}

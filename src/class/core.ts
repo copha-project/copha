@@ -6,6 +6,11 @@ const Base = require('./base')
 const Common = require('../common')
 const Proxy = require('./proxy')
 
+interface Task {
+    name: string
+    var: string
+}
+
 class Core extends Base{
     static instance = null
     constructor(){
@@ -59,7 +64,7 @@ class Core extends Base{
         return data
     }
 
-    async listTask(){
+    async listTask(): Promise<Task[]> {
         return Utils.readJson(this.constData.AppUserTasksDataPath)
     }
 
@@ -78,19 +83,19 @@ class Core extends Base{
         return data
     }
 
-    async createProject(name,task){
+    async createProject(name, task){
         const taskListData = await this.listTask()
         if(!task) {
             task = this.appSettings?.Task?.Default
         }else{
-            if(taskListData.find(e=>e.name==task)) {
+            if(taskListData.find(e => e.name === task)) {
 
             }else{
                 throw new Error(this.getMsg(24, task))
             }
         }
 
-        this.log.info(this.getMsg(25, task, name))
+        this.log.info(this.getMsg(25, name))
         // 复制项目模板文件到新的任务目录
         try {
             await this.genTpl(name,task)
@@ -318,4 +323,6 @@ class Core extends Base{
 
 module.exports = Core
 
-export {}
+export {
+    Core
+}

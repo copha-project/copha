@@ -345,4 +345,6 @@ class Project extends Base {
 
 module.exports = Project
 
-export {}
+export {
+    Project
+}

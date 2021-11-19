@@ -26,4 +26,6 @@ class Proxy extends Base {
 
 module.exports = Proxy
 
-export {}
+export {
+    Proxy
+}

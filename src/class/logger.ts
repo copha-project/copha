@@ -98,4 +98,6 @@ class Logger {
 
 module.exports = Logger
 
-export {}
+export {
+    Logger
+}

@@ -37,4 +37,6 @@ class Storage extends Base {
 
 module.exports = Storage
 
-export {}
+export {
+    Storage
+}

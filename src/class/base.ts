@@ -121,4 +121,6 @@ class Base {
 
 module.exports = Base
 
-export {}
+export {
+    Base
+}
