@@ -1,10 +1,10 @@
 ---
-title: "命令行使用说明"
+title: "Copha - Command Line tutorial"
 description: ""
 show_home: true
 ---
 
-# Command Line tutorial
+# 命令行使用说明（Command Line tutorial）
 
 ### 1. help
 ```

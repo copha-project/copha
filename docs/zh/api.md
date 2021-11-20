@@ -1,10 +1,10 @@
 ---
-title: "Copha API"
+title: "Copha - API"
 description: ""
 show_home: true
 ---
 
-## API 列表
+## 接口（API）
 
 * 系统级接口
 	* 系统配置信息操作

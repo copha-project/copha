@@ -1,7 +1,7 @@
 ---
-title: "Demo 演示"
+title: "Copha - Example"
 description: ""
 show_home: true
 ---
 
-# Examples
+# 演示案例

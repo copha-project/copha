@@ -1,6 +1,6 @@
 ---
-title: "Project"
-description: "Project Docs"
+title: "Copha - Project"
+description: ""
 show_home: true
 ---
 

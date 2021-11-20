@@ -1,10 +1,10 @@
 ---
-title: "配置项"
-description: "全局和项目的配置说明"
+title: "Copha - Configure"
+description: ""
 show_home: true
 ---
 
-# Configure Guidance
+# 全局和项目的配置说明
 
 ## Global Settings
 ### 1. Location

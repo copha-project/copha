@@ -1,10 +1,10 @@
 ---
-title: "环境变量说明"
+title: "Copha - Env"
 description: ""
 show_home: true
 ---
 
-# Environment List
+# 环境变量说明
 
 - COPHA_DATA_PATH
 

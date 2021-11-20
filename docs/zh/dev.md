@@ -1,10 +1,10 @@
 ---
-title: "Development"
-description: "Development docs"
+title: "Copha - Development"
+description: ""
 show_home: true
 ---
 
-# 开发指导
+# 开发指导（Development）
 copha 自身只包含了基础框架功能，它在设计上把任务，驱动，存储等功能以模块的形式解耦，一方面使用者可以灵活的选择需要的功能模块加载使用，另一方面开发人员也能方便定制开发专属功能模块。
 
 对于每个功能模块，copha 提供了对应的基础构建模板，你可以克隆或者下载对应模版在下面列表中，在此基础上实现特定功能。模块由多个文件组合而成，并且每个模块包都符合 npm 包格式标准（因此也可以使用 npm init 创建模块）。
