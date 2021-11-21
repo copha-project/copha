@@ -1,22 +1,27 @@
 # Copha
+![npm](https://img.shields.io/npm/v/copha)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/copha-project/copha/npm%20package%20publish)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha?ref=badge_shield)
 
 ## Copha is a general framework for running custom network tasks.
 
-> Read this in other languages: English ｜ [简体中文](./zh/)
+> Read this in other languages: English ｜ [简体中文](https://copha.net/zh/)
 
 ## Getting Started
-### 1. Installation
+- Installation
 ```
 npm i -g copha
 # or "yarn global add copha"
 ```
 
-### 2. Command line usage
+- Command line usage
 ```
 copha -h
 ```
 more help about command line [copha.net/cli](https://copha.net/cli)
+
+## Documentation
+for more examples and docs, visit [copha.net](https://copha.net/).
 
 ## How to develop
 
@@ -27,14 +32,6 @@ git submodule update --init
 yarn
 yarn start
 ```
-
-## Resources
-* [Home Page](https://copha.net)
-* [API Documents](./en/api)
-* [Configure](./en/configure)
-* [Environment](./en/env)
-* [Example](./en/example)
-
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcopha-project%2Fcopha?ref=badge_large)
