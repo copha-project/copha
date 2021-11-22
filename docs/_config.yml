@@ -9,8 +9,8 @@
 #   math_engine: mathjax
 #   syntax_highlighter: rouge
 
-theme: jekyll-theme-cayman
-remote_theme: pages-themes/cayman@v0.2.0
+#theme: jekyll-theme-cayman
+remote_theme: pmarsceill/just-the-docs
 plugins:
   - jekyll-feed
   - jekyll-remote-theme
