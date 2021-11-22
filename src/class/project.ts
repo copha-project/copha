@@ -1,7 +1,7 @@
 const path = require('path')
 const events = require('events')
 const Utils = require('uni-utils')
-const Base = require('./base')
+import { Base } from "./base"
 const Common = require('../common')
 
 class Project extends Base {
@@ -13,6 +13,7 @@ class Project extends Base {
     private _driver = null
     private _custom = null
     private task = null
+
     constructor(conf) {
         super()
         this.setConf(conf)
@@ -29,13 +30,11 @@ class Project extends Base {
         return this.instance
     }
 
-    static getPath(name,key){
+    static getPath(name: string, key: string){
         if(!name) throw new Error(this.getMsg(12))
-        if(!this.AppProjectPathSet.hasOwnProperty(key)) throw new Error(this.getMsg(13, key))
-        return path.join(this.appSettings.DataPath,name,this.AppProjectPathSet[key])
+        if(!this.constData.AppProjectPathSet.hasOwnProperty(key)) throw new Error(this.getMsg(13, key))
+        return path.join(this.appSettings.DataPath,name,this.constData.AppProjectPathSet[key])
     }
-
-    //public 方法
 
     setCore(v){
         this._core = v
@@ -211,7 +210,7 @@ class Project extends Base {
                 exitCount = 1
                 // 等待正在进行的任务，通过检查vNeedStop变量来判断是否需要暂停任务
                 this.log.warn('检测到关闭操作，通知业务暂停。')
-                this.vNeedStop = true
+                // this.vNeedStop = true
             }else{
                 this.log.warn('强制关闭!')
                 await this.clear()
@@ -225,7 +224,7 @@ class Project extends Base {
 
     private initValue() {
         // TODO: 外界发出关闭指令，内部发出需要停止信号，通知相关流程暂停运行，等待程序关闭
-        this.vNeedStop = false
+        // this.vNeedStop = false
     }
 
     private initLogger(){
