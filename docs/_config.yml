@@ -12,7 +12,6 @@
 #theme: jekyll-theme-cayman
 remote_theme: pmarsceill/just-the-docs
 plugins:
-  - jekyll-feed
   - jekyll-remote-theme
 
 repository: yxwzaxns/copha
@@ -20,3 +19,7 @@ readme_index:
   enabled:          true
   remove_originals: false
   with_frontmatter: false
+
+aux_links:
+  "Copha on GitHub":
+    - "//github.com/copha-project/copha"

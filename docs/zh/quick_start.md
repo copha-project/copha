@@ -1,7 +1,8 @@
 ---
-title: "Copha - Quick Start"
+title: "快速上手"
 description: ""
-show_home: true
+nav_order: 2
+lang: "zh"
 ---
 
 ## 快速上手

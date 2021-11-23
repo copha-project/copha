@@ -1,7 +1,7 @@
 ---
 title: "使用警告"
 description: "Usage Warning"
-show_home: true
+nav_exclude: true
 ---
 
 # 使用警告

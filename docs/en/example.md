@@ -1,8 +1,8 @@
 ---
-title: "Copha examples"
+title: "Example"
 description: ""
-show_home: true
+nav_order: 10
 permalink: /example
 ---
 
-# Examples
+# Example

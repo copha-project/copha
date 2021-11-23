@@ -1,6 +1,8 @@
 ---
 title: "Copha"
 permalink: /zh/
+nav_order: 1
+lang: "zh"
 ---
 
 

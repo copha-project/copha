@@ -1,7 +1,7 @@
 ---
 title: "Development"
 description: "Development docs"
-show_home: true
+nav_order: 8
 permalink: /dev
 ---
 

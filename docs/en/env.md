@@ -1,7 +1,7 @@
 ---
-title: "Copha Environment"
+title: "Environment"
 description: ""
-show_home: true
+nav_order: 9
 permalink: /env
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: "Copha - Project"
+title: "项目"
 description: ""
-show_home: true
+nav_order: 3
+lang: "zh"
 ---
 
 # 项目

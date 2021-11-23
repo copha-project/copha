@@ -1,7 +1,9 @@
 ---
-title: "Copha - Module"
+title: "模块"
 description: ""
-show_home: true
+nav_order: 5
+lang: "zh"
+has_children: true
 ---
 
 ## Copha 模块介绍

@@ -1,8 +1,9 @@
 ---
-title: "Copha Module"
+title: "Module"
 description: ""
-show_home: true
+nav_order: 5
 permalink: /module
+has_children: true
 ---
 
 # Module

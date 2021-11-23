@@ -1,7 +1,8 @@
 ---
-title: "Copha - Development"
+title: "开发说明"
 description: ""
-show_home: true
+nav_order: 8
+lang: "zh"
 ---
 
 # 开发指导（Development）

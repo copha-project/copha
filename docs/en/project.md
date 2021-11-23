@@ -1,7 +1,7 @@
 ---
 title: "Project"
 description: "Project Docs"
-show_home: true
+nav_order: 3
 permalink: /project
 ---
 

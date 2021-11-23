@@ -1,7 +1,7 @@
 ---
 title: "Command line tutorial"
 description: ""
-show_home: true
+nav_order: 6
 permalink: /cli
 ---
 

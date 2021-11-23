@@ -1,7 +1,8 @@
 ---
-title: "Copha - Configure"
+title: "配置"
 description: ""
-show_home: true
+nav_order: 7
+lang: "zh"
 ---
 
 # 全局和项目的配置说明

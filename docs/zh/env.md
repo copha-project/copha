@@ -1,7 +1,8 @@
 ---
-title: "Copha - Env"
+title: "环境变量"
 description: ""
-show_home: true
+nav_order: 9
+lang: "zh"
 ---
 
 # 环境变量说明

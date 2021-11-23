@@ -1,7 +1,7 @@
 ---
 title: "Configure"
 description: "Global And Project Configure"
-show_home: true
+nav_order: 7
 permalink: /configure
 ---
 

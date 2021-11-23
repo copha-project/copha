@@ -1,7 +1,9 @@
 ---
-title: "Copha - Notification"
+title: "通知"
 description: ""
-show_home: true
+nav_order: 3
+parent: "模块"
+lang: "zh"
 ---
 
 ## 事件通知（Notification）

@@ -1,8 +1,7 @@
 ---
-title: "模块注册"
+title: "Module Register"
 description: ""
 nav_order: 11
-lang: "zh"
 ---
 
 # 内置模块注册指引

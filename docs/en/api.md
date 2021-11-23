@@ -1,7 +1,7 @@
 ---
-title: "Copha API Documents"
+title: "API Documents"
 description: ""
-show_home: true
+nav_order: 8
 permalink: /api
 ---
 

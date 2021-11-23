@@ -1,7 +1,8 @@
 ---
-title: "Copha - Command Line tutorial"
+title: "命令行帮助"
 description: ""
-show_home: true
+nav_order: 6
+lang: "zh"
 ---
 
 # 命令行使用说明（Command Line tutorial）

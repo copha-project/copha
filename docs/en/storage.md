@@ -1,8 +1,9 @@
 ---
-title: "Copha Storage"
+title: "Storage"
 description: ""
-show_home: true
 permalink: /storage
+nav_order: 2
+parent: "Module"
 ---
 
-# Examples
+# Storage

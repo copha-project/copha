@@ -1,7 +1,7 @@
 ---
 title: "Task"
 description: "Task docs"
-show_home: true
+nav_order: 4
 permalink: /task
 ---
 

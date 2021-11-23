@@ -1,7 +1,9 @@
 ---
-title: "Copha - Storage"
+title: "存储"
 description: ""
-show_home: true
+nav_order: 2
+parent: "模块"
+lang: "zh"
 ---
 
 # 存储（Storage）

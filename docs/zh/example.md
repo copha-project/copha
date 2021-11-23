@@ -1,7 +1,8 @@
 ---
-title: "Copha - Example"
+title: "演示案例"
 description: ""
-show_home: true
+nav_order: 10
+lang: "zh"
 ---
 
 # 演示案例
