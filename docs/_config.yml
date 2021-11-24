@@ -10,11 +10,11 @@
 #   syntax_highlighter: rouge
 
 #theme: jekyll-theme-cayman
-remote_theme: pmarsceill/just-the-docs
+remote_theme: yxwzaxns/just-the-docs
 plugins:
   - jekyll-remote-theme
 
-repository: yxwzaxns/copha
+repository: copha-project/copha
 readme_index:
   enabled:          true
   remove_originals: false
@@ -25,3 +25,6 @@ aux_links:
     - "//github.com/copha-project/copha"
 
 logo: "/assets/images/logo2x1n.png"
+
+search:
+  rel_url: false
