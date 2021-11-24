@@ -1,8 +1,9 @@
 ---
 title: "环境变量"
 description: ""
-nav_order: 9
+nav_order: 2
 lang: "zh"
+parent: "项目"
 ---
 
 # 环境变量说明

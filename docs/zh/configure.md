@@ -1,8 +1,9 @@
 ---
 title: "配置"
 description: ""
-nav_order: 7
+nav_order: 1
 lang: "zh"
+parent: "项目"
 ---
 
 # 全局和项目的配置说明

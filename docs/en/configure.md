@@ -1,8 +1,9 @@
 ---
 title: "Configure"
 description: "Global And Project Configure"
-nav_order: 7
+nav_order: 1
 permalink: /configure
+parent: "Project"
 ---
 
 # Configure Guidance

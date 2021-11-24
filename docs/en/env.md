@@ -1,8 +1,9 @@
 ---
 title: "Environment"
 description: ""
-nav_order: 9
+nav_order: 2
 permalink: /env
+parent: "Project"
 ---
 
 # Environment List

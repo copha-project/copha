@@ -3,6 +3,7 @@ title: "Project"
 description: "Project Docs"
 nav_order: 3
 permalink: /project
+has_children: true
 ---
 
 # 项目
