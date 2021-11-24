@@ -1,6 +1,7 @@
 ---
 title: "Module Register"
 description: ""
+permalink: /register
 nav_order: 11
 ---
 

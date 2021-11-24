@@ -20,11 +20,17 @@ readme_index:
   remove_originals: false
   with_frontmatter: false
 
+# just the docs
 aux_links:
   "Copha on GitHub":
     - "//github.com/copha-project/copha"
-
 logo: "/assets/images/logo2x1n.png"
-
+ga_tracking: G-WSMTE6M84H
 search:
   rel_url: false
+gh_edit_link: true # show or hide edit this page link
+gh_edit_link_text: "Edit this page on GitHub."
+gh_edit_repository: "https://github.com/copha-project/copha"
+gh_edit_branch: "master"
+gh_edit_source: "docs"
+gh_edit_view_mode: "tree"

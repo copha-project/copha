@@ -2,6 +2,7 @@
 title: "Other"
 description: ""
 nav_order: 12
+permalink: /other
 ---
 
 # Other

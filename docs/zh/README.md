@@ -13,7 +13,7 @@ lang: "zh"
 
 ## Copha 是一个可以运行自定义网络任务的通用框架
 
-> 可使用其他语言阅读: [English](https://copha.net) ｜ 简体中文
+> 可使用其他语言阅读: [English](/) ｜ 简体中文
 
 ## 使用指南
 - 安装 Copha
