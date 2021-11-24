@@ -2,6 +2,7 @@
 title: "使用警告"
 description: "Usage Warning"
 nav_exclude: true
+search_exclude: true
 ---
 
 # 使用警告

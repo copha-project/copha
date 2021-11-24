@@ -8,7 +8,7 @@ parent: "项目"
 
 # 全局和项目的配置说明
 
-## Global Settings
+## 全局配置
 ### 1. Location
 All global system configuration are stored in a directory called **.copha**, which is created in the user's home directory folder during installation.
 
@@ -19,7 +19,7 @@ run command to open the global configuration file
 copha config
 ```
 
-### 3. Configuration item explanation
+### 3. 配置项说明
 
 - Editor
 - DataPath
@@ -42,7 +42,7 @@ copha config
 
 - Proxy
 
-## Project Settings
+## 项目配置
 ### 1. Location
 The project configuration file is stored in the `config` folder under the project root directory.
 
@@ -53,7 +53,7 @@ Run the command to open the project configuration file
 copha config project_name
 ```
 
-### 3. Configuration item explanation
+### 3. 配置项说明
 
 - Main
  - name

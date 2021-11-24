@@ -4,7 +4,7 @@ description: ""
 nav_order: 11
 ---
 
-# 内置模块注册指引
+# Module Register
 copha 接受第三方提交的模块注册申请，审核通过的模块将会被添加至 copha 内置模块列表。
 
 
