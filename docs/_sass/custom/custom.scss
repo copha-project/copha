@@ -5,3 +5,11 @@ a {
 .main a {
     color: #5f94e3;
 }
+
+svg image {
+    filter: invert(68%) sepia(0%) saturate(3980%) hue-rotate(343deg) brightness(87%) contrast(83%);
+}
+
+a svg image {
+    filter: invert(43%) sepia(49%) saturate(7469%) hue-rotate(239deg) brightness(97%) contrast(92%);
+}

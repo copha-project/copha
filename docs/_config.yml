@@ -34,3 +34,4 @@ gh_edit_repository: "https://github.com/copha-project/copha"
 gh_edit_branch: "master"
 gh_edit_source: "docs"
 gh_edit_view_mode: "tree"
+heading_anchors: true
