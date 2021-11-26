@@ -67,8 +67,8 @@
         "任务列表:"
     ],
     [
-        "Task List:(21)",
-        "工作列表:"
+        "Project List:(21)",
+        "项目列表:"
     ],
     [
         "Unknown display list type.(22)"
@@ -80,13 +80,13 @@
         "The task: [ # ] can't be use.(24)"
     ],
     [
-        "Type of # task [ # ] prepare to init.(25)"
+        "The project [ # ] prepare to init.(25)"
     ],
     [
         "Task [ # ] created successfully!(26)"
     ],
     [
-        "Task [ # ] exist!(27)"
+        "The project named [ # ] already exists!(27)"
     ],
     [
         "The data was formatted incorrectly, eg: key=value.(28)"

@@ -7,11 +7,10 @@
 /src
 /dev
 /docs
-/example
 /test
-/babel.config.js
 /yarn-error.log
 /CHANGELOG.md
 /.gitmodules
-/bin/dev.js
 /dev.env.sh
+tsconfig.json
+gulpfile.js

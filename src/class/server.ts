@@ -1,6 +1,6 @@
 const Koa = require('koa')
 const Compose = require('koa-compose')
-const Base = require('./base')
+import { Base } from './base'
 const Core = require('./core')
 const {CommonRouter, ApiRouter} = require('../server/router')
 const {errHandler, reqLog } = require('../server/mid')
@@ -13,6 +13,7 @@ interface ServerConfig {
 class Server extends Base {
     private static instance: Server
     private _serverConfig: ServerConfig
+    private app: any
     constructor() { super() }
 
     static getInstance(options: ServerConfig): Server{
@@ -51,4 +52,6 @@ class Server extends Base {
 
 module.exports = Server
 
-export {}
+export {
+    Server
+}

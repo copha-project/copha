@@ -1,4 +1,4 @@
-const Base = require("./base")
+import { Base } from './base'
 const Utils = require('uni-utils')
 const Core = require('./core')
 
@@ -108,3 +108,7 @@ class Driver extends Base {
 }
 
 module.exports = Driver
+
+export {
+    Driver
+}

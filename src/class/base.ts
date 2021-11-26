@@ -2,29 +2,20 @@ const commandExists = require('command-exists')
 const Utils = require('uni-utils')
 const Logger = require('./logger')
 const Msgs = require("../resource/i18n.json")
-const ConstData = require("../const")
+import ConstData = require("../const")
 const {cp} = require('../common')
 
 class Base {
     static appSettings = null
     static constData = ConstData
     static log = new Logger()
-    static AppProjectPathSet = ConstData.AppProjectPathSet
     RootPath: string
-    AppConfigPath: string
-    AppExecutableCommandPath: string
-    AppConfigTpl: string
+
     constructor() {
-        this.initValues()
         this.initConfig()
         Base.log.debug(this.getMsg(31, this.constructor.name))
     }
-    private initValues(){
-        this.RootPath = ConstData.AppProjectRootPath
-        this.AppConfigPath = ConstData.AppConfigUserPath
-        this.AppExecutableCommandPath = ConstData.AppExecutableCommandPath
-        this.AppConfigTpl = ConstData.AppConfigTpl
-    }
+    
     private initConfig(){
         if(!Base.appSettings){
             Base.appSettings = this.getAppSettings()
@@ -119,6 +110,8 @@ class Base {
     }
 }
 
-module.exports = Base
+// module.exports = Base
 
-export {}
+export {
+    Base
+}

@@ -1,5 +1,5 @@
 const path = require('path')
-const Base = require('./base')
+import { Base } from './base'
 const Project = require('./project')
 
 class Task extends Base {
@@ -84,4 +84,6 @@ class Task extends Base {
 
 module.exports = Task
 
-export {}
+export {
+    Task
+}

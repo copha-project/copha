@@ -1,7 +1,7 @@
 const openInEditor = require('open-in-editor')
 const pkg = require('../../package')
 const commander = require('commander')
-const Base = require('./base')
+import { Base } from './base'
 const Core = require('./core')
 
 function preCheck() {
@@ -260,7 +260,7 @@ class Cli extends Base {
             return this.setProjectConfig(name, options)
         }
         const editorBinName = await this.getEditor()
-        return this.openEditor(editorBinName, this.AppConfigPath)
+        return this.openEditor(editorBinName, this.constData.AppConfigUserPath)
     }
 
     @preCheck()
@@ -326,4 +326,6 @@ class Cli extends Base {
 
 module.exports = Cli
 
-export {}
+export {
+    Cli
+}

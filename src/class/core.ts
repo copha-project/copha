@@ -2,12 +2,18 @@ const path = require('path')
 const os = require('os')
 const Utils = require('uni-utils')
 const Project = require('./project')
-const Base = require('./base')
+import { Base } from './base'
 const Common = require('../common')
 const Proxy = require('./proxy')
 
+interface Task {
+    name: string
+    var: string
+}
+
 class Core extends Base{
     static instance = null
+    proxy: any
     constructor(){
         super()
     }
@@ -59,7 +65,7 @@ class Core extends Base{
         return data
     }
 
-    async listTask(){
+    async listTask(): Promise<Task[]> {
         return Utils.readJson(this.constData.AppUserTasksDataPath)
     }
 
@@ -78,19 +84,19 @@ class Core extends Base{
         return data
     }
 
-    async createProject(name,task){
+    async createProject(name, task){
         const taskListData = await this.listTask()
         if(!task) {
             task = this.appSettings?.Task?.Default
         }else{
-            if(taskListData.find(e=>e.name==task)) {
+            if(taskListData.find(e => e.name === task)) {
 
             }else{
                 throw new Error(this.getMsg(24, task))
             }
         }
 
-        this.log.info(this.getMsg(25, task, name))
+        this.log.info(this.getMsg(25, name))
         // 复制项目模板文件到新的任务目录
         try {
             await this.genTpl(name,task)
@@ -146,7 +152,7 @@ class Core extends Base{
     }
 
     async restartProject(name){
-        return Utils.createProcess(this.AppExecutableCommandPath, ['run', name])
+        return Utils.createProcess(this.constData.AppExecutableCommandPath, ['run', name])
     }
 
     async resetProject(name,options){
@@ -266,27 +272,27 @@ class Core extends Base{
         ])
         // config file
         await Utils.copyFile(
-            this.AppConfigTpl.configPath,
+            this.constData.AppConfigTpl.configPath,
             projectConfigPath
             )
         // state
         await Utils.copyFile(
-            this.AppConfigTpl.statePath,
+            this.constData.AppConfigTpl.statePath,
             Project.getPath(name,'state')
         )
         // export data
         await Utils.copyFile(
-            this.AppConfigTpl.custom_export_data,
+            this.constData.AppConfigTpl.custom_export_data,
             Project.getPath(name,'custom_export_data')
         )
         // overcode
         await Utils.copyFile(
-            this.AppConfigTpl.custom_over_write_code,
+            this.constData.AppConfigTpl.custom_over_write_code,
             Project.getPath(name,'custom_over_write_code')
         )
         // custom code
         await Utils.copyFile(
-            this.AppConfigTpl.custom_exec_code,
+            this.constData.AppConfigTpl.custom_exec_code,
             Project.getPath(name,'custom_exec_code')
         )
 
@@ -318,4 +324,6 @@ class Core extends Base{
 
 module.exports = Core
 
-export {}
+export {
+    Core
+}

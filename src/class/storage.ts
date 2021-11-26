@@ -1,9 +1,10 @@
-const Base = require('./base')
+import { Base } from './base'
 
 class Storage extends Base {
     db = null
     private _projectConfig = null
     private _config = null
+    private storageType: string
     constructor() {
         super()
     }
@@ -37,4 +38,6 @@ class Storage extends Base {
 
 module.exports = Storage
 
-export {}
+export {
+    Storage
+}
