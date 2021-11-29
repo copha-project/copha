@@ -24,10 +24,17 @@ class Driver extends Base {
     }
 
     async clear(){}
+
     async open(){
         throw new Error(this.getMsg(10,'must implement open()'))
     }
+    
+    async reload(){
+        throw new Error(this.getMsg(10,'must implement reload()'))
+    }
+
     async closeTab(){}
+    
     async quit(){}
 
     async sleep(n){
@@ -83,27 +90,33 @@ class Driver extends Base {
         return this.buildSelector('css', v)
     }
 
-    async findElementBy(k,v){
+    async findElementBy(k, v, target){
+        if(target){
+            return target.findElement(this.buildSelector(k,v))
+        }
         return this.findElement(this.buildSelector(k,v))
     }
-    async findElementByXpath(v){
-        return this.findElementBy('xpath',v)
+    async findElementByXpath(v, target){
+        return this.findElementBy('xpath', v, target)
     }
-    async findElementByCss(v){
-        return this.findElementBy('css',v)
+    async findElementByCss(v, target){
+        return this.findElementBy('css', v, target)
     }
-    async findElementById(v){
-        return this.findElementBy('id',v)
+    async findElementById(v, target){
+        return this.findElementBy('id', v, target)
     }
 
-    async findElementsBy(k,v){
+    async findElementsBy(k, v, target){
+        if(target){
+            return target.findElements(this.buildSelector(k,v))
+        }
         return this.findElements(this.buildSelector(k,v))
     }
-    async findElementsByCss(v){
-        return this.findElementsBy('css',v)
+    async findElementsByCss(v, target){
+        return this.findElementsBy('css', v, target)
     }
-    async findElementsByXpath(v){
-        return this.findElementsBy('xpath',v)
+    async findElementsByXpath(v, target){
+        return this.findElementsBy('xpath', v, target)
     }
 }
 

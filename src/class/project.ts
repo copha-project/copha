@@ -127,7 +127,7 @@ class Project extends Base {
                 await this.task?.runBefore()
                 await this.task?.runTest()
             }, async (error)=>{
-                this.log.err('test err:', error)
+                this.log.err(`test err: ${error.message}`)
             }, async ()=>{
                 await this.clear()
                 this.log.info('Task test finished')
