@@ -26,10 +26,11 @@ jobs:
           cache: 'npm'
       - run: npm i -g npm
       - run: yarn
+      - run: git submodule update
       - run: npm run build
-      - run: npm run dev -- -h
+      - run: npm start -- -h
       - run: mkdir /tmp/co
-      - run: npm run dev create t1
-      - run: npm run dev list
-      - run: npm run dev run t1
-      - run: npm run dev delete t1
+      - run: npm start create t1
+      - run: npm start list
+      - run: npm start run t1
+      - run: npm start delete t1

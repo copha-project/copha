@@ -12,6 +12,7 @@ const runCli = async () => {
         }else{
             Cli.log.err(e.message)
         }
+        process.exit(1)
     }
 }
 
