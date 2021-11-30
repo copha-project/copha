@@ -27,8 +27,8 @@ jobs:
       - run: npm i -g npm
       - run: yarn
       - run: npm run build
-      - run: npm run dev -h
-      - run: makir /co
+      - run: npm run dev -- -h
+      - run: mkdir /co
       - run: npm run dev create t1
       - run: npm run dev list
       - run: npm run dev run t1
