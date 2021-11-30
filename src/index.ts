@@ -1,13 +1,13 @@
 const Cli = require('./class/cli')
-const { isDebug, loadPackageEnv } = require('./common')
+import Common from './common'
 
 const runCli = async () => {
-    loadPackageEnv()
+    Common.loadPackageEnv()
     try {
         await Cli.installCheck()
         await Cli.getInstance().createCommander()
     } catch (e) {
-        if(isDebug){
+        if(Common.isDebug){
             console.log(e)
         }else{
             Cli.log.err(e.message)

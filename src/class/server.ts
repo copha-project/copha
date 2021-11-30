@@ -1,6 +1,6 @@
 const Koa = require('koa')
 const Compose = require('koa-compose')
-import { Base } from './base'
+import Base from './base'
 const Core = require('./core')
 const {CommonRouter, ApiRouter} = require('../server/router')
 const {errHandler, reqLog } = require('../server/mid')

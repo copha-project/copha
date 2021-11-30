@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-class Common {
+export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
   static isDev = process.env.NODE_ENV !== "production"
 
@@ -129,10 +129,4 @@ class Common {
     }
     require('module').Module._initPaths()
   }
-}
-
-module.exports = Common
-
-export {
-  Common
 }

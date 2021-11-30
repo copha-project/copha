@@ -1,11 +1,11 @@
 const commandExists = require('command-exists')
 const Utils = require('uni-utils')
-const Logger = require('./logger')
+import Logger from './logger'
 const Msgs = require("../resource/i18n.json")
 import ConstData = require("../const")
-const {cp} = require('../common')
+import Common from '../common'
 
-class Base {
+export default class Base {
     static appSettings = null
     static constData = ConstData
     static log = new Logger()
@@ -36,7 +36,7 @@ class Base {
         this.log.info(this.getMsg(9))
         try {
             if(process.platform === 'win32'){
-                await cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+                await Common.cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
             }else{
                 await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
             }
@@ -108,10 +108,4 @@ class Base {
 
         return config
     }
-}
-
-// module.exports = Base
-
-export {
-    Base
 }

@@ -1,7 +1,7 @@
 const openInEditor = require('open-in-editor')
 const pkg = require('../../package')
 const commander = require('commander')
-import { Base } from './base'
+import Base from './base'
 const Core = require('./core')
 
 function preCheck() {

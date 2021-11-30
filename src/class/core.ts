@@ -2,8 +2,8 @@ const path = require('path')
 const os = require('os')
 const Utils = require('uni-utils')
 const Project = require('./project')
-import { Base } from './base'
-const Common = require('../common')
+import Base from './base'
+import Common from '../common'
 const Proxy = require('./proxy')
 
 interface Task {
