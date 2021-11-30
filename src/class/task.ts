@@ -1,6 +1,7 @@
 const path = require('path')
 import { Base } from './base'
 const Project = require('./project')
+const Utils = require('uni-utils')
 
 class Task extends Base {
     private _name = null
@@ -53,6 +54,13 @@ class Task extends Base {
     checkNeedStop(){
 
     }
+
+    get helper(){
+        return {
+            uni: Utils
+        }
+    }
+
     get conf(){
         return this._conf
     }

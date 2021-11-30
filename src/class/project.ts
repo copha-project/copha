@@ -57,11 +57,11 @@ class Project extends Base {
     }
     async exportData() {
         this.log.info('Prepare to export data')
-        if(this.conf.Task?.CustomStage?.ExportData){
-            if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
+        if(this.conf.Task?.CustomStage?.CustomExportData){
+            if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
-            return customCode?.call(this)
+            return customCode?.call(this.helper)
         }
 
         let files = await this.storage.all()
@@ -142,7 +142,7 @@ class Project extends Base {
                 await this.startPrepare()
                 await this.task?.runBefore()
                 await this.task?.run()
-                await this.execCode()
+                await this.execCustomCode()
             }, async (error)=>{
                 this.log.err(`Task start error: ${error.message}`)
                 // 遇到错误退出程序，有可能的话重启进程
@@ -158,15 +158,15 @@ class Project extends Base {
             })
     }
 
-    async execCode(){
-        if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
+    async execCustomCode(){
+        if(!await Utils.checkFile(this.getPath('custom_exec_code'))) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
         const customCode = require(this.getPath('custom_exec_code'))
         Common.domain(
             async ()=>{
                 await customCode?.call(this)
-            }, async (error)=>{
-                console.log('execCode err:',error)
+            }, async (error: Error)=>{
+                this.log.err(`execCustomCode err: ${error.message}`)
             }, async ()=>{
             })
     }
@@ -324,6 +324,8 @@ class Project extends Base {
     get helper(){
     	return {
             uni: Utils,
+            log: this.log,
+            getPath: this.getPath.bind(this),
             getDedailList : async () => {
         		const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
         		return files
