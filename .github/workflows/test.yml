@@ -15,19 +15,21 @@ jobs:
         os: [ubuntu-latest]
         # node-version: [12, 14, 16]
         # os: [ubuntu-latest, windows-latest, macOS-latest]
-
+    env:
+      COPHA_DATA_PATH: /co
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm i -g npm
-    - run: yarn
-    - run: npm run build
-    - run: npm run dev
-    - run: npm run dev create t1
-    - run: npm run dev list
-    - run: npm run dev run t1
-    - run: npm run dev delete t1
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm i -g npm
+      - run: yarn
+      - run: npm run build
+      - run: npm run dev -h
+      - run: makir /co
+      - run: npm run dev create t1
+      - run: npm run dev list
+      - run: npm run dev run t1
+      - run: npm run dev delete t1
