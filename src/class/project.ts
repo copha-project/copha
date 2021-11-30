@@ -1,8 +1,8 @@
 const path = require('path')
 const events = require('events')
 const Utils = require('uni-utils')
-import { Base } from "./base"
-const Common = require('../common')
+import Base from './base'
+import Common from '../common'
 
 class Project extends Base {
     static instance = null

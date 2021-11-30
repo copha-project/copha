@@ -1,5 +1,5 @@
 const path = require('path')
-import { Base } from './base'
+import Base from './base'
 const Project = require('./project')
 const Utils = require('uni-utils')
 

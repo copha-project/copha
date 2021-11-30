@@ -1,6 +1,6 @@
 const path = require('path')
 const pkg = require('../package')
-const Common = require('./common')
+import Common from './common'
 
 // store dir on install
 const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')

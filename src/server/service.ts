@@ -1,4 +1,4 @@
-const Base = require('../class/base')
+import Base from '../class/base'
 
 class Service extends Base {
     static instance = undefined

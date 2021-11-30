@@ -1,6 +1,4 @@
-const path = require('path')
-// const { Base } = require('./base')
-import { Base } from './base'
+import Base from './base'
 
 class Proxy extends Base {
     private static instance = null

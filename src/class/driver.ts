@@ -1,4 +1,4 @@
-import { Base } from './base'
+import Base from './base'
 const Utils = require('uni-utils')
 const Core = require('./core')
 
