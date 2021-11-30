@@ -3224,10 +3224,10 @@ undertaker@^1.2.1:
     object.reduce "^1.0.0"
     undertaker-registry "^1.0.0"
 
-uni-utils@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/uni-utils/-/uni-utils-1.0.13.tgz#f3ad1df943b200d6f53b84824945c4c7a5d9bddd"
-  integrity sha512-PAyZtVD3kf1XS++Zob+OugX5RH7KWXdDPMROASxPwP0dobVQimz3kViO5LiLBckCfulZQjFPFDJmExqqzrd8Bw==
+uni-utils@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/uni-utils/-/uni-utils-1.0.15.tgz#f395fc798bcf0114640ae4931bbcc3afc368ff02"
+  integrity sha512-LYt5SH9oBriCFz0VZZ6+sA4giNaAsQZzDfqdxKD/xN+keKHTecN3ZyXswy68Q5/VyAqxQ1MQwnZCKM2YYdQ9Rw==
   dependencies:
     cli-progress "^3.8.0"
     fast-csv "^4.3.6"
