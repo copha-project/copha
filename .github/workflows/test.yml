@@ -16,7 +16,7 @@ jobs:
         # node-version: [12, 14, 16]
         # os: [ubuntu-latest, windows-latest, macOS-latest]
     env:
-      COPHA_DATA_PATH: /co
+      COPHA_DATA_PATH: /tmp/co
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
@@ -28,7 +28,7 @@ jobs:
       - run: yarn
       - run: npm run build
       - run: npm run dev -- -h
-      - run: mkdir /co
+      - run: mkdir /tmp/co
       - run: npm run dev create t1
       - run: npm run dev list
       - run: npm run dev run t1
