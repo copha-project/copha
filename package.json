@@ -43,6 +43,7 @@
         "win32"
     ],
     "devDependencies": {
+        "@types/command-exists": "^1.2.0",
         "cross-env": "^7.0.3",
         "del": "^6.0.0",
         "gulp": "^4.0.2",
