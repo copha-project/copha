@@ -258,7 +258,6 @@ class Project extends Base {
             const taskClass = await this._core.getTask(taskName)
             this.task = new taskClass()
             this.task.setConfig(this.conf)
-            this.task.helper = this.helper
         } catch (error) {
             throw Error(`can't load task [${taskName}] : ${error}`)
         }
