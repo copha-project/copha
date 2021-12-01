@@ -31,7 +31,7 @@ class Core extends Base{
     }
 
     static async rootDataPathAvailabilityCheck(){
-        let stat = true
+        let stat = ""
         try {
             if (this.appSettings.DataPath === '') {
                 stat = this.getMsg(1)
@@ -47,7 +47,7 @@ class Core extends Base{
         } catch (e) {
             stat = e.message
         }
-        if(stat !== true){
+        if(stat !== ""){
             throw new Error(stat.toString())
         }
     }
