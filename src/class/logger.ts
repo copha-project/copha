@@ -1,7 +1,7 @@
-const { spawn } = require('child_process')
-const winston = require('winston')
-const { isDebug } = require('../common')
-const { format, createLogger } = require('winston')
+import { spawn } from 'child_process'
+import * as winston from 'winston'
+import Common from '../common'
+import { format, createLogger } from 'winston'
 
 const LogBaseConfig = {
     levels: {
@@ -35,7 +35,7 @@ export default class Logger {
     constructor(logConf?){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
-            level: isDebug ? 'custom' : 'info',
+            level: Common.isDebug ? 'custom' : 'info',
             levels: LogBaseConfig.levels,
             format: winston.format.json(),
             transports: []

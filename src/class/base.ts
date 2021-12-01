@@ -1,15 +1,18 @@
-const commandExists = require('command-exists')
-const Utils = require('uni-utils')
+import commandExists = require('command-exists')
+import Utils = require('uni-utils')
 import Logger from './logger'
-const Msgs = require("../resource/i18n.json")
-import ConstData = require("../const")
+import * as Msgs from "../resource/i18n.json"
+import ConstData from "../const"
 import Common from '../common'
 
+interface AppSettings {
+    [propName: string]: any;
+}
+
 export default class Base {
-    static appSettings = null
+    static appSettings : AppSettings
     static constData = ConstData
     static log = new Logger()
-    RootPath: string
 
     constructor() {
         this.initConfig()
@@ -79,7 +82,7 @@ export default class Base {
     }
 
     async getEditor(){
-        for (const cmd of [this.appSettings.Editor,...this.constData.DefaultEditorList]) {
+        for (const cmd of [this.appSettings.Editor as string, ...this.constData.DefaultEditorList]) {
             try {
                 if(await commandExists(cmd)) return cmd
             } catch {
@@ -91,7 +94,7 @@ export default class Base {
 
     private getAppSettings(){
         if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
-        const config = Utils.readJsonSync(ConstData.AppConfigUserPath)
+        const config: AppSettings = Utils.readJsonSync(ConstData.AppConfigUserPath)
         if (config?.DataPath === ""){
             if(this.getEnv('COPHA_DATA_PATH')){
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')

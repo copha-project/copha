@@ -66,7 +66,7 @@ const DefaultEditorList = ['code','vim','vi','nano']
 
 const BugLink = pkg?.bugs?.url
 
-export {
+export default {
     AppProjectRootPath,
     AppConfigUserDir,
     AppConfigUserPath,

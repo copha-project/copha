@@ -6,6 +6,7 @@
         "experimentalDecorators": true,
         // Generate d.ts files
         "declaration": true,
+        "resolveJsonModule": true,
     },
     "include": ["./src/**/*"],
     "exclude": ["./src/resource"]
