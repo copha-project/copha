@@ -101,7 +101,7 @@
     function setTheme(theme) {
         jtd.setTheme(theme);
         window.localStorage.setItem('color_scheme', theme);
-        document.body.setAttribute('class',theme)
+        document.body.setAttribute('class',theme);
         darkThemeSwitcherElement.querySelector('button').setAttribute('class', getTheme());
     }
 
