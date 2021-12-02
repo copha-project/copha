@@ -63,6 +63,10 @@
 }
 </style>
 <script>
+
+var color_scheme = window.localStorage.color_scheme || "light";
+document.body.setAttribute('class',color_scheme);
+
 (function() {
     var darkThemeSwitcherElement = document.querySelector('.lang-switcher');
 
