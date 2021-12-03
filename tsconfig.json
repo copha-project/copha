@@ -7,6 +7,15 @@
         // Generate d.ts files
         "declaration": true,
         "resolveJsonModule": true,
+        "strictNullChecks": true,
+        "typeRoots": ["./node_modules/@types/", "./src/types/"],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "src/types/*"
+            ]
+        }
     },
     "include": ["./src/**/*"],
     "exclude": ["./src/resource"]

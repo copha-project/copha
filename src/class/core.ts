@@ -4,15 +4,10 @@ const Utils = require('uni-utils')
 const Project = require('./project')
 import Base from './base'
 import Common from '../common'
-const Proxy = require('./proxy')
-
-interface Task {
-    name: string
-    var: string
-}
+import Proxy from './proxy'
 
 class Core extends Base{
-    static instance = null
+    static instance: Core
     proxy: any
     constructor(){
         super()
@@ -324,6 +319,4 @@ class Core extends Base{
 
 module.exports = Core
 
-export {
-    Core
-}
+export default Core

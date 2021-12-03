@@ -1,18 +1,19 @@
 import Base from '../class/base'
 
 class Service extends Base {
-    static instance = undefined
+    static instance: Service
     constructor() {
-        if(!Service.instance){
-            super()
-            Service.instance = this.getInstance()
+        super()
+    }
+
+    static getInstance(){
+        if(!this.instance){
+            this.log.debug('init Service')
+            this.instance = new this()
         }
-        return Service.instance
+        return this.instance
     }
-    getInstance(){
-        this.log.debug('init Service')
-        return this
-    }
+
     async home(ctx){
         ctx.body = "ok"
     }

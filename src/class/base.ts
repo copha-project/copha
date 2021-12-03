@@ -2,12 +2,8 @@ import commandExists = require('command-exists')
 import Utils = require('uni-utils')
 import Logger from './logger'
 import * as Msgs from "../resource/i18n.json"
-import ConstData from "../const"
+import ConstData from "../constants"
 import Common from '../common'
-
-interface AppSettings {
-    [propName: string]: any;
-}
 
 export default class Base {
     static appSettings : AppSettings
@@ -54,7 +50,7 @@ export default class Base {
     }
 
     static getEnv(key: string){
-        return process.env[key]
+        return process.env[key]  || ""
     }
 
     get appSettings() {

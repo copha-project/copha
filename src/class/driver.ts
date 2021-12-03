@@ -4,7 +4,7 @@ const Core = require('./core')
 
 class Driver extends Base {
     DriverModule = this
-    private _projectConfig = null
+    private _projectConfig: ProjectConfig
     private config = null
     private _driver = this
     constructor(){

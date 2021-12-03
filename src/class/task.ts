@@ -3,12 +3,12 @@ import Base from './base'
 const Project = require('./project')
 const Utils = require('uni-utils')
 
-class Task extends Base {
+export default class Task extends Base {
     private _name = null
     private _storage = null
     private _driver = null
     private _custom = null
-    private _projectConfig = null
+    private _projectConfig: ProjectConfig
     private _conf = null
     constructor() {
         super()
@@ -37,6 +37,7 @@ class Task extends Base {
 
     async loadState(){}
 
+    async runBefore(){}
     async run(){}
     async saveContext(){}
     async recover(){}
@@ -88,10 +89,4 @@ class Task extends Base {
     get name(){
         return this._name
     }
-}
-
-module.exports = Task
-
-export {
-    Task
 }

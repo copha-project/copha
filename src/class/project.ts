@@ -3,16 +3,17 @@ const events = require('events')
 const Utils = require('uni-utils')
 import Base from './base'
 import Common from '../common'
+import Task from './task'
 
 class Project extends Base {
-    static instance = null
-    private _core = null
-    private _conf = null
-    private _storage = null
-    private _event = null
-    private _driver = null
-    private _custom = null
-    private task = null
+    static instance: Project
+    private _core: BaseObject
+    private _conf: ProjectConfig
+    private _storage: BaseObject
+    private _event: BaseObject
+    private _driver: BaseObject
+    private _custom: BaseObject
+    private task: Task
 
     constructor(conf) {
         super()
@@ -57,7 +58,7 @@ class Project extends Base {
     }
     async exportData() {
         this.log.info('Prepare to export data')
-        if(this.conf.Task?.CustomStage?.CustomExportData){
+        if(this.conf.Task?.CustomStage?.ExportData){
             if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
