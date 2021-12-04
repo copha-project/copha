@@ -11,37 +11,15 @@ parent: "模块"
 
 Copha 提供了一个基础的任务模板，你可以克隆或者下载此项目，在此基础上编写自己的特定任务。
 
-> 任务也是标准的 Copha 模块
+> 任务模块也是标准的 Copha 模块
 
-## 任务模块结构
-
-| 名称 | 类型 | 说明|
-|--|--|--|
-| resource | 文件夹 | 存放任务运行所需要的相关资源，存放内容，格式，形式由开发者定义，资源访问方式参考 [getResource](#getResource) API |
-| index.js| JS文件 | 任务的加载入口，此文件需导出一个任务类，该类需实现任务的相关接口。具体参考 **任务接口说明** |
-| config.json| JSON文件 | 任务配置项文件，包含一个标准的 JSON 对象，内容为任务运行所需要提供的配置字段，这些配置字段将会出现在项目配置中 |
-
-> 在业务代码中使用配置值的示例：
-
-```
-# config.json
-{
-	"Key1": "Value"
-}
-
-# index.js
-...
-this.config.Key1
-...
-```
-
-## 使用
+## 命令行操作
 * 查看 Copha 中存在的任务模块信息
 	 ```
 	 copha list -t task
 	 ```
  
-* 导入第三方任务包
+* 导入第三方任务模块
 	```
 	copha load xxx-task
 	```
@@ -51,4 +29,34 @@ this.config.Key1
 	copha create project-name -t xxx-task
 	```
 	
-	> 未使用 **-t** 选项时，会默认使用系统内置的基础任务包。
+	> 未使用 **-t** 选项时，会默认使用系统内置的基础任务模块。
+
+## 接口说明
+- ###  Class: Task
+- task.name（只读）
+
+	常量：任务模块名称
+
+- task.projectName
+
+	常量：项目名称（只读）
+
+- task.projectConfig
+
+	常量：项目配置数据对象（只读）
+
+- task.config
+
+	常量：任务配置数据对象（只读）
+
+- task.runBefore()
+
+	运行任务前调用
+
+- task.runTest()
+
+	任务测试接口
+
+- task.run()
+
+	任务执行接口
