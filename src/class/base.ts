@@ -1,15 +1,14 @@
-const commandExists = require('command-exists')
-const Utils = require('uni-utils')
-const Logger = require('./logger')
-const Msgs = require("../resource/i18n.json")
-import ConstData = require("../const")
-const {cp} = require('../common')
+import commandExists = require('command-exists')
+import Utils = require('uni-utils')
+import Logger from './logger'
+import * as Msgs from "../resource/i18n.json"
+import ConstData from "../constants"
+import Common from '../common'
 
-class Base {
-    static appSettings = null
+export default class Base {
+    static appSettings : AppSettings
     static constData = ConstData
     static log = new Logger()
-    RootPath: string
 
     constructor() {
         this.initConfig()
@@ -36,7 +35,7 @@ class Base {
         this.log.info(this.getMsg(9))
         try {
             if(process.platform === 'win32'){
-                await cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+                await Common.cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
             }else{
                 await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
             }
@@ -51,7 +50,7 @@ class Base {
     }
 
     static getEnv(key: string){
-        return process.env[key]
+        return process.env[key]  || ""
     }
 
     get appSettings() {
@@ -79,7 +78,7 @@ class Base {
     }
 
     async getEditor(){
-        for (const cmd of [this.appSettings.Editor,...this.constData.DefaultEditorList]) {
+        for (const cmd of [this.appSettings.Editor as string, ...this.constData.DefaultEditorList]) {
             try {
                 if(await commandExists(cmd)) return cmd
             } catch {
@@ -91,7 +90,7 @@ class Base {
 
     private getAppSettings(){
         if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
-        const config = Utils.readJsonSync(ConstData.AppConfigUserPath)
+        const config: AppSettings = Utils.readJsonSync(ConstData.AppConfigUserPath)
         if (config?.DataPath === ""){
             if(this.getEnv('COPHA_DATA_PATH')){
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')
@@ -108,10 +107,4 @@ class Base {
 
         return config
     }
-}
-
-// module.exports = Base
-
-export {
-    Base
 }

@@ -1,7 +1,7 @@
-const { spawn } = require('child_process')
-const winston = require('winston')
-const { isDebug } = require('../common')
-const { format, createLogger } = require('winston')
+import { spawn } from 'child_process'
+import * as winston from 'winston'
+import Common from '../common'
+import { format, createLogger } from 'winston'
 
 const LogBaseConfig = {
     levels: {
@@ -30,12 +30,12 @@ const LogTimeConfig = format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'})
 const LogColorConfig = format.colorize({ all: true })
 
 
-class Logger {
+export default class Logger {
     logger: any
-    constructor(logConf){
+    constructor(logConf?){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
-            level: isDebug ? 'custom' : 'info',
+            level: Common.isDebug ? 'custom' : 'info',
             levels: LogBaseConfig.levels,
             format: winston.format.json(),
             transports: []
@@ -94,10 +94,4 @@ class Logger {
     warn(...e){
         this.logger.warn(e)
     }
-}
-
-module.exports = Logger
-
-export {
-    Logger
 }

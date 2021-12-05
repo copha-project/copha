@@ -1,4 +1,4 @@
-import { Base } from './base'
+import Base from './base'
 
 class Storage extends Base {
     db = null

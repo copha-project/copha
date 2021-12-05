@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-class Common {
+export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
   static isDev = process.env.NODE_ENV !== "production"
 
@@ -11,9 +11,8 @@ class Common {
     const user = env.LOGNAME || env.USER || env.LNAME || env.USERNAME
 
     if (process.platform === 'win32') {
-      return env.USERPROFILE || env.HOMEDRIVE + env.HOMEPATH || home || null
+      return env.USERPROFILE || (env.HOMEDRIVE || '') + (env.HOMEPATH || '') || home || null
     }
-
     if (process.platform === 'darwin') {
       return home || (user ? '/Users/' + user : null)
     }
@@ -129,10 +128,4 @@ class Common {
     }
     require('module').Module._initPaths()
   }
-}
-
-module.exports = Common
-
-export {
-  Common
 }

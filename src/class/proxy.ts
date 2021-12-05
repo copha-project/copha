@@ -1,9 +1,7 @@
-const path = require('path')
-// const { Base } = require('./base')
-import { Base } from './base'
+import Base from './base'
 
-class Proxy extends Base {
-    private static instance = null
+export default class Proxy extends Base {
+    private static instance: Proxy
     constructor() {
         super()
     }
@@ -23,10 +21,4 @@ class Proxy extends Base {
         }
         return this.appSettings.Proxy.List[index]
     }
-}
-
-module.exports = Proxy
-
-export {
-    Proxy
 }

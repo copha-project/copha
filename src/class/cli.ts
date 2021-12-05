@@ -1,8 +1,8 @@
 const openInEditor = require('open-in-editor')
 const pkg = require('../../package')
 const commander = require('commander')
-import { Base } from './base'
-const Core = require('./core')
+import Base from './base'
+import Core from './core'
 
 function preCheck() {
     return function(o, k, descriptor) {
@@ -16,7 +16,7 @@ function preCheck() {
 
 class Cli extends Base {
     private static instance: Cli
-    private _core = null
+    private _core: Core
     constructor() { super() }
 
     createCommander() {
@@ -60,10 +60,10 @@ class Cli extends Base {
             .option('-r, --restart', 'stop and restart project')
             .action(this.getMethod('stopProject'))
 
-        program.command('reset <name>')
-            .description('reset a project')
-            .option('--hard', 'delete all data of project')
-            .action(this.getMethod('resetProject'))
+        // program.command('reset <name>')
+        //     .description('reset a project')
+        //     .option('--hard', 'delete all data of project')
+        //     .action(this.getMethod('resetProject'))
 
         program.command('config [name]')
             .description('edit global or project config')

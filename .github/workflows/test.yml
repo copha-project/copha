@@ -1,0 +1,36 @@
+name: Copha build and test
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [12]
+        os: [ubuntu-latest]
+        # node-version: [12, 14, 16]
+        # os: [ubuntu-latest, windows-latest, macOS-latest]
+    env:
+      COPHA_DATA_PATH: /tmp/co
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm i -g npm
+      - run: yarn
+      - run: git submodule update --init
+      - run: npm run build
+      - run: npm start -- -h
+      - run: mkdir /tmp/co
+      - run: npm start create t1
+      - run: npm start list
+      - run: npm start run t1
+      - run: npm start delete t1

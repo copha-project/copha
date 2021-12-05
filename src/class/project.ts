@@ -1,18 +1,21 @@
 const path = require('path')
 const events = require('events')
 const Utils = require('uni-utils')
-import { Base } from "./base"
-const Common = require('../common')
+import Base from './base'
+import Common from '../common'
+import Task from './task'
+import Core from './core'
+
 
 class Project extends Base {
-    static instance = null
-    private _core = null
-    private _conf = null
-    private _storage = null
-    private _event = null
-    private _driver = null
-    private _custom = null
-    private task = null
+    static instance: Project
+    private _core: Core
+    private _conf: ProjectConfig
+    private _storage: BaseObject
+    private _event: BaseObject
+    private _driver: BaseObject
+    private _custom: BaseObject
+    private task: Task
 
     constructor(conf) {
         super()
@@ -24,7 +27,7 @@ class Project extends Base {
     static async getInstance(core, projectConfig){
         if(!this.instance){
             this.instance = new Project(projectConfig)
-            this.instance.setCore(core)
+            core && this.instance.setCore(core)
             await this.instance.init()
         }
         return this.instance
@@ -36,7 +39,7 @@ class Project extends Base {
         return path.join(this.appSettings.DataPath,name,this.constData.AppProjectPathSet[key])
     }
 
-    setCore(v){
+    setCore(v: Core){
         this._core = v
     }
 
@@ -58,10 +61,11 @@ class Project extends Base {
     async exportData() {
         this.log.info('Prepare to export data')
         if(this.conf.Task?.CustomStage?.ExportData){
-            if(await Utils.checkFile(this.getPath('custom_export_data')) !== true) throw new Error(this.getMsg(5))
+
+            if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))
-            return customCode?.call(this)
+            return customCode?.call(this.helper)
         }
 
         let files = await this.storage.all()
@@ -127,7 +131,7 @@ class Project extends Base {
                 await this.task?.runBefore()
                 await this.task?.runTest()
             }, async (error)=>{
-                this.log.err('test err:', error)
+                this.log.err(`test err: ${error.message}`)
             }, async ()=>{
                 await this.clear()
                 this.log.info('Task test finished')
@@ -142,7 +146,7 @@ class Project extends Base {
                 await this.startPrepare()
                 await this.task?.runBefore()
                 await this.task?.run()
-                await this.execCode()
+                await this.execCustomCode()
             }, async (error)=>{
                 this.log.err(`Task start error: ${error.message}`)
                 // 遇到错误退出程序，有可能的话重启进程
@@ -158,15 +162,15 @@ class Project extends Base {
             })
     }
 
-    async execCode(){
-        if(await Utils.checkFile(this.getPath('custom_exec_code')) !== true) throw new Error(this.getMsg(5))
+    async execCustomCode(){
+        if(!await Utils.checkFile(this.getPath('custom_exec_code'))) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
         const customCode = require(this.getPath('custom_exec_code'))
         Common.domain(
             async ()=>{
                 await customCode?.call(this)
-            }, async (error)=>{
-                console.log('execCode err:',error)
+            }, async (error: Error)=>{
+                this.log.err(`execCustomCode err: ${error.message}`)
             }, async ()=>{
             })
     }
@@ -238,13 +242,13 @@ class Project extends Base {
 
     private async initStorage() {
         const storageInfo = this.conf?.Storage
-        const storageClass = await this._core.getStorage(storageInfo?.Name)
+        const storageClass = await this.core.getStorage(storageInfo?.Name)
         this._storage = new storageClass()
         this.storage.setConfig(this.conf)
     }
 
     private async loadBrowserDriver() {
-        const driverClass = await this._core.getDriver(this.conf.main?.driver)
+        const driverClass = await this.core.getDriver(this.conf.main?.driver)
         this._driver = new driverClass()
         this.driver.setConfig(this.conf)
     }
@@ -255,10 +259,8 @@ class Project extends Base {
         }
         const taskName = this.conf.main?.task
         try {
-            const taskClass = await this._core.getTask(taskName)
-            this.task = new taskClass()
+            this.task = await this.core.getTask(taskName)
             this.task.setConfig(this.conf)
-            this.task.helper = this.helper
         } catch (error) {
             throw Error(`can't load task [${taskName}] : ${error}`)
         }
@@ -324,6 +326,8 @@ class Project extends Base {
     get helper(){
     	return {
             uni: Utils,
+            log: this.log,
+            getPath: this.getPath.bind(this),
             getDedailList : async () => {
         		const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
         		return files

@@ -89,6 +89,11 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@types/command-exists@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/command-exists/-/command-exists-1.2.0.tgz#d97e0ed10097090e4ab0367ed425b0312fad86f3"
+  integrity sha512-ugsxEJfsCuqMLSuCD4PIJkp5Uk2z6TCMRCgYVuhRo5cYQY3+1xXTQkSlPtkpGHuvWMjS2KTeVQXxkXRACMbM6A==
+
 "@types/node@^14.0.1":
   version "14.17.27"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.17.27.tgz#5054610d37bb5f6e21342d0e6d24c494231f3b85"
@@ -3224,10 +3229,10 @@ undertaker@^1.2.1:
     object.reduce "^1.0.0"
     undertaker-registry "^1.0.0"
 
-uni-utils@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/uni-utils/-/uni-utils-1.0.13.tgz#f3ad1df943b200d6f53b84824945c4c7a5d9bddd"
-  integrity sha512-PAyZtVD3kf1XS++Zob+OugX5RH7KWXdDPMROASxPwP0dobVQimz3kViO5LiLBckCfulZQjFPFDJmExqqzrd8Bw==
+uni-utils@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/uni-utils/-/uni-utils-1.0.15.tgz#f395fc798bcf0114640ae4931bbcc3afc368ff02"
+  integrity sha512-LYt5SH9oBriCFz0VZZ6+sA4giNaAsQZzDfqdxKD/xN+keKHTecN3ZyXswy68Q5/VyAqxQ1MQwnZCKM2YYdQ9Rw==
   dependencies:
     cli-progress "^3.8.0"
     fast-csv "^4.3.6"
