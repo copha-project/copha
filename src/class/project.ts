@@ -6,6 +6,7 @@ import Common from '../common'
 import Task from './task'
 import Core from './core'
 
+
 class Project extends Base {
     static instance: Project
     private _core: Core
@@ -60,6 +61,7 @@ class Project extends Base {
     async exportData() {
         this.log.info('Prepare to export data')
         if(this.conf.Task?.CustomStage?.ExportData){
+
             if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = require(this.getPath('custom_export_data'))

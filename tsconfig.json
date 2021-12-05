@@ -16,6 +16,7 @@
                 "src/types/*"
             ]
         }
+
     },
     "include": ["./src/**/*"],
     "exclude": ["./src/resource"]
