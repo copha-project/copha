@@ -1,5 +1,6 @@
 const Cli = require('./class/cli')
 import Common from './common'
+import Task from './class/task'
 
 const runCli = async () => {
     Common.loadPackageEnv()
@@ -19,7 +20,7 @@ const runCli = async () => {
 exports.runCli = runCli
 exports.Core = require('./class/core')
 exports.Project = require('./class/project')
-exports.Task = require('./class/task')
+exports.Task = Task
 exports.Driver = require('./class/driver')
 exports.Storage = require('./class/storage')
 exports.Utils = require('uni-utils')

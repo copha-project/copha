@@ -47,10 +47,7 @@ class Core extends Base{
         }
     }
 
-    async getProxy(...args){
-        return this.proxy.getProxy(...args)
-    }
-
+    // task
     // TODO: 现在是扫描数据目录获取project list，需要重构成把project信息记录在文件了里
     async listProject(): Promise<any[]> {
         const files = await Utils.readDir(this.appSettings.DataPath)
@@ -60,7 +57,7 @@ class Core extends Base{
         return data
     }
 
-    async listTask(): Promise<Task[]> {
+    async listTask(): Promise<TaskModel[]> {
         return Utils.readJson(this.constData.AppUserTasksDataPath)
     }
 
@@ -114,7 +111,7 @@ class Core extends Base{
         await Utils.rm(projectPath)
     }
 
-    async getProject(name, singleton = false){
+    async getProject(name: string, singleton = false){
         const projectConfig = await this.getProjectConf(name)
         const project = singleton ? await Project.getInstance(this, projectConfig) : new Project(projectConfig)
         return project
@@ -238,15 +235,21 @@ class Core extends Base{
         return require(driverClassPath)
     }
 
-    async getTask(name){
+    async getTask(name:string){
         if(!this.appSettings.Task.Default){
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
         const taskName = name || this.appSettings.Task.Default
-        const taskClassPath = path.resolve(this.constData.AppConfigUserDir,`tasks/${taskName}/src`)
-        return require(taskClassPath)
+        const taskClassPath = path.resolve(this.constData.AppConfigUserDir,`tasks/${taskName}`)
+        const taskClass = require(taskClassPath)
+        return new taskClass()
     }
 
+    async getProxy(...args){
+        return this.proxy.getProxy(...args)
+    }
+
+    // other
     async startProjectByDaemon(name){
         await this.getProject(name)
         return Utils.createProcess(this.constData.AppExecutableCommandPath,['run',name])
@@ -316,7 +319,5 @@ class Core extends Base{
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
     }
 }
-
-module.exports = Core
 
 export default Core

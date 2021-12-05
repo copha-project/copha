@@ -26,8 +26,8 @@
         "copha": "./dist/bin/index.js"
     },
     "scripts": {
-        "dev": "cross-env COPHA_DEBUG=1 ts-node -- ./src/bin/dev.ts",
-        "start": "ts-node -- ./src/bin/index.ts",
+        "dev": "cross-env COPHA_DEBUG=1 ts-node --files -- ./src/bin/dev.ts",
+        "start": "ts-node --files -- ./src/bin/index.ts",
         "test": "node ./test/index.js",
         "build": "gulp",
         "clear": "node ./dev/clear.js",

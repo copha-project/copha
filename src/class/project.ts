@@ -4,10 +4,11 @@ const Utils = require('uni-utils')
 import Base from './base'
 import Common from '../common'
 import Task from './task'
+import Core from './core'
 
 class Project extends Base {
     static instance: Project
-    private _core: BaseObject
+    private _core: Core
     private _conf: ProjectConfig
     private _storage: BaseObject
     private _event: BaseObject
@@ -25,7 +26,7 @@ class Project extends Base {
     static async getInstance(core, projectConfig){
         if(!this.instance){
             this.instance = new Project(projectConfig)
-            this.instance.setCore(core)
+            core && this.instance.setCore(core)
             await this.instance.init()
         }
         return this.instance
@@ -37,7 +38,7 @@ class Project extends Base {
         return path.join(this.appSettings.DataPath,name,this.constData.AppProjectPathSet[key])
     }
 
-    setCore(v){
+    setCore(v: Core){
         this._core = v
     }
 
@@ -239,13 +240,13 @@ class Project extends Base {
 
     private async initStorage() {
         const storageInfo = this.conf?.Storage
-        const storageClass = await this._core.getStorage(storageInfo?.Name)
+        const storageClass = await this.core.getStorage(storageInfo?.Name)
         this._storage = new storageClass()
         this.storage.setConfig(this.conf)
     }
 
     private async loadBrowserDriver() {
-        const driverClass = await this._core.getDriver(this.conf.main?.driver)
+        const driverClass = await this.core.getDriver(this.conf.main?.driver)
         this._driver = new driverClass()
         this.driver.setConfig(this.conf)
     }
@@ -256,8 +257,7 @@ class Project extends Base {
         }
         const taskName = this.conf.main?.task
         try {
-            const taskClass = await this._core.getTask(taskName)
-            this.task = new taskClass()
+            this.task = await this.core.getTask(taskName)
             this.task.setConfig(this.conf)
         } catch (error) {
             throw Error(`can't load task [${taskName}] : ${error}`)
