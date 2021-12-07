@@ -4,21 +4,30 @@ class Storage extends Base {
     db = null
     private _projectConfig = null
     private _config = null
-    private storageType: string
+    private _storageType: string
     constructor() {
         super()
     }
     get conf(){
         return this._config
     }
+
+    get config(){
+        return this._config
+    }
+
     get projectConfig(){
         return this._projectConfig
+    }
+    
+    get storageType(){
+        return this._storageType
     }
 
     setConfig(projectConfig){
         this._projectConfig = projectConfig
         this._config = projectConfig?.Storage || {}
-        this.storageType = projectConfig?.Storage?.Name
+        this._storageType = projectConfig?.Storage?.Name
     }
 
     async init(){}
