@@ -3,7 +3,9 @@ interface BaseObject {
 }
 
 interface AppSettings extends BaseObject {
-    
+    DataPath:string
+    Language:string
+    Editor:string
 }
 
 interface ProjectConfig extends BaseObject {
