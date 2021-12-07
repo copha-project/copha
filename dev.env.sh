@@ -3,4 +3,4 @@
 # usage:  . ./dev.env.sh
 export COPHA_DEBUG=1
 export COPHA_DATA_PATH="${your_data_dir_name}"
-alias copha="./node_modules/.bin/ts-node -- ./src/bin/dev.ts"
+alias copha="./node_modules/.bin/ts-node --files -- ./src/bin/dev.ts"
