@@ -1,6 +1,5 @@
-const openInEditor = require('open-in-editor')
-const pkg = require('../../package')
-const commander = require('commander')
+import openInEditor = require('open-in-editor')
+import commander = require('commander')
 import Base from './base'
 import Core from './core'
 
@@ -14,7 +13,7 @@ function preCheck() {
     }
 }
 
-class Cli extends Base {
+export default class Cli extends Base {
     private static instance: Cli
     private _core: Core
     constructor() { super() }
@@ -27,10 +26,10 @@ class Cli extends Base {
           subcommandTerm: (cmd) => cmd.name()
         })
 
-        program.name(pkg.name)
+        program.name(this.constData.AppInfo.name)
 
         program
-            .version(pkg.version, '-v, --version', 'output the current version')
+            .version(this.constData.AppInfo.version, '-v, --version', 'output the current version')
 
         program.command('list')
             .description('list project info')
@@ -219,7 +218,7 @@ class Cli extends Base {
         } else if (options.test) {
             return (await this.core.getProject(name, true)).test()
         } else if (options.custom) {
-            return (await this.core.getProject(name, true)).execCode()
+            return (await this.core.getProject(name, true)).execCustomCode()
         } else if (options.daemon) {
             const sp = await this.core.startProjectByDaemon(name)
             this.log.info(this.getMsg(17,name,sp.pid))
@@ -321,11 +320,4 @@ class Cli extends Base {
             .catch(dealErr)
         })
     }
-}
-
-
-module.exports = Cli
-
-export {
-    Cli
 }

@@ -1,5 +1,5 @@
-const path = require('path')
-const fs = require('fs')
+import path = require('path')
+import fs = require('fs')
 
 export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
@@ -7,21 +7,24 @@ export default class Common {
 
   static homedir() {
     const env = process.env
-    const home = env.HOME
+    let home: string|undefined|null = env.HOME
     const user = env.LOGNAME || env.USER || env.LNAME || env.USERNAME
 
     if (process.platform === 'win32') {
-      return env.USERPROFILE || (env.HOMEDRIVE || '') + (env.HOMEPATH || '') || home || null
+      home = home || env.USERPROFILE || (env.HOMEDRIVE || '') + (env.HOMEPATH || '')
     }
+
     if (process.platform === 'darwin') {
-      return home || (user ? '/Users/' + user : null)
+      home = home || (user ? '/Users/' + user : null)
     }
 
     if (process.platform === 'linux') {
-      return home || (process.getuid() === 0 ? '/root' : (user ? '/home/' + user : null))
+      home = home || (process.getuid() === 0 ? '/root' : (user ? '/home/' + user : null))
     }
-
-    return home || null
+    
+    if(!home) throw new Error(`can't get use home path!`)
+    
+    return home
   }
 
   static async zipDir(dirPath, outPath) {

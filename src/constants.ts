@@ -1,6 +1,6 @@
-const path = require('path')
-const pkg = require('../package')
+import path = require('path')
 import Common from './common'
+import Utils = require('uni-utils')
 
 // store dir on install
 const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')
@@ -33,13 +33,16 @@ const AppConfigTpl = {
     custom_over_write_code: path.join(AppConfigTplPath, 'custom_over_write_code.js')
 }
 
+// app info
+const AppInfo = Utils.readJsonSync(path.join(AppProjectRootPath,'package.json'))
+
 const LangList = ["en","cn"]
 
 const DocsLinks = {
-    StorageHelpLink: pkg.homepage + "/storage",
-    ProjectHelpLink: pkg.homepage + "/project",
-    TaskHelpLink: pkg.homepage + "/task",
-    DriverHelpLink: pkg.homepage + "/driver"
+    StorageHelpLink: AppInfo.homepage + "/storage",
+    ProjectHelpLink: AppInfo.homepage + "/project",
+    TaskHelpLink: AppInfo.homepage + "/task",
+    DriverHelpLink: AppInfo.homepage + "/driver"
 }
 
 const AppProjectPathSet =  {
@@ -64,7 +67,7 @@ const AppProjectPathSet =  {
 
 const DefaultEditorList = ['code','vim','vi','nano']
 
-const BugLink = pkg?.bugs?.url
+const BugLink = AppInfo?.bugs?.url
 
 export default {
     AppProjectRootPath,
@@ -83,5 +86,6 @@ export default {
     AppUserDriversDataPath,
     LangList,
     DefaultEditorList,
-    DocsLinks
+    DocsLinks,
+    AppInfo
 }
