@@ -1,22 +1,24 @@
 {
     "compilerOptions": {
         "outDir": "./dist",
-        "allowJs": true,
+        "allowJs": false,
         "target": "es5",
+        "noUnusedLocals": true,
+        "noEmitOnError": true,
+        // "noImplicitAny": true, 
         "experimentalDecorators": true,
         // Generate d.ts files
         "declaration": true,
         "resolveJsonModule": true,
         "strictNullChecks": true,
-        "typeRoots": ["./node_modules/@types/", "./src/types/"],
+        // "typeRoots": ["./node_modules/@types/", "./types"],
         "baseUrl": ".",
         "paths": {
             "*": [
-                "node_modules/*",
+                "*",
                 "src/types/*"
             ]
         }
-
     },
     "include": ["./src/**/*"],
     "exclude": ["./src/resource"]
