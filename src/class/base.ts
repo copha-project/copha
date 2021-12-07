@@ -31,7 +31,7 @@ export default class Base {
     }
 
     static async installCheck(){
-        if(await Utils.checkFile(this.constData.AppConfigUserDir)) return true
+        if(await Utils.checkFile(this.constData.AppInstalledLockFile)) return true
         this.log.info(this.getMsg(9))
         try {
             if(process.platform === 'win32'){
