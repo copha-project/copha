@@ -2,7 +2,7 @@
     "name": "Copha", 
     "short_name": "Copha", 
     "descriptions": "Copha Documentation", 
-    "start_url": "/install_pwa", 
+    "start_url": "/", 
     "background_color": "#fff", 
     "display": "minimal-ui", 
     "scope": "/", 
