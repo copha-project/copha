@@ -313,6 +313,7 @@ export default class Cli extends Base {
                 this.log.debug(`open editor error: ${error?.message || error}`)
                 reject(new Error(this.getMsg(32, editorBinName)))
             }
+            // win10 need update vscode location : https://github.com/lahmatiy/open-in-editor/pull/22
             openInEditor.configure({
                 editor: editorBinName
             }, dealErr)?.open(filePath)
