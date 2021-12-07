@@ -1,13 +1,13 @@
-const path = require('path')
-const events = require('events')
-const Utils = require('uni-utils')
+import path = require('path')
+import events = require('events')
+import Utils = require('uni-utils')
 import Base from './base'
 import Common from '../common'
 import Task from './task'
 import Core from './core'
 
 
-class Project extends Base {
+export default class Project extends Base {
     static instance: Project
     private _core: Core
     private _conf: ProjectConfig
@@ -337,17 +337,11 @@ class Project extends Base {
         	getExportJsonData : async () => {
         		return Utils.readJson(path.join(this.getPath('data_dir'), 'export/export.json'))
         	},
-        	download : Utils.listDownload
+        	download : Utils.download
         }
     }
 
     get core(){
         return this._core
     }
-}
-
-module.exports = Project
-
-export {
-    Project
 }

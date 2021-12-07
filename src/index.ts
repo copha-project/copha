@@ -1,4 +1,4 @@
-const Cli = require('./class/cli')
+import Cli from './class/cli'
 import Common from './common'
 import Task from './class/task'
 

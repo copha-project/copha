@@ -14,4 +14,9 @@ declare namespace uniUtils {
     function copyDir(srcDir:string,distDir:string): Promise<any>
     function checkFileSync(file:string): boolean
     function readJsonSync(file:string): any
+    function fileExist(file:string): Promise<boolean>
+    function readFile(file:string): Promise<string>
+    function createProcess(jsPath:string, options: string[]): Promise<any>
+    function createDir(dirPath:string|string[]): Promise<any>
+    function copyFile(srcFile:string,distFile:string): Promise<any> 
 }
