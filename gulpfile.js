@@ -25,4 +25,4 @@ gulp.task("compile-ts", function () {
   ])
 })
 
-gulp.task("default", gulp.series('clean',gulp.parallel("copy-resource-file","compile-ts")))
+gulp.task("default", gulp.series('clean',"compile-ts","copy-resource-file"))
