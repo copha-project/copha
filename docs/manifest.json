@@ -9,10 +9,15 @@
     "theme_color": "#fff", 
     "icons": [
         {
-        "src": "/assets/images/logo2x1n.png", 
-        "type": "image/png", 
-        "sizes": "883x442", 
-        "purpose": "any maskable"
+            "src": "/assets/images/logo2x1n.png", 
+            "type": "image/png", 
+            "sizes": "883x442", 
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo1x1w.png", 
+            "type": "image/png", 
+            "sizes": "883x442"
         }
     ]
 }
