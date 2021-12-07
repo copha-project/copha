@@ -28,9 +28,9 @@ jobs:
       - run: yarn
       - run: git submodule update --init
       - run: npm run build
-      - run: npm start -- -h
+      - run: npm run dev -- -h
       - run: mkdir /tmp/co
-      - run: npm start create t1
-      - run: npm start list
-      - run: npm start run t1
-      - run: npm start delete t1
+      - run: npm run dev create t1
+      - run: npm run dev list
+      - run: npm run dev run t1
+      - run: npm run dev delete t1
