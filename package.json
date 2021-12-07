@@ -32,6 +32,7 @@
         "build": "gulp",
         "clear": "node ./dev/clear.js",
         "np": "npm version from-git --force --no-git-tag-version --no-commit-hooks --allow-same-version",
+        "init-submodule": "git submodule update --init",
         "update-submodule": "git submodule update --remote --merge"
     },
     "main": "./dist/index.js",
