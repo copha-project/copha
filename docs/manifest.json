@@ -3,10 +3,10 @@
     "short_name": "Copha", 
     "description": "Copha Documentation App", 
     "start_url": "/", 
-    "background_color": "#fff", 
+    "background_color": "#f0f8ff", 
     "display": "minimal-ui", 
     "scope": "/", 
-    "theme_color": "#fff", 
+    "theme_color": "#f0f8ff", 
     "icons": [
         {
             "src": "/assets/images/pwa/icon_x512.png", 

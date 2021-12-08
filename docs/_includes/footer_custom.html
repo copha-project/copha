@@ -9,6 +9,9 @@
           </svg>
     </button>
 </div>
+<div class="pwa-install">
+    <button type="button" title="安装/打开PWA应用" aria-label="Toggle pwa install/open">PWA</button>
+</div>
 <style>
 .lang-switcher{
     position: fixed;
@@ -44,6 +47,7 @@
     width: 50px;
     background-color: #7db7eb;
 }
+
 .dark-theme-switcher button.dark{
     background-image: url({{ '/assets/images/light-mode.svg' | relative_url }});
 }
@@ -60,6 +64,28 @@
     color: #ccc;
     cursor: pointer;
     padding: 12px;
+}
+
+.pwa-install{
+    position: fixed;
+    right: 40px;
+    bottom: 80px;
+    display: flex;
+    padding: 10px 0;
+    flex-direction: column;
+    justify-items: center;
+    border-radius: 5px;
+    width: 50px;
+    background-color: #7db7eb;
+}
+
+.pwa-install button{
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    color: whitesmoke;
+    cursor: pointer;
 }
 </style>
 <script>
@@ -117,12 +143,42 @@ document.body.setAttribute('class',color_scheme);
 </script>
 
 <script>
-    if (navigator.serviceWorker != null) {
-      navigator.serviceWorker.register('sw.js')
-      .then(function(registration) {
-        console.log('Registered events at scope: ', registration.scope);
-      }).catch(function(e){
-        console.log('Registered events error : ', e);
-      });
-    }
-  </script>
+    (function(){
+        let deferredPrompt;
+
+        var pwaElement = document.querySelector('.pwa-install');
+
+        function hideInstallPromotion(){
+
+        }
+
+        window.addEventListener('appinstalled', function(){
+            hideInstallPromotion();
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
+
+        pwaElement.addEventListener('click', function() {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(res){
+                console.log(res.outcome==='accepted');
+                deferredPrompt = null;
+            })
+        });
+
+        window.addEventListener('beforeinstallprompt', function(e){
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('app not install');
+        });
+
+        if (navigator.serviceWorker != null) {
+            navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('PWA ServiceWorker registered events at scope: ', registration.scope);
+            }).catch(function(e){
+                console.log('PWA ServiceWorker registered events error : ', e);
+            });
+        }
+    })();
+</script>
