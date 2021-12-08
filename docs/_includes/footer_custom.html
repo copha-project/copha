@@ -118,7 +118,7 @@ document.body.setAttribute('class',color_scheme);
 
 <script>
     if (navigator.serviceWorker != null) {
-      navigator.serviceWorker.register('pwa/sw.js', { scope: '/' })
+      navigator.serviceWorker.register('pwa/sw.js', { scope: '/pwa' })
       .then(function(registration) {
         console.log('Registered events at scope: ', registration.scope);
       }).catch(function(e){
