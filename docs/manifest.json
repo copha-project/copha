@@ -1,23 +1,59 @@
 {
     "name": "Copha", 
     "short_name": "Copha", 
-    "descriptions": "Copha Documentation", 
+    "description": "Copha Documentation App", 
     "start_url": "/", 
-    "background_color": "#fff", 
+    "background_color": "#f0f8ff", 
     "display": "minimal-ui", 
     "scope": "/", 
-    "theme_color": "#fff", 
+    "theme_color": "#f0f8ff", 
     "icons": [
         {
-            "src": "/assets/images/logo2x1n.png", 
+            "src": "/assets/images/pwa/icon_x512.png", 
             "type": "image/png", 
-            "sizes": "883x442", 
-            "purpose": "any maskable"
+            "sizes": "512x512", 
+            "purpose": "maskable"
         },
         {
-            "src": "/assets/images/logo1x1w.png", 
+            "src": "/assets/images/pwa/icon_x384.png", 
             "type": "image/png", 
-            "sizes": "784x784"
+            "sizes": "384x384", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon_x192.png", 
+            "type": "image/png", 
+            "sizes": "192x192", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon_x128.png", 
+            "type": "image/png", 
+            "sizes": "128x128", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon_x96.png", 
+            "type": "image/png", 
+            "sizes": "96x96", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon_x72.png", 
+            "type": "image/png", 
+            "sizes": "72x72", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon_x48.png", 
+            "type": "image/png", 
+            "sizes": "48x48", 
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/images/pwa/icon.png", 
+            "type": "image/png", 
+            "sizes": "981x981"
         }
     ]
 }
