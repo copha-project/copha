@@ -147,7 +147,7 @@ document.body.setAttribute('class',color_scheme);
         let deferredPrompt;
         var pwaElement = document.querySelector('.pwa-install');
         function hideInstallPromotion(){
-            pwaElement.style.setProperty('display','none')
+            pwaElement.style.setProperty('display','none');
         }
 
         window.addEventListener('appinstalled', function(){
@@ -161,7 +161,7 @@ document.body.setAttribute('class',color_scheme);
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(function(res){
                     console.log(res.outcome==='accepted');
-                    hideInstallPromotion()
+                    hideInstallPromotion();
                     deferredPrompt = null;
                 })
             }else{
