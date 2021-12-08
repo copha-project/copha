@@ -145,11 +145,9 @@ document.body.setAttribute('class',color_scheme);
 <script>
     (function(){
         let deferredPrompt;
-
         var pwaElement = document.querySelector('.pwa-install');
-
         function hideInstallPromotion(){
-
+            pwaElement.style.setProperty('display','none')
         }
 
         window.addEventListener('appinstalled', function(){
@@ -159,17 +157,21 @@ document.body.setAttribute('class',color_scheme);
         });
 
         pwaElement.addEventListener('click', function() {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function(res){
-                console.log(res.outcome==='accepted');
-                deferredPrompt = null;
-            })
+            if(deferredPrompt && deferredPrompt.prompt){
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(res){
+                    console.log(res.outcome==='accepted');
+                    hideInstallPromotion()
+                    deferredPrompt = null;
+                })
+            }else{
+                alert("app has been installed.");
+            }
         });
 
         window.addEventListener('beforeinstallprompt', function(e){
             e.preventDefault();
             deferredPrompt = e;
-            console.log('app not install');
         });
 
         if (navigator.serviceWorker != null) {
