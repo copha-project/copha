@@ -118,9 +118,11 @@ document.body.setAttribute('class',color_scheme);
 
 <script>
     if (navigator.serviceWorker != null) {
-      navigator.serviceWorker.register('sw.js')
+      navigator.serviceWorker.register('pwa/sw.js')
       .then(function(registration) {
         console.log('Registered events at scope: ', registration.scope);
+      }).catch(function(e){
+        console.log('Registered events error : ', e);
       });
     }
   </script>
