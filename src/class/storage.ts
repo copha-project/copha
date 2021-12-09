@@ -1,6 +1,6 @@
 import Base from './base'
 
-class Storage extends Base {
+export default class Storage extends Base {
     db = null
     private _projectConfig = null
     private _config = null
@@ -43,10 +43,4 @@ class Storage extends Base {
     querySync(where){}
 
     async close(){}
-}
-
-module.exports = Storage
-
-export {
-    Storage
 }

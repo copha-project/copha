@@ -1,12 +1,12 @@
-import path = require('path')
-import os = require('os')
-import Utils = require('uni-utils')
+import path from 'path'
+import os from 'os'
+import Utils from 'uni-utils'
 import Project from './project'
 import Base from './base'
 import Common from '../common'
 import Proxy from './proxy'
 
-class Core extends Base{
+export default class Core extends Base{
     static instance: Core
     proxy: any
     constructor(){
@@ -319,5 +319,3 @@ class Core extends Base{
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
     }
 }
-
-export default Core

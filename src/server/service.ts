@@ -1,6 +1,6 @@
 import Base from '../class/base'
 
-class Service extends Base {
+export default class Service extends Base {
     static instance: Service
     constructor() {
         super()
@@ -35,7 +35,3 @@ class Service extends Base {
         return ctx
     }
 }
-
-module.exports = Service
-
-export {}

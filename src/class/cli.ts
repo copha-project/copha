@@ -1,7 +1,8 @@
-import openInEditor = require('open-in-editor')
-import commander = require('commander')
+import openInEditor from 'open-in-editor'
+import commander from 'commander'
 import Base from './base'
 import Core from './core'
+import Server from './server'
 
 function preCheck() {
     return function(o, k, descriptor) {
@@ -72,8 +73,8 @@ export default class Cli extends Base {
             .option('-e, --export-data', 'edit custom export data code')
             .action(this.getMethod('setConfig'))
 
-        program.command('server')
-            .description('launch a api server')
+        program.command('serve')
+            .description('launch a API server')
             .option('-H, --host', 'server address, default use 127.0.0.1')
             .option('-p, --port <port>', 'server port, default use 7000')
             .option('-d, --daemon', 'run with daemon')
@@ -287,9 +288,9 @@ export default class Cli extends Base {
 
     @preCheck()
     async server(options) {
-        const Server = require('./server')
         const server = Server.getInstance(options)
         server.launch()
+        console.log(`The API server is running at : ${server.serverConfig.host}:${server.serverConfig.port}`)
     }
 
     @preCheck()

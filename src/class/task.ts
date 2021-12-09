@@ -1,7 +1,7 @@
-const path = require('path')
+import path from 'path'
 import Base from './base'
-const Project = require('./project')
-const Utils = require('uni-utils')
+import Project from './project'
+import Utils from 'uni-utils'
 
 export default class Task extends Base {
     private _name = null
@@ -44,11 +44,11 @@ export default class Task extends Base {
     async reset(){}
     async clear(){}
 
-    getPath(name){
+    getPath(name:string){
         return Project.getPath(this.projectName, name)
     }
 
-    getResourcePath(name, type="json"){
+    getResourcePath(name:string, type="json"){
         return path.join(this.getPath('task_file'),`${name}.${type}`)
     }
 

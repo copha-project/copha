@@ -29,7 +29,6 @@ const LogTextFormatConfig = format.printf(({ level, message, timestamp }) => `${
 const LogTimeConfig = format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'})
 const LogColorConfig = format.colorize({ all: true })
 
-
 export default class Logger {
     logger: any
     constructor(logConf?){

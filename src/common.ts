@@ -1,5 +1,5 @@
-import path = require('path')
-import fs = require('fs')
+import path from 'path'
+import fs from 'fs'
 
 export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"

@@ -1,8 +1,15 @@
 import Cli from './class/cli'
 import Common from './common'
-import Task from './class/task'
+export * from './class/task'
+export * from './class/driver'
+export * from './class/storage'
+export * from './class/project'
+export * from './class/core'
+// https://stackoverflow.com/questions/41892470/how-to-reexport-from-a-module-that-uses-export
+import Utils from 'uni-utils'
+export { Utils }
 
-const runCli = async () => {
+export const runCli = async () => {
     Common.loadPackageEnv()
     try {
         await Cli.installCheck()
@@ -16,11 +23,3 @@ const runCli = async () => {
         process.exit(1)
     }
 }
-
-exports.runCli = runCli
-exports.Core = require('./class/core')
-exports.Project = require('./class/project')
-exports.Task = Task
-exports.Driver = require('./class/driver')
-exports.Storage = require('./class/storage')
-exports.Utils = require('uni-utils')

@@ -16,3 +16,8 @@ interface TaskModel {
     name: string;
     version: string;
 }
+
+interface ServerConfig {
+    host: string,
+    port: number
+}

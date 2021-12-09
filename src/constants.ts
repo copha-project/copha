@@ -1,6 +1,6 @@
-import path = require('path')
+import path from 'path'
 import Common from './common'
-import Utils = require('uni-utils')
+import Utils from 'uni-utils'
 
 // store dir on install
 const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')

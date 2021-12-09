@@ -1,5 +1,5 @@
-import commandExists = require('command-exists')
-import Utils = require('uni-utils')
+import commandExists from 'command-exists'
+import Utils from 'uni-utils'
 import Logger from './logger'
 import * as Msgs from "../resource/i18n.json"
 import ConstData from "../constants"

@@ -1,8 +1,8 @@
 import Base from './base'
-import Utils = require('uni-utils')
+import Utils from 'uni-utils'
 import Core from './core'
 
-class Driver extends Base {
+export default class Driver extends Base {
     DriverModule = this
     private _projectConfig: ProjectConfig
     private config = null
@@ -118,10 +118,4 @@ class Driver extends Base {
     async findElementsByXpath(v, target){
         return this.findElementsBy('xpath', v, target)
     }
-}
-
-module.exports = Driver
-
-export {
-    Driver
 }

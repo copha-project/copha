@@ -1,16 +1,11 @@
-const Koa = require('koa')
-const Compose = require('koa-compose')
+import Koa from 'koa'
+import Compose from 'koa-compose'
 import Base from './base'
-const Core = require('./core')
-const {CommonRouter, ApiRouter} = require('../server/router')
-const {errHandler, reqLog } = require('../server/mid')
+import Core from './core'
+import { CommonRouter, ApiRouter } from '../server/router'
+import { errHandler, reqLog } from '../server/mid'
 
-interface ServerConfig {
-    host: string,
-    port: number
-}
-
-class Server extends Base {
+export default class Server extends Base {
     private static instance: Server
     private _serverConfig: ServerConfig
     private app: any
@@ -26,6 +21,8 @@ class Server extends Base {
     }
 
     private setConfig(options: ServerConfig){
+        options.port = options.port || this.appSettings.Server?.Port || 7000
+        options.host = options.host || this.appSettings.Server?.Host || '127.0.0.1'
         this._serverConfig = options
     }
 
@@ -45,13 +42,6 @@ class Server extends Base {
         return this
     }
     launch() {
-        const port = this.serverConfig.port || this.appSettings.Server?.Port || 7000
-        this.app.listen(port)
+        this.app.listen(this.serverConfig.port)
     }
-}
-
-module.exports = Server
-
-export {
-    Server
 }
