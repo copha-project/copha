@@ -146,8 +146,13 @@ document.body.setAttribute('class',color_scheme);
     (function(){
         let deferredPrompt;
         var pwaElement = document.querySelector('.pwa-install');
+
         function hideInstallPromotion(){
             pwaElement.style.setProperty('display','none');
+        }
+
+        if(window.matchMedia('(display-mode: minimal-ui)').matches){
+            hideInstallPromotion()
         }
 
         window.addEventListener('appinstalled', function(){
@@ -160,8 +165,9 @@ document.body.setAttribute('class',color_scheme);
             if(deferredPrompt && deferredPrompt.prompt){
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(function(res){
-                    console.log(res.outcome==='accepted');
-                    hideInstallPromotion();
+                    if(res.outcome === 'accepted'){
+                        hideInstallPromotion();
+                    }
                     deferredPrompt = null;
                 })
             }else{
