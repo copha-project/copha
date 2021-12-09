@@ -1,16 +1,26 @@
 import Router from 'koa-router'
-import Service from './service'
+import Controller from './controller'
 
-export const CommonRouter = new Router()
-export const ApiRouter = new Router({prefix: '/api'})
-const service = new Service()
+export function CommonRouter(){
+    const router = new Router()
+    const service = Controller.getInstance()
+    
+    router.get('/',service.home)
+    router.all('(.*)',service.notFind)
+    
+    return router.routes()
+}
 
-ApiRouter
-.get('/',service.home)
-.get('/project', service.project)
-.get('/task', service.task)
-.get('/settings', service.settings)
-.get('/project/:name/config',service.projectConf)
+export function ApiRouter(){
+    const apiRouter = new Router({prefix: '/api'})
+    const service = Controller.getInstance()
 
-CommonRouter.get('/',service.home)
-CommonRouter.all('(.*)',service.notFind)
+    apiRouter
+    .get('/',service.home)
+    .get('/project', service.project)
+    .get('/task', service.task)
+    .get('/settings', service.settings)
+    .get('/project/:name/config',service.projectConf)
+
+    return apiRouter.routes()
+}

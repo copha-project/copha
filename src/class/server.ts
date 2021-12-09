@@ -35,8 +35,8 @@ export default class Server extends Base {
         this.app = new Koa()
         this.app
         .use(Compose([errHandler,reqLog]))
-        .use(ApiRouter.routes())
-        .use(CommonRouter.routes())
+        .use(ApiRouter())
+        .use(CommonRouter())
 
         this.app.context.copha = Core.getInstance()
         return this

@@ -1,7 +1,7 @@
-import Service from './service'
-const service = new Service()
+import Controller from './controller'
 
 export async function reqLog(ctx, next){
+    const service = Controller.getInstance()
     const start = Date.now()
     await next()
     const ms = Date.now() - start

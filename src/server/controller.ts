@@ -1,14 +1,14 @@
 import Base from '../class/base'
 
-export default class Service extends Base {
-    static instance: Service
+export default class Controller extends Base {
+    static instance: Controller
     constructor() {
         super()
     }
 
     static getInstance(){
         if(!this.instance){
-            this.log.debug('init Service')
+            this.log.debug('init server Controller')
             this.instance = new this()
         }
         return this.instance
