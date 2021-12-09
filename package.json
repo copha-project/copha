@@ -45,6 +45,7 @@
     ],
     "devDependencies": {
         "@types/command-exists": "^1.2.0",
+        "@types/koa-router": "^7.4.4",
         "cross-env": "^7.0.3",
         "del": "^6.0.0",
         "gulp": "^4.0.2",
