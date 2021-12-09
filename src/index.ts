@@ -1,12 +1,13 @@
 import Cli from './class/cli'
 import Common from './common'
-export * from './class/task'
-export * from './class/driver'
-export * from './class/storage'
-export * from './class/project'
-export * from './class/core'
+export { default as Task } from './class/task'
+export { default as Driver } from './class/driver'
+export { default as Storage } from './class/storage'
+export { default as Project } from './class/project'
+export { default as Core } from './class/core'
 // https://stackoverflow.com/questions/41892470/how-to-reexport-from-a-module-that-uses-export
 import Utils from 'uni-utils'
+
 export { Utils }
 
 export const runCli = async () => {
