@@ -91,28 +91,35 @@
 <script>
 
 (function() {
-    var langSwitcherElement = document.querySelector('.lang-switcher');
-
-    function langSwitcherHandle(){
-        var lang = window.localStorage.getItem('lang_scheme') || 'en';
-        if(lang == 'en'){
-            setLang('zh');
-        }else{
-            setLang('en');
-        }
+    function getCurrentLang(){
+        return location.href.match(/\/(zh)\/?/) ? 'zh' : 'en';
     }
 
-    function setLang(lang){
-        window.localStorage.setItem('lang_scheme', lang);
-        if(lang != 'en'){
-            location.href = location.origin + location.pathname.replace('/','/'+lang+'/');
+    function langSwitcherHandle(){
+        var currentLang = getCurrentLang();
+        if(currentLang === 'en'){
+            window.localStorage.setItem('lang_scheme', 'zh');
+        }else{
+            window.localStorage.setItem('lang_scheme', 'en');
+        }
+        setLang();
+    }
+
+    function setLang(){
+        var localLang = window.localStorage.getItem('lang_scheme') || 'en';
+        var currentLang = getCurrentLang();
+        if(localLang === currentLang) return;
+
+        if(currentLang !== 'en'){
+            location.href = location.origin + location.pathname.replace('/','/'+localLang+'/');
         }else{
             location.href = location.origin + location.pathname.replace(/\/.{2}\//,'/');
         }
     }
 
+    var langSwitcherElement = document.querySelector('.lang-switcher');
     langSwitcherElement.addEventListener('click', langSwitcherHandle);
-    langSwitcherHandle();
+    setLang();
 }
 )();
 
