@@ -90,33 +90,36 @@
 </style>
 <script>
 
-var color_scheme = window.localStorage.color_scheme || "light";
-document.body.setAttribute('class',color_scheme);
-
 (function() {
-    var darkThemeSwitcherElement = document.querySelector('.lang-switcher');
+    var langSwitcherElement = document.querySelector('.lang-switcher');
 
-    darkThemeSwitcherElement.addEventListener('click', function() {
-        var lang = location.href.match(/\/(zh|en)\/?/) && location.href.match(/\/(zh|en)\/?/)[1] || 'en';
+    function langSwitcherHandle(){
+        var lang = window.localStorage.getItem('lang_scheme') || 'en';
         if(lang == 'en'){
             setLang('zh');
         }else{
             setLang('en');
         }
-    });
+    }
 
     function setLang(lang){
+        window.localStorage.setItem('lang_scheme', lang);
         if(lang != 'en'){
             location.href = location.origin + location.pathname.replace('/','/'+lang+'/');
         }else{
-            location.href = location.origin + location.pathname.replace(/\/.{2}\//,'/')
+            location.href = location.origin + location.pathname.replace(/\/.{2}\//,'/');
         }
     }
+
+    langSwitcherElement.addEventListener('click', langSwitcherHandle);
+    langSwitcherHandle();
 }
 )();
 
 (function() {
-    const themeAttr = 'data-theme';
+    var color_scheme = window.localStorage.color_scheme || "light";
+    document.body.setAttribute('class',color_scheme);
+    
     var darkThemeSwitcherElement = document.querySelector('.dark-theme-switcher');
     darkThemeSwitcherElement.querySelector('button').setAttribute('class', getTheme());
     darkThemeSwitcherElement.addEventListener('click', function() {
