@@ -110,7 +110,7 @@
         var currentLang = getCurrentLang();
         if(localLang === currentLang) return;
 
-        if(currentLang !== 'en'){
+        if(currentLang === 'en'){
             location.href = location.origin + location.pathname.replace('/','/'+localLang+'/');
         }else{
             location.href = location.origin + location.pathname.replace(/\/.{2}\//,'/');
