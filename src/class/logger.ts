@@ -1,7 +1,6 @@
 import { spawn } from 'child_process'
-import * as winston from 'winston'
+import winston, { format, createLogger }  from 'winston'
 import Common from '../common'
-import { format, createLogger } from 'winston'
 
 const LogBaseConfig = {
     levels: {

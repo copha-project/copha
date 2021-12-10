@@ -148,7 +148,8 @@ export default class Project extends Base {
                 await this.task?.run()
                 await this.execCustomCode()
             }, async (error)=>{
-                this.log.err(`Task start error: ${error.message}`)
+                this.log.err(`Task run error: ${error.message}`)
+                console.log(error)
                 // 遇到错误退出程序，有可能的话重启进程
                 await this.saveContext()
                 this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
