@@ -3,19 +3,20 @@ import commander from 'commander'
 import Base from './base'
 import Core from './core'
 import Server from './server'
+import Common from '../common'
 
 function preCheck() {
-    return function(o, k, descriptor) {
-        const method = descriptor.value
-        descriptor.value = async function(...args) {
+    return (target: any, k: string, descriptor: TypedPropertyDescriptor<Function>) => {
+        const method = descriptor.value!
+        descriptor.value = async function(...args){
             await Core.preCheck()
-            await method.apply(this, args)
+            return method.apply(target, args)
         }
     }
 }
 
 export default class Cli extends Base {
-    private static instance: Cli
+    static instance: Cli
     private _core: Core
     constructor() { super() }
 
@@ -36,16 +37,16 @@ export default class Cli extends Base {
             .description('list project info')
             .option('-a, --all','show all list data')
             .option('-t, --type <value>', 'show list info about project')
-            .action(this.getMethod('listInfo'))
+            .action(this.instance.listInfo)
 
         program.command('create <name>')
             .description('create a new project')
             .option('-t, --task <value>', 'choose a task, default with a empty task')
-            .action(this.getMethod('createProject'))
+            .action(this.instance.createProject)
 
         program.command('delete <name>')
             .description('delete a project')
-            .action(this.getMethod('deleteProject'))
+            .action(this.instance.deleteProject)
 
         program.command('run <name>')
             .description('run a project')
@@ -53,17 +54,17 @@ export default class Cli extends Base {
             .option('-t, --test', 'custom test only')
             .option('-d, --daemon', 'run with daemon mode')
             .option('-c, --custom','run custom code after the project finished')
-            .action(this.getMethod('runProject'))
+            .action(this.instance.runProject)
 
         program.command('stop <name>')
             .description('stop a project')
             .option('-r, --restart', 'stop and restart project')
-            .action(this.getMethod('stopProject'))
+            .action(this.instance.stopProject)
 
         // program.command('reset <name>')
         //     .description('reset a project')
         //     .option('--hard', 'delete all data of project')
-        //     .action(this.getMethod('resetProject'))
+        //     .action(this.instance.resetProject)
 
         program.command('config [name]')
             .description('edit global or project config')
@@ -71,29 +72,29 @@ export default class Cli extends Base {
             .option('-c, --custom', 'edit custom exec code')
             .option('-o, --overwrite', 'edit overwrite code of project')
             .option('-e, --export-data', 'edit custom export data code')
-            .action(this.getMethod('setConfig'))
+            .action(this.instance.setConfig)
 
         program.command('serve')
             .description('launch a API server')
-            .option('-H, --host', 'server address, default use 127.0.0.1')
+            .option('-H, --host <host>', 'server address, default use 127.0.0.1')
             .option('-p, --port <port>', 'server port, default use 7000')
             .option('-d, --daemon', 'run with daemon')
-            .action(this.getMethod('server'))
+            .action(this.instance.serve)
 
         program.command('load <data>')
             .description('load resource from tar, url, name')
             .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['task', 'driver', 'storage']))
-            .action(this.getMethod('load'))
+            .action(this.instance.load)
 
         program.command('logs [project]')
             .description('stream logs file. Default stream all logs')
-            .action(this.getMethod('logs'))
+            .action(this.instance.logs)
 
         program.command('export <project>')
             .description('export project data')
             .option('-f --save-path <path>','absolute path of saved data')
             .option('-d, --data', 'export with data dir')
-            .action(this.getMethod('export'))
+            .action(this.instance.export)
 
         return program.parseAsync()
     }
@@ -105,16 +106,35 @@ export default class Cli extends Base {
         return this.instance
     }
 
-    get core() {
+    static async run(){
+        Common.loadPackageEnv()
+        try {
+            await Cli.installCheck()
+            await Cli.getInstance().createCommander()
+        } catch (e) {
+            if(Common.isDebug){
+                console.log(e)
+            }else{
+                Cli.log.err(e.message)
+            }
+            process.exit(1)
+        }
+    }
+
+    private get core() {
         if (!this._core) {
             this._core = Core.getInstance()
         }
         return this._core
     }
     
+    private get instance(){
+        return Cli.getInstance()
+    }
+
     // xx = xx => (){} 形式的方法会忽略 装饰器方法
     @preCheck()
-    async listInfo(options){
+    private async listInfo(options){
         if(options.all) {
             this.listTask()
             this.listDriver()
@@ -134,7 +154,7 @@ export default class Cli extends Base {
         }
     }
 
-    async listProject(){
+    private async listProject(){
         const projectsData = await this.core.listProject()
         console.log(this.getMsg(21))
         if(projectsData.length == 0){
@@ -153,7 +173,7 @@ export default class Cli extends Base {
         )
     }
 
-    async listTask(){
+    private async listTask(){
         const taskList = await this.core.listTask()
         console.log(this.getMsg(20))
         console.table(
@@ -167,7 +187,7 @@ export default class Cli extends Base {
         )
     }
 
-    async listDriver(){
+    private async listDriver(){
         const driverList = await this.core.listDriver()
         console.log(this.getMsg(23))
         console.table(
@@ -183,25 +203,25 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    async load(name, options){
+    private async load(name, options){
         return this.core.load(name, options)
     }
 
     @preCheck()
-    async logs(name, options){
+    private async logs(name, options){
         name = await this.core.getProjectName(name)
         return this.core.logs(name, options)
     }
 
     @preCheck()
-    async createProject(name, {task}) {
+    private async createProject(name, {task}) {
         this.log.info(this.getMsg(15,name))
         await this.core.checkName(name)
         return this.core.createProject(name,task)
     }
 
     @preCheck()
-    async deleteProject(name){
+    private async deleteProject(name){
         name = await this.core.getProjectName(name)
         try {
             await this.core.deleteProject(name)
@@ -212,7 +232,7 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    async runProject(name, options) {
+    private async runProject(name, options) {
         name = await this.core.getProjectName(name)
         if (options.export) {
             return (await this.core.getProject(name, true)).exportData()
@@ -238,7 +258,7 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    async stopProject(name, options) {
+    private async stopProject(name, options) {
         name = await this.core.getProjectName(name)
         this.log.info(this.getMsg(19,name))
         await this.core.stopProject(name)
@@ -248,13 +268,13 @@ export default class Cli extends Base {
         }
     }
 
-    @preCheck()
-    async resetProject(name, options) {
-        name = await this.core.getProjectName(name)
-        return this.core.resetProject(name, options)
-    }
+    // @preCheck()
+    // private async resetProject(name, options) {
+    //     name = await this.core.getProjectName(name)
+    //     return this.core.resetProject(name, options)
+    // }
 
-    async setConfig(name, options) {
+    private async setConfig(name, options) {
         // open or edit project config if has project name
         if (name) {
             return this.setProjectConfig(name, options)
@@ -264,7 +284,7 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    async setProjectConfig(name, options) {
+    private async setProjectConfig(name, options) {
         let configPath = ''
         name = await this.core.getProjectName(name)
         const project = await this.core.getProject(name)
@@ -287,25 +307,20 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    async server(options) {
+    private async serve(options: ServerConfig) {
         const server = Server.getInstance(options)
         server.launch()
         console.log(`The API server is running at : ${server.serverConfig.host}:${server.serverConfig.port}`)
     }
 
     @preCheck()
-    async export(name, options){
+    private async export(name, options){
         name = await this.core.getProjectName(name)
         const exportFile = await this.core.exportProject(name,options)
         this.log.info(`export data at : ${exportFile}`)
     }
 
-    // get method bind this
-    getMethod(method){
-        return this[method].bind(this)
-    }
-
-    async openEditor(editorBinName, filePath){
+    private async openEditor(editorBinName, filePath): Promise<void>{
         if(!editorBinName){
             throw new Error(this.getMsg(33, filePath))
         }
