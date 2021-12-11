@@ -85,11 +85,11 @@ copha delete [project_name]
 copha delete project_name # delete a project
 ```
 
-### 9. server
+### 9. serve
 ```
-copha server [-options]
+copha serve [-options]
 
-copha server # launch a web server of api at local
+copha serve # launch a web server of api at local
 
 -p <7000> # specify the service port
 

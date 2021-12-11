@@ -70,7 +70,7 @@ copha delete [project_name]
 copha delete project_name # 删除项目
 ```
 
-### 8. server（API 服务器命令）
+### 8. serve（API 服务器命令）
 ```shell
 copha serve [-options]
 
