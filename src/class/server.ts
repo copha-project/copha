@@ -6,7 +6,7 @@ import { CommonRouter, ApiRouter } from '../server/router'
 import { errHandler, reqLog } from '../server/mid'
 
 export default class Server extends Base {
-    private static instance: Server
+    static instance: Server
     private _serverConfig: ServerConfig
     private app: any
     constructor() { super() }

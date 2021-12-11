@@ -1,7 +1,7 @@
 import Base from './base'
 
 export default class Proxy extends Base {
-    private static instance: Proxy
+    static instance: Proxy
     constructor() {
         super()
     }
