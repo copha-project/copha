@@ -17,3 +17,7 @@ svg image {
 a svg image {
     filter: invert(43%) sepia(49%) saturate(7469%) hue-rotate(239deg) brightness(97%) contrast(92%);
 }
+
+.dark a svg image {
+    filter: invert(68%) sepia(8%) saturate(582%) hue-rotate(177deg) brightness(92%) contrast(91%);
+}
