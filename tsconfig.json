@@ -4,6 +4,7 @@
         "allowJs": false,
         "target": "es5",
         "noUnusedLocals": true,
+        "noImplicitThis": true,
         "esModuleInterop": true,
         "noEmitOnError": true,
         // "noImplicitAny": true, 
