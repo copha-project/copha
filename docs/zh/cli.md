@@ -72,9 +72,9 @@ copha delete project_name # 删除项目
 
 ### 8. server（API 服务器命令）
 ```shell
-copha server [-options]
+copha serve [-options]
 
-copha server # 启动一个本地运行的 API 服务器
+copha serve # 启动一个本地运行的 API 服务器
 
 -p <7000> # 指定运行端口（默认为：7000）
 
