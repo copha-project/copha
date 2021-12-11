@@ -119,7 +119,10 @@
 
     var langSwitcherElement = document.querySelector('.lang-switcher');
     langSwitcherElement.addEventListener('click', langSwitcherHandle);
-    setLang();
+    
+    if(!location.href.match(/.+#tmp_lang/)){
+        setLang();
+    }
 }
 )();
 

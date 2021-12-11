@@ -5,7 +5,7 @@
 
 ## Copha is a general framework for running custom network tasks.
 
-> Read this in other languages: English ｜ [简体中文](./zh)
+> Read this in other languages: English ｜ [简体中文](./zh#tmp_lang)
 
 ## Getting Started
 - Installation
