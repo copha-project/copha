@@ -14,11 +14,10 @@
         "Default": "empty"
     },
     "Storage":{
-        "List": [
-            {
-                "name": "file"
-            }
-        ]
+        "Default": "file"
+    },
+    "Notification":{
+        "Default": "native"
     },
     "Proxy": {
         "List": [

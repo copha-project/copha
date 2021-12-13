@@ -136,9 +136,11 @@ export default class Cli extends Base {
     @preCheck()
     private async listInfo(options){
         if(options.all) {
-            this.listTask()
-            this.listDriver()
-            this.listProject()
+            await this.listTask()
+            await this.listDriver()
+            await this.listStorage()
+            await this.listNotification()
+            await this.listProject()
             return
         }
         if(!options.type) return this.listProject()
@@ -149,6 +151,10 @@ export default class Cli extends Base {
                 return this.listProject()
             case 'driver':
                 return this.listDriver()
+            case 'storage':
+                return this.listStorage()
+            case 'notification':
+                return this.listNotification()
             default:
                 throw new Error(this.getMsg(22))
         }
@@ -174,29 +180,32 @@ export default class Cli extends Base {
     }
 
     private async listTask(){
-        const taskList = await this.core.listTask()
-        console.log(this.getMsg(20))
-        console.table(
-            taskList.map(task => {
-                return {
-                    Name: task.name,
-                    Ver: task.version,
-                    Default: this.appSettings?.Task?.Default === task.name ? 'Y' : '-'
-                }
-            })
-        )
+        return this.listModule('Task')
     }
 
     private async listDriver(){
-        const driverList = await this.core.listDriver()
-        console.log(this.getMsg(23))
+        return this.listModule('Driver')
+    }
+
+    private async listStorage(){
+        return this.listModule('Storage')
+    }
+
+    private async listNotification(){
+        return this.listModule('Notification')
+    }
+
+    private async listModule(name){
+        const driverList: Module[] = await this.core['list'+name]()
+        const isDefaultModuleName = this.appSettings?.[name]?.Default
+        console.log(this.getMsg(23, name))
         console.table(
             driverList.map(driver => {
                 return {
                     Name: driver.name,
                     Ver: driver.version,
-                    Default: this.appSettings?.Driver?.Default === driver.name ? 'Y' : '-',
-                    Loaded: driver.active
+                    Default: isDefaultModuleName  === driver.name ? 'Y' : '-',
+                    Active: driver.active
                 }
             })
         )

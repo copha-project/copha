@@ -3,6 +3,7 @@
         "name": "empty",
         "desc": "default task",
         "repository": "https://github.com/copha-project/copha-empty-task",
-        "version": "latest"
+        "version": "latest",
+        "active": true
     }
 ]

@@ -57,12 +57,20 @@ export default class Core extends Base{
         return data
     }
 
-    async listTask(): Promise<TaskModel[]> {
+    async listTask(): Promise<TaskModule[]> {
         return Utils.readJson(this.constData.AppUserTasksDataPath)
     }
 
-    async listDriver(){
+    async listDriver(): Promise<DriverModule[]>{
         return Utils.readJson(this.constData.AppUserDriversDataPath)
+    }
+
+    async listStorage(): Promise<StorageModule[]>{
+        return Utils.readJson(this.constData.AppUserStoragesDataPath)
+    }
+
+    async listNotification(): Promise<NotificationModule[]>{
+        return Utils.readJson(this.constData.AppUserNotificationsDataPath)
     }
 
     async getProjectName(data){

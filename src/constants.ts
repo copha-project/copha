@@ -16,6 +16,10 @@ const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
 const AppUserTasksDataPath = path.resolve(AppConfigUserDir,'task.data')
 
 const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
+
+const AppUserStoragesDataPath = path.resolve(AppConfigUserDir,'storage.data')
+
+const AppUserNotificationsDataPath = path.resolve(AppConfigUserDir,'notification.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../')
 
@@ -84,6 +88,8 @@ export default {
     AppUserDriversDir,
     AppUserTasksDataPath,
     AppUserDriversDataPath,
+    AppUserStoragesDataPath,
+    AppUserNotificationsDataPath,
     LangList,
     DefaultEditorList,
     DocsLinks,

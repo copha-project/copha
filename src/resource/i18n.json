@@ -74,7 +74,8 @@
         "Unknown display list type.(22)"
     ],
     [
-        "Browser Driver List:(23)"
+        "# Module List:(23)",
+        "# 模块列表:"
     ],
     [
         "The task: [ # ] can't be use.(24)"

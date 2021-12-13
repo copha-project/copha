@@ -1,7 +1,7 @@
 [
     {
         "name": "simple-driver",
-        "desc": "default browser driver",
+        "desc": "default copha driver",
         "repository": "https://github.com/copha-project/simple-driver",
         "version": 1,
         "active": true
