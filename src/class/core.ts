@@ -252,6 +252,11 @@ export default class Core extends Base{
         return new taskClass()
     }
 
+    async getNotification(name){
+        const classPath = path.resolve(this.constData.AppConfigUserDir,`notifications/${name}`)
+        return require(classPath)
+    }
+
     async getProxy(...args){
         return this.proxy.getProxy(...args)
     }

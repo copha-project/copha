@@ -14,6 +14,7 @@ export default class Project extends Base {
     private _storage: BaseObject
     private _event: BaseObject
     private _driver: BaseObject
+    private _notifier: BaseObject
     private _custom: BaseObject
     private task: Task
 
@@ -105,6 +106,8 @@ export default class Project extends Base {
         await this.loadTask()
         // 初始化 用户自定义操作
         await this.loadCustomCode()
+
+        return this.loadNotification()
     }
 
     private async startPrepare(){
@@ -160,6 +163,7 @@ export default class Project extends Base {
             }, async ()=>{
                 await this.clear()
                 this.log.info('Task finished')
+                this.notifier.send('Task finished')
             })
     }
 
@@ -267,6 +271,12 @@ export default class Project extends Base {
         }
     }
 
+    private async loadNotification(){
+        const notificationClass = await this.core.getNotification('native')
+        this._notifier = new notificationClass()
+        this.notifier.setConfig(this.conf)
+    }
+
     private loadCustomCode() {
         try {
             this._custom =  require(this.getPath('custom_over_write_code'))
@@ -318,6 +328,10 @@ export default class Project extends Base {
 
     get Driver(){
         return this.driver?.DriverModule
+    }
+
+    get notifier(){
+        return this._notifier
     }
 
     get name(){
