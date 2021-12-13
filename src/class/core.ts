@@ -224,13 +224,12 @@ export default class Core extends Base{
         return Utils.saveFile(JSON.stringify(config, null, 4), Project.getPath(name,'config'))
     }
 
-    async getStorage(name){
-        if(!name) throw new Error(this.getMsg(39))
-        const storage = this.appSettings?.Storage?.List.find(e=>e.name===name)
-        if(!storage){
-            throw new Error(this.getMsg(36,name,this.constData.DocsLinks.StorageHelpLink))
-        }
-        const storageClassPath = path.resolve(this.constData.AppConfigUserDir,`storages/${storage.name}`)
+    async getStorage(name: string){
+        // const storage = this.appSettings?.Storage?.List.find(e=>e.name===name)
+        // if(!storage){
+        //     throw new Error(this.getMsg(36,name,this.constData.DocsLinks.StorageHelpLink))
+        // }
+        const storageClassPath = path.resolve(this.constData.AppConfigUserDir,`storages/${name}`)
         return require(storageClassPath)
     }
 

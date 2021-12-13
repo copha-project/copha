@@ -242,8 +242,8 @@ export default class Project extends Base {
     }
 
     private async initStorage() {
-        const storageInfo = this.conf?.Storage
-        const storageClass = await this.core.getStorage(storageInfo?.Name)
+        const storageName = this.conf?.Storage.Name || this.appSettings.Driver.Default || "file"
+        const storageClass = await this.core.getStorage(storageName)
         this._storage = new storageClass()
         this.storage.setConfig(this.conf)
     }
