@@ -7,3 +7,6 @@
 [submodule "src/resource/config/default/tasks/empty"]
 	path = src/resource/config/default/tasks/empty
 	url = https://github.com/copha-project/copha-empty-task
+[submodule "src/resource/config/default/notifications/native"]
+	path = src/resource/config/default/notifications/native
+	url = https://github.com/copha-project/native-notification
