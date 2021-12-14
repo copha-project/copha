@@ -1,5 +1,10 @@
 # Changelog
 
+### 2021-12-14
+- remove built-in submodule
+- unified import syntax
+- add notification module
+
 ### 2021-11-19
 - convert to typescript version
 
