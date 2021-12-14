@@ -1,9 +1,9 @@
 import path from 'path'
-import Base from './base'
+import Module from './module'
 import Project from './project'
 import Utils from 'uni-utils'
 
-export default class Task extends Base {
+export default class Task extends Module {
     private _name = null
     private _storage = null
     private _driver = null

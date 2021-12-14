@@ -8,6 +8,7 @@ import Proxy from './proxy'
 
 export default class Core extends Base{
     static instance: Core
+    private _modules: Module[] = []
     proxy: any
     constructor(){
         super()
@@ -57,20 +58,20 @@ export default class Core extends Base{
         return data
     }
 
-    async listTask(): Promise<TaskModule[]> {
-        return Utils.readJson(this.constData.AppUserTasksDataPath)
+    async listTask(): Promise<Module[]> {
+        return this.modules.filter(e=>e.type === ModuleType.Task)
     }
 
-    async listDriver(): Promise<DriverModule[]>{
-        return Utils.readJson(this.constData.AppUserDriversDataPath)
+    async listDriver(): Promise<Module[]>{
+        return this.modules.filter(e=>e.type === ModuleType.Driver)
     }
 
-    async listStorage(): Promise<StorageModule[]>{
-        return Utils.readJson(this.constData.AppUserStoragesDataPath)
+    async listStorage(): Promise<Module[]>{
+        return this.modules.filter(e=>e.type === ModuleType.Storage)
     }
 
-    async listNotification(): Promise<NotificationModule[]>{
-        return Utils.readJson(this.constData.AppUserNotificationsDataPath)
+    async listNotification(): Promise<Module[]>{
+        return this.modules.filter(e=>e.type === ModuleType.Notification)
     }
 
     async getProjectName(data){
@@ -224,43 +225,12 @@ export default class Core extends Base{
         return Utils.saveFile(JSON.stringify(config, null, 4), Project.getPath(name,'config'))
     }
 
-    async getStorage(name: string){
-        // const storage = this.appSettings?.Storage?.List.find(e=>e.name===name)
-        // if(!storage){
-        //     throw new Error(this.getMsg(36,name,this.constData.DocsLinks.StorageHelpLink))
-        // }
-        const storageClassPath = path.resolve(this.constData.AppConfigDir,`storages/${name}`)
-        return require(storageClassPath)
-    }
-
-    async getDriver(name){
-        const driverName = name || this.appSettings.Driver.Default
-        const driverClassPath = path.resolve(this.constData.AppConfigDir,`drivers/${driverName}`)
-        return require(driverClassPath)
-    }
-
-    async getTask(name:string){
-        if(!this.appSettings.Task.Default){
-            throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
-        }
-        const taskName = name || this.appSettings.Task.Default
-        const taskClassPath = path.resolve(this.constData.AppConfigDir,`tasks/${taskName}`)
-        const taskClass = require(taskClassPath)
-        return new taskClass()
-    }
-
-    async getNotification(name){
-        const classPath = path.resolve(this.constData.AppConfigDir,`notifications/${name}`)
-        return require(classPath)
-    }
-
     async getModule(name:string) {
         return require(path.resolve(this.constData.AppModulesDir,name))
     }
 
     async getModuleInfo(name:string) {
-        const modules: Module[] = await Utils.readJson(path.resolve(this.constData.AppConfigDir,'module.json'))
-        return modules.find(e=>e.name === name)
+        return this._modules.find(e=>e.name === name)
     }
 
     async getProxy(...args){
@@ -273,7 +243,7 @@ export default class Core extends Base{
         return Utils.createProcess(this.constData.AppExecutableCommandPath,['run',name])
     }
 
-    private async genTpl(name, task) {
+    private async genTpl(name, taskName) {
         const projectConfigPath = Project.getPath(name,'config')
         // TODO: 集中管理任务相关名字常量
         await Utils.createDir([
@@ -313,27 +283,34 @@ export default class Core extends Base{
         )
 
         // check task tpl exist
-        if(!await Utils.fileExist(path.join(this.constData.AppUserTasksDir, task,'package.json'))){
+        if(!await Utils.fileExist(path.join(this.constData.AppModulesDir, taskName,'package.json'))){
             throw new Error(this.getMsg(11))
         }
 
         // copy task
         await Utils.copyDir(
-            path.resolve(this.constData.AppUserTasksDir, task ,`src/resource`),
+            path.resolve(this.constData.AppModulesDir, taskName ,`src/resource`),
             path.resolve(Project.getPath(name,'root_dir'),'task')
         )
 
         const projectConfig = await this.getProjectConf(name)
         projectConfig.main.name = name
-        projectConfig.main.task = task
+        projectConfig.main.task = taskName
         projectConfig.main.dataPath = Project.getPath(name,'data_dir')
         projectConfig.main.createTime = Utils.getTodayDate()
 
-        projectConfig.Task = require(path.resolve(this.constData.AppUserTasksDir, task,'src/config.json'))
+        projectConfig.Task = require(path.resolve(this.constData.AppModulesDir, taskName,'src/config.json'))
         await this.saveProjectConf(name, projectConfig)
     }
 
     private getExportFileName(name){
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
+    }
+
+    get modules(){
+        if(!this._modules.length){
+            this._modules = Utils.readJsonSync(this.constData.AppModuleDBPath)
+        }
+        return this._modules
     }
 }

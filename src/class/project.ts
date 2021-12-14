@@ -13,10 +13,10 @@ export default class Project extends Base {
     private _conf: ProjectConfig
     private _storage: BaseObject
     private _event: BaseObject
+    private _task: Task
     private _driver: BaseObject
-    private _notifier: BaseObject
+    private _notification: BaseObject
     private _custom: BaseObject
-    private task: Task
 
     constructor(conf) {
         super()
@@ -98,16 +98,11 @@ export default class Project extends Base {
     //public end
 
     async init(){
-        // 加载存储模块
-        await this.initStorage()
-
-        await this.loadBrowserDriver()
-        // 判断任务类型，加载任务模块
         await this.loadTask()
-        // 初始化 用户自定义操作
+        await this.loadStorage()
+        await this.loadDriver()
+        await this.loadNotification()
         await this.loadCustomCode()
-
-        return this.loadNotification()
     }
 
     private async startPrepare(){
@@ -163,7 +158,7 @@ export default class Project extends Base {
             }, async ()=>{
                 await this.clear()
                 this.log.info('Task finished')
-                this.notifier.send('Task finished')
+                this.notification.send('Task finished')
             })
     }
 
@@ -245,46 +240,38 @@ export default class Project extends Base {
         }
     }
 
-    private async initStorage() {
-        const storageName = this.conf?.Storage.Name || this.appSettings.Driver.Default || "file"
-        const storageClass = await this.core.getStorage(storageName)
-        this._storage = new storageClass()
-        this.storage.setConfig(this.conf)
-    }
-
-    private async loadBrowserDriver() {
-        let useModuleName = this.conf.main?.driver
+    private async loadModule(moduleType:ModuleType){
+        const capitalizeFirstLetter = (s:string) => s.charAt(0).toUpperCase() + s.slice(1)
+        let useModuleName = this.conf.main?.[moduleType]
         if(!useModuleName){
-            if(!this.appSettings.Driver.Default){
-                throw new Error(this.getMsg(37))
+            if(!this.appSettings?.[capitalizeFirstLetter(moduleType)]?.Default){
+                throw new Error(this.getMsg(37,capitalizeFirstLetter(moduleType)))
             }
-            useModuleName = this.appSettings.Driver.Default
+            useModuleName = this.appSettings?.[capitalizeFirstLetter(moduleType)].Default
         }
         const moduleClass = await this.core.getModule(useModuleName)
-        this._driver = moduleClass
-        this.driver.setConfig(this.conf)
+        
+        this[`_${moduleType}`] = moduleClass.getInstance()
+        this[moduleType].setConfig(this.conf)
+    }
+
+    private async loadStorage() {
+        return this.loadModule(ModuleType.Storage)
+    }
+
+    private async loadDriver() {
+        return this.loadModule(ModuleType.Driver)
     }
 
     private async loadTask(){
-        if(!this.conf.main?.task){
-            throw Error(`Task not has a type, please set it.`)
-        }
-        const taskName = this.conf.main?.task
-        try {
-            this.task = await this.core.getTask(taskName)
-            this.task.setConfig(this.conf)
-        } catch (error) {
-            throw Error(`can't load task [${taskName}] : ${error}`)
-        }
+        return this.loadModule(ModuleType.Task)
     }
 
     private async loadNotification(){
-        const notificationClass = await this.core.getNotification('native')
-        this._notifier = new notificationClass()
-        this.notifier.setConfig(this.conf)
+        return this.loadModule(ModuleType.Notification)
     }
 
-    private loadCustomCode() {
+    private async loadCustomCode() {
         try {
             this._custom =  require(this.getPath('custom_over_write_code'))
         } catch (e) {
@@ -313,6 +300,10 @@ export default class Project extends Base {
         this._conf = v
     }
 
+    get task(){
+        return this._task
+    }
+
     get conf(){
         return this._conf
     }
@@ -337,8 +328,8 @@ export default class Project extends Base {
         return this.driver?.DriverModule
     }
 
-    get notifier(){
-        return this._notifier
+    get notification(){
+        return this._notification
     }
 
     get name(){

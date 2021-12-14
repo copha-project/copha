@@ -1,6 +1,6 @@
-import Base from './base'
+import Module from './module'
 
-export default class Storage extends Base {
+export default class Storage extends Module {
     db = null
     private _projectConfig = null
     private _config = null

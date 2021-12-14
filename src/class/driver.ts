@@ -1,8 +1,8 @@
-import Base from './base'
+import Module from './module'
 import Utils from 'uni-utils'
 import Core from './core'
 
-export default class Driver extends Base {
+export default class Driver extends Module {
     DriverModule = this
     private _projectConfig: ProjectConfig
     private config = null

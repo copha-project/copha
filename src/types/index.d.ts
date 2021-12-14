@@ -36,7 +36,7 @@ interface Module {
     repository?: string;
     version: string;
     active: boolean;
-    level: ModuleLevel
+    level: ModuleLevel;
 }
 
 interface TaskModule extends Module {

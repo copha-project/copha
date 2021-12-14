@@ -123,8 +123,8 @@
         "未能加载存储模块 [ # ]. 需要帮助请访问以下网页: \n #"
     ],
     [
-        "Please set [Driver.Default] value on the app settings, you can run `copha config` to open it.(37)",
-        "请在软件全局配置文件里设置 [Driver.Default] 值，你可以使用 `copha config` 来打开该配置文件."
+        "Please set [#.Default] value on the app settings, you can run `copha config` to open it.(37)",
+        "请在软件全局配置文件里设置 [#.Default] 值，你可以使用 `copha config` 来打开该配置文件."
     ],
     [
         "Not find browser driver module with delare name [ # ]. for more help, please visit the website: \n #(38)",

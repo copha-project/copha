@@ -6,22 +6,13 @@ import Utils from 'uni-utils'
 const AppConfigDir = path.resolve(Common.homedir(),'.copha')
 // modules save dir
 const AppModulesDir = path.resolve(AppConfigDir,'./modules')
-// store tasks at local settings
-const AppUserTasksDir = path.resolve(AppConfigDir,'./tasks')
-// store drivers at local settings
-const AppUserDriversDir = path.resolve(AppConfigDir,'./drivers')
+
+const AppModuleDBPath = path.resolve(AppConfigDir,'./module.json')
 // app config file path on user disk
 const AppConfigPath = path.join(AppConfigDir,'config.json')
 
 const AppInstalledLockFile = path.join(AppConfigDir,'install.lock')
 
-const AppUserTasksDataPath = path.resolve(AppConfigDir,'task.data')
-
-const AppUserDriversDataPath = path.resolve(AppConfigDir,'driver.data')
-
-const AppUserStoragesDataPath = path.resolve(AppConfigDir,'storage.data')
-
-const AppUserNotificationsDataPath = path.resolve(AppConfigDir,'notification.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../')
 
@@ -86,13 +77,8 @@ export default {
     AppProjectPathSet,
     BugLink,
     AppInstalledLockFile,
-    AppUserTasksDir,
     AppModulesDir,
-    AppUserDriversDir,
-    AppUserTasksDataPath,
-    AppUserDriversDataPath,
-    AppUserStoragesDataPath,
-    AppUserNotificationsDataPath,
+    AppModuleDBPath,
     LangList,
     DefaultEditorList,
     DocsLinks,

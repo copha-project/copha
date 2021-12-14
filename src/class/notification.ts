@@ -1,6 +1,6 @@
-import Base from './base'
+import Module from './module'
 
-export default class Notification extends Base {
+export default class Notification extends Module {
     private _projectConfig = null
     private _config = null
     constructor() {
