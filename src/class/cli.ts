@@ -72,7 +72,7 @@ export default class Cli extends Base {
             .option('-c, --custom', 'edit custom exec code')
             .option('-o, --overwrite', 'edit overwrite code of project')
             .option('-e, --export-data', 'edit custom export data code')
-            .action(this.instance.setConfig)
+            .action(this.instance.setConfig.bind(this))
 
         program.command('serve')
             .description('launch a API server')
