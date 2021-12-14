@@ -253,8 +253,15 @@ export default class Project extends Base {
     }
 
     private async loadBrowserDriver() {
-        const driverClass = await this.core.getDriver(this.conf.main?.driver)
-        this._driver = new driverClass()
+        let useModuleName = this.conf.main?.driver
+        if(!useModuleName){
+            if(!this.appSettings.Driver.Default){
+                throw new Error(this.getMsg(37))
+            }
+            useModuleName = this.appSettings.Driver.Default
+        }
+        const moduleClass = await this.core.getModule(useModuleName)
+        this._driver = moduleClass
         this.driver.setConfig(this.conf)
     }
 

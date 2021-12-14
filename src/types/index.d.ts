@@ -17,11 +17,26 @@ interface ServerConfig {
     port: number
 }
 
+declare const enum ModuleType {
+    Task="task",
+    Driver="driver",
+    Storage="storage",
+    Notification="notification"
+}
+
+declare const enum ModuleLevel {
+    I="I",
+    II="II",
+    III="III"
+}
 interface Module {
     name: string;
+    desc: string;
+    type: ModuleType;
+    repository?: string;
     version: string;
     active: boolean;
-    default: boolean;
+    level: ModuleLevel
 }
 
 interface TaskModule extends Module {

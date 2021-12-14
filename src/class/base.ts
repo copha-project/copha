@@ -35,14 +35,14 @@ export default class Base {
         this.log.info(this.getMsg(9))
         try {
             if(process.platform === 'win32'){
-                await Common.cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+                await Common.cp(this.constData.AppDefaultConfigDir,this.constData.AppConfigDir)
             }else{
-                await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigUserDir)
+                await Utils.copyDir(this.constData.AppDefaultConfigDir,this.constData.AppConfigDir)
             }
             await Utils.saveFile("", this.constData.AppInstalledLockFile)
         } catch (e) {
             try{
-                await Utils.rm(this.constData.AppConfigUserDir)
+                await Utils.rm(this.constData.AppConfigDir)
             }catch{}
             console.log(e.message)
             throw new Error(this.getMsg(8,this.constData.BugLink))
@@ -89,8 +89,8 @@ export default class Base {
     }
 
     private getAppSettings(){
-        if(!Utils.checkFileSync(ConstData.AppConfigUserPath)) throw new Error(this.getMsg(4))
-        const config: AppSettings = Utils.readJsonSync(ConstData.AppConfigUserPath)
+        if(!Utils.checkFileSync(ConstData.AppConfigPath)) throw new Error(this.getMsg(4))
+        const config: AppSettings = Utils.readJsonSync(ConstData.AppConfigPath)
         if (config?.DataPath === ""){
             if(this.getEnv('COPHA_DATA_PATH')){
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')

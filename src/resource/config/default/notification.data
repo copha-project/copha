@@ -1,9 +1,0 @@
-[
-    {
-        "name": "native",
-        "desc": "default copha notification",
-        "repository": "https://github.com/copha-project/native-notification",
-        "version": 0.01,
-        "active": true
-    }
-]

@@ -1,9 +1,0 @@
-[
-    {
-        "name": "file",
-        "desc": "default copha storage",
-        "repository": "https://github.com/copha-project/file-storage",
-        "version": 0.01,
-        "active": true
-    }
-]

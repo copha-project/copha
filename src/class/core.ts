@@ -205,7 +205,7 @@ export default class Core extends Base{
         if(!queryDriver.active){
             throw new Error(this.getMsg(35,driverName,driverName))
         }
-        const driver = await this.getDriver(driverName)
+        const driver = await this.getModule(driverName)
         projectConfig.main.driver = driverName
         projectConfig.Driver = driver.CONFIG
         return this.saveProjectConf(name, projectConfig)
@@ -229,16 +229,13 @@ export default class Core extends Base{
         // if(!storage){
         //     throw new Error(this.getMsg(36,name,this.constData.DocsLinks.StorageHelpLink))
         // }
-        const storageClassPath = path.resolve(this.constData.AppConfigUserDir,`storages/${name}`)
+        const storageClassPath = path.resolve(this.constData.AppConfigDir,`storages/${name}`)
         return require(storageClassPath)
     }
 
     async getDriver(name){
-        if(!this.appSettings.Driver.Default){
-            throw new Error(this.getMsg(37))
-        }
         const driverName = name || this.appSettings.Driver.Default
-        const driverClassPath = path.resolve(this.constData.AppConfigUserDir,`drivers/${driverName}`)
+        const driverClassPath = path.resolve(this.constData.AppConfigDir,`drivers/${driverName}`)
         return require(driverClassPath)
     }
 
@@ -247,14 +244,23 @@ export default class Core extends Base{
             throw 'please set Driver.Default value on app settings, you can run \`copha config\` do it.'
         }
         const taskName = name || this.appSettings.Task.Default
-        const taskClassPath = path.resolve(this.constData.AppConfigUserDir,`tasks/${taskName}`)
+        const taskClassPath = path.resolve(this.constData.AppConfigDir,`tasks/${taskName}`)
         const taskClass = require(taskClassPath)
         return new taskClass()
     }
 
     async getNotification(name){
-        const classPath = path.resolve(this.constData.AppConfigUserDir,`notifications/${name}`)
+        const classPath = path.resolve(this.constData.AppConfigDir,`notifications/${name}`)
         return require(classPath)
+    }
+
+    async getModule(name:string) {
+        return require(path.resolve(this.constData.AppModulesDir,name))
+    }
+
+    async getModuleInfo(name:string) {
+        const modules: Module[] = await Utils.readJson(path.resolve(this.constData.AppConfigDir,'module.json'))
+        return modules.find(e=>e.name === name)
     }
 
     async getProxy(...args){

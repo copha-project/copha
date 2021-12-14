@@ -289,7 +289,7 @@ export default class Cli extends Base {
             return this.setProjectConfig(name, options)
         }
         const editorBinName = await this.getEditor()
-        return this.openEditor(editorBinName, this.constData.AppConfigUserPath)
+        return this.openEditor(editorBinName, this.constData.AppConfigPath)
     }
 
     @preCheck()

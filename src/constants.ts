@@ -3,23 +3,25 @@ import Common from './common'
 import Utils from 'uni-utils'
 
 // store dir on install
-const AppConfigUserDir = path.resolve(Common.homedir(),'.copha')
+const AppConfigDir = path.resolve(Common.homedir(),'.copha')
+// modules save dir
+const AppModulesDir = path.resolve(AppConfigDir,'./modules')
 // store tasks at local settings
-const AppUserTasksDir = path.resolve(AppConfigUserDir,'./tasks')
+const AppUserTasksDir = path.resolve(AppConfigDir,'./tasks')
 // store drivers at local settings
-const AppUserDriversDir = path.resolve(AppConfigUserDir,'./drivers')
+const AppUserDriversDir = path.resolve(AppConfigDir,'./drivers')
 // app config file path on user disk
-const AppConfigUserPath = path.join(AppConfigUserDir,'config.json')
+const AppConfigPath = path.join(AppConfigDir,'config.json')
 
-const AppInstalledLockFile = path.join(AppConfigUserDir,'install.lock')
+const AppInstalledLockFile = path.join(AppConfigDir,'install.lock')
 
-const AppUserTasksDataPath = path.resolve(AppConfigUserDir,'task.data')
+const AppUserTasksDataPath = path.resolve(AppConfigDir,'task.data')
 
-const AppUserDriversDataPath = path.resolve(AppConfigUserDir,'driver.data')
+const AppUserDriversDataPath = path.resolve(AppConfigDir,'driver.data')
 
-const AppUserStoragesDataPath = path.resolve(AppConfigUserDir,'storage.data')
+const AppUserStoragesDataPath = path.resolve(AppConfigDir,'storage.data')
 
-const AppUserNotificationsDataPath = path.resolve(AppConfigUserDir,'notification.data')
+const AppUserNotificationsDataPath = path.resolve(AppConfigDir,'notification.data')
 // app rootPath
 const AppProjectRootPath = path.resolve(__dirname, '../')
 
@@ -75,8 +77,8 @@ const BugLink = AppInfo?.bugs?.url
 
 export default {
     AppProjectRootPath,
-    AppConfigUserDir,
-    AppConfigUserPath,
+    AppConfigDir,
+    AppConfigPath,
     AppConfigTplPath,
     AppDefaultConfigDir,
     AppExecutableCommandPath,
@@ -85,6 +87,7 @@ export default {
     BugLink,
     AppInstalledLockFile,
     AppUserTasksDir,
+    AppModulesDir,
     AppUserDriversDir,
     AppUserTasksDataPath,
     AppUserDriversDataPath,
