@@ -36,7 +36,7 @@ export default class Project extends Base {
 
     static getPath(name: string, key: string){
         if(!name) throw new Error(this.getMsg(12))
-        if(!this.constData.AppProjectPathSet.hasOwnProperty(key)) throw new Error(this.getMsg(13, key))
+        if(!this.constData.AppProjectPathSet[key]) throw new Error(this.getMsg(13, key))
         return path.join(this.appSettings.DataPath,name,this.constData.AppProjectPathSet[key])
     }
 
@@ -65,11 +65,11 @@ export default class Project extends Base {
 
             if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
-            const customCode = require(this.getPath('custom_export_data'))
+            const customCode = await import(this.getPath('custom_export_data')).then(e=>e.default)
             return customCode?.call(this.helper)
         }
 
-        let files = await this.storage.all()
+        const files = await this.storage.all()
 
         if (files.length == 0) {
             throw new Error('0 files, not need save.')
@@ -165,13 +165,14 @@ export default class Project extends Base {
     async execCustomCode(){
         if(!await Utils.checkFile(this.getPath('custom_exec_code'))) throw new Error(this.getMsg(5))
         this.log.info('start exec custom code')
-        const customCode = require(this.getPath('custom_exec_code'))
+        const customCode = await import(this.getPath('custom_exec_code')).then(e=>e.default)
         Common.domain(
             async ()=>{
                 await customCode?.call(this)
             }, async (error: Error)=>{
                 this.log.err(`execCustomCode err: ${error.message}`)
             }, async ()=>{
+                this.log.info(`custom code exec end.`)
             })
     }
 
@@ -289,7 +290,7 @@ export default class Project extends Base {
     }
 
     private async restart(){
-        const count: number = 0
+        const count = 0
         const waitSecond = 2 ** (count || 1)
         this.log.warn(`-----wait ${waitSecond}s Restart Process -----`)
         await Utils.sleep(waitSecond * 1000)
@@ -337,20 +338,20 @@ export default class Project extends Base {
     }
 
     get helper(){
-    	return {
+        return {
             uni: Utils,
             log: this.log,
             getPath: this.getPath.bind(this),
             getDedailList : async () => {
-        		const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
-        		return files
+                const files = await Utils.readDir(path.join(this.getPath('data_dir'),'detail'))
+                return files
                 .filter(e => e.endsWith('.json'))
                 .map(e=>path.join(this.getPath('data_dir'),'detail',e))
-        	},
-        	getExportJsonData : async () => {
-        		return Utils.readJson(path.join(this.getPath('data_dir'), 'export/export.json'))
-        	},
-        	download : Utils.download
+            },
+            getExportJsonData : async () => {
+                return Utils.readJson(path.join(this.getPath('data_dir'), 'export/export.json'))
+            },
+            download : Utils.download
         }
     }
 
