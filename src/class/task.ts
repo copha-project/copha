@@ -4,89 +4,77 @@ import Project from './project'
 import Utils from 'uni-utils'
 
 export default class Task extends Module {
-    private _name = null
     private _storage = null
     private _driver = null
+    private _notification = null
     private _custom = null
-    private _projectConfig: ProjectConfig
-    private _conf = null
-    constructor() {
-        super()
+
+    setStorage (storage) {
+      this.setModule(storage, ModuleType.Storage)
     }
 
-    setConfig(projectConfig){
-        this._name = projectConfig.main.task
-        this._projectConfig = projectConfig
-        this._conf = projectConfig?.Task || {}
+    setDriver (driver) {
+      this.setModule(driver, ModuleType.Driver)
     }
 
-    setStorage(storage){
-        this._storage = storage
+    setNotification (notifier) {
+      this.setModule(notifier, ModuleType.Notification)
     }
 
-    setDriver(driver){
-        this._driver = driver
+    private setModule (module, moduleType: ModuleType) {
+      this[`_${moduleType}`] = module
     }
 
-    setCustom(custom){
-        this._custom = custom
+    setCustom (custom) {
+      this._custom = custom
     }
 
-    async init(){}
-    async runTest(){}
+    async runTest () { }
 
-    async loadState(){}
+    async loadState () { }
 
-    async runBefore(){}
-    async run(){}
-    async saveContext(){}
-    async recover(){}
-    async reset(){}
-    async clear(){}
+    async runBefore () { }
+    async run () { }
+    async saveContext () { }
+    async recover () { }
+    async reset () { }
+    async clear () { }
 
-    getPath(name:string){
-        return Project.getPath(this.projectName, name)
+    getPath (name: string) {
+      return Project.getPath(this.projectName, name)
     }
 
-    getResourcePath(name:string, type="json"){
-        return path.join(this.getPath('task_file'),`${name}.${type}`)
+    getResourcePath (name: string, type = 'json') {
+      return path.join(this.getPath('task_file'), `${name}.${type}`)
     }
 
-    checkNeedStop(){
+    checkNeedStop () {
 
     }
 
-    get helper(){
-        return {
-            uni: Utils
-        }
+    get helper () {
+      return {
+        uni: Utils
+      }
     }
 
-    get conf(){
-        return this._conf
+    get custom () {
+      return this._custom
     }
 
-    get projectConfig(){
-        return this._projectConfig
+    get driver () {
+      return this._driver
     }
 
-    get custom(){
-        return this._custom
-    }
- 
-    get driver(){
-        return this._driver
-    }
- 
-    get storage(){
-        return this._storage
+    get notification () {
+      return this._notification
     }
 
-    get projectName(){
-        return this._projectConfig?.main.name
+    get storage () {
+      return this._storage
     }
 
-    get name(){
-        return this._name
+    get name () {
+      return this.projectConfig.main.task
     }
 }

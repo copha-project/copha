@@ -4,23 +4,12 @@ import Core from './core'
 
 export default class Driver extends Module {
     DriverModule = this
-    private _projectConfig: ProjectConfig
-    private config = null
+
     private _driver = this
-    constructor(){
-        super()
-    }
-
-    setConfig(projectConfig){
-        this._projectConfig = projectConfig
-        this.config = projectConfig.Driver || {}
-    }
-
-    static CONFIG = {}
-    async init(){}
+    constructor(){ super() }
 
     async getProxy(){
-        return Core.getInstance().getProxy(this._projectConfig?.Proxy?.SelectIndex || 0)
+        return Core.getInstance().getProxy(this.projectConfig?.Proxy?.SelectIndex || 0)
     }
 
     async clear(){}
@@ -39,14 +28,6 @@ export default class Driver extends Module {
 
     async sleep(n){
         return Utils.sleep(n)
-    }
-
-    get projectConfig(){
-        return this._projectConfig
-    }
-
-    get conf(){
-        return this.config
     }
 
     get driver(){
