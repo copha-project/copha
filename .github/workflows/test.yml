@@ -26,7 +26,6 @@ jobs:
           cache: 'npm'
       - run: npm i -g npm
       - run: yarn
-      - run: npm run init-submodule
       - run: npm run build
       - run: npm run dev -- -h
       - run: mkdir /tmp/co
