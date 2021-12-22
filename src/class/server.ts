@@ -8,7 +8,7 @@ import { errHandler, reqLog } from '../server/mid'
 export default class Server extends Base {
     static instance: Server
     private _serverConfig: ServerConfig
-    private app: any
+    private app: Koa
     constructor() { super() }
 
     static getInstance(options: ServerConfig): Server{

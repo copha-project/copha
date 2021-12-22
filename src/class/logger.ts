@@ -29,7 +29,7 @@ const LogTimeConfig = format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'})
 const LogColorConfig = format.colorize({ all: true })
 
 export default class Logger {
-    logger: any
+    private logger: winston.Logger
     constructor(logConf?){
         winston.addColors(LogBaseConfig.colors)
         this.logger = createLogger({
@@ -76,7 +76,8 @@ export default class Logger {
             throw Error(`${data}`)
         })
     }
-    async stream(logPath){
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async stream(logPath: string, options?: object){
         return Logger.stream(logPath)
     }
 

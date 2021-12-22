@@ -3,7 +3,7 @@ import Base from './base'
 export default class Module extends Base {
     static instance: Module
     private _projectConfig: ProjectConfig
-    private _config = null
+    private _config: BaseObject
 
     constructor() {super()}
 
