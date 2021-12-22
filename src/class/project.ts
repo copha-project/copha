@@ -177,8 +177,8 @@ export default class Project extends Base {
     }
 
     private async clear() {
-        await this.task?.clear()
-        await this.driver?.clear()
+        await this.task?.clear?.()
+        await this.driver?.clear?.()
         // delete pid file
         await this.clearPid()
     }
