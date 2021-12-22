@@ -3,7 +3,7 @@ import Module from './module'
 import Project from './project'
 import Utils from 'uni-utils'
 
-export default class Task extends Module {
+export default abstract class Task extends Module {
     private _storage = null
     private _driver = null
     private _notification = null
@@ -29,16 +29,14 @@ export default class Task extends Module {
       this._custom = custom
     }
 
-    async runTest () { }
-
-    async loadState () { }
-
-    async runBefore () { }
-    async run () { }
-    async saveContext () { }
-    async recover () { }
-    async reset () { }
-    async clear () { }
+    abstract runTest (): unknown
+    abstract loadState (): unknown
+    abstract runBefore (): unknown
+    abstract run (): unknown
+    abstract saveContext (): unknown
+    abstract recover (): unknown
+    abstract reset (): unknown
+    abstract clear (): unknown 
 
     getPath (name: string) {
       return Project.getPath(this.projectName, name)
@@ -46,10 +44,6 @@ export default class Task extends Module {
 
     getResourcePath (name: string, type = 'json') {
       return path.join(this.getPath('task_file'), `${name}.${type}`)
-    }
-
-    checkNeedStop () {
-
     }
 
     get helper () {

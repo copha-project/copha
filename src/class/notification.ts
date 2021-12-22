@@ -1,7 +1,4 @@
 import Module from './module'
-
-export default class Notification extends Module {
-    constructor() {super()}
-    
-    async send(msg: string){}
+export default abstract class Notification extends Module{
+    abstract send(msg:string): void
 }

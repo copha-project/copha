@@ -1,15 +1,47 @@
 interface BaseObject {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 
-interface AppSettings extends BaseObject {
+interface AppSettings {
     DataPath:string
     Language:string
     Editor:string
+    Modules: {
+        Driver: {
+            Default: string
+        },
+        Task: {
+            Default: string
+        },
+        Storage: {
+            Default: string
+        },
+        Notification: {
+            Default: string
+        }
+    },
+    Proxy: {
+        List: []
+    },
+    Server: {
+        Host: string,
+        Port: number
+    }
 }
 
-interface ProjectConfig extends BaseObject {
-    
+interface ProjectConfig {
+    main: {
+        name: string
+        desc: string
+        createTime: string
+        task: string
+        alwaysRestart: boolean
+    }
+    Driver: BaseObject
+    Proxy: BaseObject
+    Storage: BaseObject
+    Task: BaseObject
 }
 
 interface ServerConfig {
@@ -39,18 +71,4 @@ interface Module {
     level: ModuleLevel;
 }
 
-interface TaskModule extends Module {
-
-}
-
-interface DriverModule extends Module {
-    
-}
-
-interface StorageModule extends Module {
-   
-}
-
-interface NotificationModule extends Module {
-    
-}
+declare type TaskModule = Module

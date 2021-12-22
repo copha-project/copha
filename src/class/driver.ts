@@ -1,32 +1,16 @@
 import Module from './module'
 import Utils from 'uni-utils'
 import Core from './core'
-
-export default class Driver extends Module {
+export default abstract class Driver extends Module {
     DriverModule = this
 
     private _driver = this
-    constructor(){ super() }
 
     async getProxy(){
         return Core.getInstance().getProxy(this.projectConfig?.Proxy?.SelectIndex || 0)
     }
 
-    async clear(){}
-
-    async open(){
-        throw new Error(this.getMsg(10,'must implement open()'))
-    }
-    
-    async reload(){
-        throw new Error(this.getMsg(10,'must implement reload()'))
-    }
-
-    async closeTab(){}
-    
-    async quit(){}
-
-    async sleep(n){
+    async sleep(n:number){
         return Utils.sleep(n)
     }
 
@@ -38,65 +22,13 @@ export default class Driver extends Module {
         this._driver = v
     }
 
-    // return key of keyboard
-    getKey(name){}
-    // k is css xpath id js ...
-    buildSelector(k,v){
-        throw new Error(this.getMsg(10,'must implement buildSelector()'))
-    }
-
-    async getTitle(){
-        throw new Error(this.getMsg(10,'getTitle()'))
-    }
-
-    async getCurrentUrl(){
-        throw new Error(this.getMsg(10,'getCurrentUrl()'))
-    }
-
-    async findElements(selector){
-        throw new Error(this.getMsg(10,'findElements()'))
-    }
-    async findElement(selector){
-        throw new Error(this.getMsg(10,'findElement()'))
-    }
-
-    // method not need change, they has be implement by above method
-    buildSelectorForId(v){
-        return this.buildSelector('id', v)
-    }
-    buildSelectorForXpath(v){
-        return this.buildSelector('xpath', v)
-    }
-    buildSelectorForCss(v){
-        return this.buildSelector('css', v)
-    }
-
-    async findElementBy(k, v, target){
-        if(target){
-            return target.findElement(this.buildSelector(k,v))
-        }
-        return this.findElement(this.buildSelector(k,v))
-    }
-    async findElementByXpath(v, target){
-        return this.findElementBy('xpath', v, target)
-    }
-    async findElementByCss(v, target){
-        return this.findElementBy('css', v, target)
-    }
-    async findElementById(v, target){
-        return this.findElementBy('id', v, target)
-    }
-
-    async findElementsBy(k, v, target){
-        if(target){
-            return target.findElements(this.buildSelector(k,v))
-        }
-        return this.findElements(this.buildSelector(k,v))
-    }
-    async findElementsByCss(v, target){
-        return this.findElementsBy('css', v, target)
-    }
-    async findElementsByXpath(v, target){
-        return this.findElementsBy('xpath', v, target)
-    }
+    abstract open(): unknown
+    abstract clear(): unknown
+    abstract closeTab(): unknown
+    abstract quit(): unknown
+    abstract getKey(): unknown
+    abstract getTitle(): unknown
+    abstract getCurrentUrl(): unknown
+    abstract findElements(): unknown
+    abstract findElement(): unknown
 }

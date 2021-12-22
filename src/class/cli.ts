@@ -6,11 +6,11 @@ import Server from './server'
 import Common from '../common'
 
 function preCheck() {
-    return (target: any, k: string, descriptor: TypedPropertyDescriptor<Function>) => {
-        const method = descriptor.value!
+    return (target: Cli, k: string, descriptor: TypedPropertyDescriptor<(...args) => Promise<void>>) => {
+        const method = descriptor.value
         descriptor.value = async function(...args){
             await Core.preCheck()
-            return method.apply(target, args)
+            return method?.apply(target, args)
         }
     }
 }
@@ -171,9 +171,9 @@ export default class Cli extends Base {
         console.table(
             projectsData.map(project => {
                 return {
-                    Name: project.name,
-                    Description: project.desc || '',
-                    createTime: project.createTime || '-'
+                    Name: project.main.name,
+                    Description: project.main.desc || '',
+                    createTime: project.main.createTime || '-'
                 }
             })
         )
@@ -197,7 +197,7 @@ export default class Cli extends Base {
 
     private async listModule(name){
         const driverList: Module[] = await this.core['list'+name]()
-        const isDefaultModuleName = this.appSettings?.[name]?.Default
+        const isDefaultModuleName = this.appSettings.Modules?.[name]?.Default
         console.log(this.getMsg(23, name))
         console.table(
             driverList.map(driver => {

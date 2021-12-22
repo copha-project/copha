@@ -9,7 +9,7 @@ import Proxy from './proxy'
 export default class Core extends Base{
     static instance: Core
     private _modules: Module[] = []
-    proxy: any
+    proxy: Proxy
     constructor(){
         super()
     }
@@ -50,7 +50,7 @@ export default class Core extends Base{
 
     // task
     // TODO: 现在是扫描数据目录获取project list，需要重构成把project信息记录在文件了里
-    async listProject(): Promise<any[]> {
+    async listProject(): Promise<ProjectConfig[]> {
         const files = await Utils.readDir(this.appSettings.DataPath)
         const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(async name=>{
             return (await Utils.readJson(Project.getPath(name,'config'))).main
@@ -80,7 +80,7 @@ export default class Core extends Base{
             if(!projects[data]){
                 throw Error(this.getMsg(14 ))
             }
-            return projects[data].name
+            return projects[data].main.name
         }
         return data
     }
@@ -88,10 +88,14 @@ export default class Core extends Base{
     async createProject(name, task){
         const taskListData = await this.listTask()
         if(!task) {
-            task = this.appSettings?.Task?.Default
+            try {
+                task = this.appSettings.Modules.Task.Default
+            } catch (error) {
+                throw new Error('not find default task module!')
+            }
         }else{
             if(taskListData.find(e => e.name === task)) {
-
+                this.log.info(`use task module : ${task}`)
             }else{
                 throw new Error(this.getMsg(24, task))
             }
@@ -184,7 +188,7 @@ export default class Core extends Base{
 
     async logs(name, options){
         const project = await this.getProject(name)
-        this.log.stream(project.getPath('info_log'))
+        this.log.stream(project.getPath('info_log'), options)
     }
 
     async exportProject(name, options){
@@ -233,8 +237,8 @@ export default class Core extends Base{
         return this._modules.find(e=>e.name === name)
     }
 
-    async getProxy(...args){
-        return this.proxy.getProxy(...args)
+    async getProxy(index){
+        return this.proxy.getProxy(index)
     }
 
     // other

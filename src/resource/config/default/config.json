@@ -2,22 +2,24 @@
     "DataPath":"",
     "Editor": "",
     "Language": "en",
-    "Driver": {
-        "Default": "simple-driver",
-        "Time": {
-            "LocatingElementsTimeout": 10000,
-            "PageLoadTimeout": 10000,
-            "RunScriptTimeout": 30000
+    "Modules": {
+        "Driver": {
+            "Default": "simple-driver",
+            "Time": {
+                "LocatingElementsTimeout": 10000,
+                "PageLoadTimeout": 10000,
+                "RunScriptTimeout": 30000
+            }
+        },
+        "Task": {
+            "Default": "empty"
+        },
+        "Storage":{
+            "Default": "file"
+        },
+        "Notification":{
+            "Default": "native"
         }
-    },
-    "Task": {
-        "Default": "empty"
-    },
-    "Storage":{
-        "Default": "file"
-    },
-    "Notification":{
-        "Default": "native"
     },
     "Proxy": {
         "List": [

@@ -36,7 +36,7 @@ export default class Project extends Base {
 
     static getPath(name: string, key: string){
         if(!name) throw new Error(this.getMsg(12))
-        if(!this.constData.AppProjectPathSet[key]) throw new Error(this.getMsg(13, key))
+        if(this.constData.AppProjectPathSet[key] === undefined) throw new Error(this.getMsg(13, key))
         return path.join(this.appSettings.DataPath,name,this.constData.AppProjectPathSet[key])
     }
 
@@ -245,10 +245,11 @@ export default class Project extends Base {
         const capitalizeFirstLetter = (s:string) => s.charAt(0).toUpperCase() + s.slice(1)
         let useModuleName = this.conf.main?.[moduleType]
         if(!useModuleName){
-            if(!this.appSettings?.[capitalizeFirstLetter(moduleType)]?.Default){
-                throw new Error(this.getMsg(37,capitalizeFirstLetter(moduleType)))
+            const keyNmae = capitalizeFirstLetter(moduleType)
+            if(!this.appSettings.Modules[keyNmae]?.Default){
+                throw new Error(this.getMsg(37,keyNmae))
             }
-            useModuleName = this.appSettings?.[capitalizeFirstLetter(moduleType)].Default
+            useModuleName = this.appSettings.Modules[keyNmae].Default
         }
         const moduleClass = await this.core.getModule(useModuleName)
         
