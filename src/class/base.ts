@@ -43,7 +43,9 @@ export default class Base {
         } catch (e) {
             try{
                 await Utils.rm(this.constData.AppConfigDir)
-            }catch{}
+            }catch{
+                console.log(e.message)    
+            }
             console.log(e.message)
             throw new Error(this.getMsg(8,this.constData.BugLink))
         }
