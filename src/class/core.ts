@@ -52,10 +52,9 @@ export default class Core extends Base{
     // TODO: 现在是扫描数据目录获取project list，需要重构成把project信息记录在文件了里
     async listProject(): Promise<ProjectConfig[]> {
         const files = await Utils.readDir(this.appSettings.DataPath)
-        const data = await Promise.all(files.filter(e=>!e.startsWith('.')).map(name=>{
+        return Promise.all(files.filter(e=>!e.startsWith('.')).map(name=>{
             return Utils.readJson(Project.getPath(name,'config'))
         }))
-        return data
     }
 
     async listTask(): Promise<Module[]> {
