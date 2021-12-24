@@ -73,7 +73,7 @@
         "ncp": "^2.0.0",
         "open-in-editor": "^2.2.0",
         "pidusage": "^2.0.20",
-        "uni-utils": "^1.0.15",
+        "uni-utils": "^1.0.16",
         "winston": "^3.2.1"
     }
 }
