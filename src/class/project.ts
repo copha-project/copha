@@ -173,6 +173,7 @@ export default class Project extends Base {
                 this.log.err(`execCustomCode err: ${error.message}`)
             }, async ()=>{
                 this.log.info(`custom code exec end.`)
+                this.clear()
             })
     }
 
@@ -184,7 +185,7 @@ export default class Project extends Base {
     }
 
     private async saveContext() {
-        await this.task?.saveContext()
+        return this.task?.saveContext?.()
     }
 
     // self method

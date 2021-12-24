@@ -1,5 +1,7 @@
 import Module from './module'
 export default abstract class Storage extends Module {
+
+    protected readonly typeName = 'Storage'
     get storageType(){
         return this.projectConfig?.Storage?.Name
     }

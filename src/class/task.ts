@@ -4,6 +4,7 @@ import Project from './project'
 import Utils from 'uni-utils'
 
 export default abstract class Task extends Module {
+    protected readonly typeName = 'Task'
     private _storage = null
     private _driver = null
     private _notification = null

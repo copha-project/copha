@@ -3,7 +3,7 @@ import Utils from 'uni-utils'
 import Core from './core'
 export default abstract class Driver extends Module {
     DriverModule = this
-
+    protected readonly typeName = 'Driver'
     private _driver = this
 
     async getProxy(){

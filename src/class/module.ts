@@ -2,6 +2,8 @@ import Base from './base'
 
 export default class Module extends Base {
     static instance: Module
+
+    protected typeName = ""
     private _projectConfig: ProjectConfig
     private _config: BaseObject
 
@@ -15,8 +17,9 @@ export default class Module extends Base {
     }
 
     setConfig(projectConfig: ProjectConfig){
+        if(!this.typeName) throw Error('module meta data error')
         this._projectConfig = projectConfig
-        this._config = projectConfig.Driver || {}
+        this._config = projectConfig[this.typeName] || {}
     }
 
     static CONFIG = {}
