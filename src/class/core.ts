@@ -201,11 +201,7 @@ export default class Core extends Base{
 
     async changeProjectDriver(name, driverName){
         const projectConfig = await this.getProjectConf(name)
-        const drivers = await this.listDriver()
-        const queryDriver = drivers.find( item => item.name === driverName)
-        if(!queryDriver){
-            throw new Error(this.getMsg(34,driverName))
-        }
+        const queryDriver = await this.getModuleInfo(driverName)
         if(!queryDriver.active){
             throw new Error(this.getMsg(35,driverName,driverName))
         }
@@ -233,7 +229,11 @@ export default class Core extends Base{
     }
 
     async getModuleInfo(name:string) {
-        return this._modules.find(e=>e.name === name)
+        const module = this.modules.find(e=>e.name === name)
+        if(module === undefined){
+            throw new Error(this.getMsg(34,name))
+        }
+        return module
     }
 
     async getProxy(index){
