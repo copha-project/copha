@@ -122,7 +122,6 @@ export default class Project extends Base {
 
     async test() {
         this.log.info(this.getMsg(6))
-
         Common.domain(
             async ()=>{
                 await this.startPrepare()
@@ -138,13 +137,12 @@ export default class Project extends Base {
 
     async start() {
         this.log.info(this.getMsg(7,this.name))
-
         Common.domain(
             async ()=>{
                 await this.startPrepare()
                 await this.task?.runBefore()
                 await this.task?.run()
-                await this.execCustomCode()
+                await this._execCustomCode()
             }, async (error)=>{
                 this.log.err(`Task run error: ${error.message}`)
                 console.log(error)
@@ -163,12 +161,9 @@ export default class Project extends Base {
     }
 
     async execCustomCode(){
-        if(!await Utils.checkFile(this.getPath('custom_exec_code'))) throw new Error(this.getMsg(5))
-        this.log.info('start exec custom code')
-        const customCode = await import(this.getPath('custom_exec_code')).then(e=>e.default)
         Common.domain(
             async ()=>{
-                await customCode?.call(this)
+                await this._execCustomCode()
             }, async (error: Error)=>{
                 this.log.err(`execCustomCode err: ${error.message}`)
             }, async ()=>{
@@ -189,6 +184,14 @@ export default class Project extends Base {
     }
 
     // self method
+    private async _execCustomCode(){
+        if(!await Utils.checkFile(this.getPath('custom_exec_code'))) throw new Error(this.getMsg(5))
+        this.log.info('start exec custom code')
+        const modulePath = this.getPath('custom_exec_code')
+        const customCode = await import(modulePath).then(e=>e.default)
+        return customCode?.call(this)
+    }
+
     private async setRunPid(){
         this.log.info(`Task run pid on : ${process.pid}`)
         return Utils.saveFile(`${process.pid}`,this.getPath('pid'))
