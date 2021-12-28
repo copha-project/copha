@@ -66,7 +66,7 @@ export default class Project extends Base {
             if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
             this.log.info('Start exec custom method of export data')
             const customCode = await import(this.getPath('custom_export_data')).then(e=>e.default)
-            return customCode?.call(this.helper)
+            return customCode?.call(this.customCodeThis)
         }
 
         const files = await this.storage.all()
@@ -189,7 +189,7 @@ export default class Project extends Base {
         this.log.info('start exec custom code')
         const modulePath = this.getPath('custom_exec_code')
         const customCode = await import(modulePath).then(e=>e.default)
-        return customCode?.call(this)
+        return customCode?.call(this.customCodeThis)
     }
 
     private async setRunPid(){
@@ -342,7 +342,7 @@ export default class Project extends Base {
         return this.conf?.main?.name
     }
 
-    get helper(){
+    get customCodeThis(){
         return {
             uni: Utils,
             log: this.log,
@@ -356,7 +356,9 @@ export default class Project extends Base {
             getExportJsonData : async () => {
                 return Utils.readJson(path.join(this.getPath('data_dir'), 'export/export.json'))
             },
-            download : Utils.download
+            download : Utils.download,
+            getTaskResource: this.task.getResource.bind(this.task),
+            driver: this.driver
         }
     }
 
