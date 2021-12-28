@@ -43,8 +43,21 @@ export default abstract class Task extends Module {
       return Project.getPath(this.projectName, name)
     }
 
-    getResourcePath (name: string, type = 'json') {
-      return path.join(this.getPath('task_file'), `${name}.${type}`)
+    getResourcePath (name: string) {
+      return path.join(this.getPath('task_file'), `${name}`)
+    }
+
+    async getResource(name){
+      let readMethod = "readFile"
+      const extName = path.extname(name)
+      switch (extName) {
+        case '.json':
+            readMethod = "readJson"
+          break;
+      }
+
+      const filePath = this.getResourcePath(name)
+      return Utils[readMethod](filePath)
     }
 
     get helper () {
