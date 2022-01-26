@@ -2,6 +2,7 @@
     "DataPath":"",
     "Editor": "",
     "Language": "en",
+    "ModuleHub": "https://hub.copha.net/api/v1/modules",
     "Modules": {
         "Driver": {
             "Default": "simple-driver",

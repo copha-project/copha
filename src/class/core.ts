@@ -9,6 +9,7 @@ import Proxy from './proxy'
 export default class Core extends Base{
     static instance: Core
     private _modules: Module[] = []
+    private modulesHub: RemoteModule[]
     proxy: Proxy
     constructor(){
         super()
@@ -164,24 +165,32 @@ export default class Core extends Base{
         return project.reset(options)
     }
 
-    async load(value, options){
-        // local file
-        if(await Utils.fileExist(value)){
-            const ext = path.extname(value)
-            if(!ext || ext !== '.zip'){
-                throw Error(this.getMsg(29))
+    async load(value: string|undefined){
+        await this.getModulesHub()
+        if(value == undefined){
+            // load all module
+            for (const module of this.modules) {
+                this.log.info(`Check module info: [${module.name}]: ${module.active?'Ready':'No Ready'}`)
+                if(!module.active){
+                    this.log.info(`Module: [${module.name}] is ready to use.`)
+                }else{
+                    await this.loadModule(module)
+                }
+                this.log.info("\n")
             }
-            console.log('file ok')
-        }
-        // git
-        if(value.includes('http') && value.includes('github.com')){
-            console.log('github ok')
-        }
-        // official name
-        if(options.type){
-            console.log(`start load ${options.type} ${value}`)
         }else{
-            throw Error(this.getMsg(30))
+             // local file
+            if(await Utils.fileExist(value)){
+                const ext = path.extname(value)
+                if(!ext || ext !== '.zip'){
+                    throw Error(this.getMsg(29))
+                }
+                console.log('file ok')
+            }
+            // git
+            if(value.includes('http') && value.includes('github.com')){
+                console.log('github ok')
+            }
         }
     }
 
@@ -308,6 +317,22 @@ export default class Core extends Base{
 
     private getExportFileName(name){
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
+    }
+
+    private async loadModule(module: Module){
+        this.log.info(`Start load module: [${module.name}]`)   
+        const remoteModule = this.modulesHub.find(e=>e.name == module.name)
+        if(remoteModule == undefined){
+            this.log.err('not find module info from module hub.')
+        }else{
+            this.log.debug(remoteModule.repository)
+        }
+    }
+
+    private async getModulesHub(){
+        this.log.debug(`fetch modules info from : ${this.appSettings.ModuleHub}`)
+        const listData = await Utils.download(this.appSettings.ModuleHub)
+        this.modulesHub = JSON.parse(listData)
     }
 
     get modules(){

@@ -9,7 +9,7 @@ declare namespace uniUtils {
     function saveFile(data:string, path:string): Promise<void>
     function readDir(dir:string): Promise<string[]>
     function readJson(file:string): Promise<any>
-    function download(url:string, options:any): Promise<any>
+    function download(url:string, options?:any): Promise<any>
     function loopTask(tasks: string[], taskHandel:(data:any)=>Promise<any>, options:any): Promise<any>
     function copyDir(srcDir:string,distDir:string): Promise<any>
     function checkFileSync(file:string): boolean

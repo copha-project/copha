@@ -96,7 +96,7 @@
         "File format is invalid, support .zip only.(29)"
     ],
     [
-        "You must declare type use -t option if you wan to load official resource.(30)"
+        "No Msg.(30)"
     ],
     [
         "Base class init for : #.(31)",

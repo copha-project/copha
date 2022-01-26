@@ -98,11 +98,17 @@ export default class Base {
                 config.DataPath = this.getEnv('COPHA_DATA_PATH')
             }
         }
+        
+        if (config?.ModuleHub === ""){
+            if(this.getEnv('COPHA_MODULE_HUB')){
+                config.ModuleHub = this.getEnv('COPHA_MODULE_HUB')
+            }
+        }
 
         if(this.getEnv('COPHA_LANG') && this.constData.LangList.indexOf(this.getEnv('COPHA_LANG')) != -1){
             config.Language = this.getEnv('COPHA_LANG')
         }
-
+        
         if(!config.Editor && this.getEnv('COPHA_EDITOR')){
             config.Editor = this.getEnv('COPHA_EDITOR')
         }

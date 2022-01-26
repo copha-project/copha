@@ -7,6 +7,7 @@ interface AppSettings {
     DataPath:string
     Language:string
     Editor:string
+    ModuleHub: string
     Modules: {
         Driver: {
             Default: string
@@ -62,13 +63,21 @@ declare const enum ModuleLevel {
     III="III"
 }
 interface Module {
-    name: string;
-    desc: string;
-    type: ModuleType;
-    repository?: string;
-    version: string;
-    active: boolean;
-    level: ModuleLevel;
+    name: string
+    desc: string
+    type: ModuleType
+    repository: string | undefined
+    version: string
+    active: boolean
+    level: ModuleLevel
+}
+
+interface RemoteModule {
+    name: string
+    desc: string
+    type: ModuleType
+    repository: string
+    down_link: string
 }
 
 declare type TaskModule = Module

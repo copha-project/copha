@@ -81,9 +81,8 @@ export default class Cli extends Base {
             .option('-d, --daemon', 'run with daemon')
             .action(this.instance.serve)
 
-        program.command('load <data>')
-            .description('load resource from tar, url, name')
-            .addOption(new commander.Option('-t, --type <value>', 'select resource type').choices(['task', 'driver', 'storage']))
+        program.command('load [data]')
+            .description('load resource : project, module')
             .action(this.instance.load)
 
         program.command('logs [project]')
@@ -212,8 +211,8 @@ export default class Cli extends Base {
     }
 
     @preCheck()
-    private async load(name, options){
-        return this.core.load(name, options)
+    private async load(name){
+        return this.core.load(name)
     }
 
     @preCheck()
