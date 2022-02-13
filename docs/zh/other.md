@@ -3,6 +3,7 @@ title: "其他"
 description: ""
 nav_order: 12
 lang: "zh"
+has_children: true
 ---
 
 ### 其他链接
