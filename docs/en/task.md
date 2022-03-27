@@ -1,8 +1,7 @@
 ---
 title: "Task"
 description: "Task docs"
-nav_order: 1
-parent: "Module"
+nav_order: 4
 permalink: /task
 ---
 
