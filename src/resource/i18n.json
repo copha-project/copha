@@ -111,8 +111,8 @@
         "未找到可用的文本编辑器，请自行修改如下文件: [ # ]"
     ],
     [
-        "The driver [ # ] is invalid!.(34)",
-        "指定的驱动 [ # ] 不可用."
+        "not use.(34)",
+        ""
     ],
     [
         "The driver [ # ] is not load, use `copha load # -t driver` to load it.(35)",
@@ -123,8 +123,8 @@
         "未能加载存储模块 [ # ]. 需要帮助请访问以下网页: \n #"
     ],
     [
-        "Please set [#.Default] value on the app settings, you can run `copha config` to open it.(37)",
-        "请在软件全局配置文件里设置 [#.Default] 值，你可以使用 `copha config` 来打开该配置文件."
+        "not use.(37)",
+        ""
     ],
     [
         "Not find browser driver module with delare name [ # ]. for more help, please visit the website: \n #(38)",
@@ -138,6 +138,6 @@
         "no projects here, you can create a project use `copha create -h`.(40)"
     ],
     [
-        "not find delare proxy info.(41)"
+        "not use(41)"
     ]
 ]

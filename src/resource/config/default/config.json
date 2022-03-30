@@ -2,37 +2,7 @@
     "DataPath":"",
     "Editor": "",
     "Language": "en",
-    "ModuleHub": "https://hub.copha.net/api/v1/modules",
-    "Modules": {
-        "Driver": {
-            "Default": "simple-driver",
-            "Time": {
-                "LocatingElementsTimeout": 10000,
-                "PageLoadTimeout": 10000,
-                "RunScriptTimeout": 30000
-            }
-        },
-        "Task": {
-            "Default": "empty"
-        },
-        "Storage":{
-            "Default": "file"
-        },
-        "Notification":{
-            "Default": "native"
-        }
-    },
-    "Proxy": {
-        "List": [
-            {
-                "type": "socks",
-                "host": "127.0.0.1",
-                "port": 7890,
-                "user": "",
-                "pass": ""
-            }
-        ]
-    },
+    "ModuleHub": "hub.copha.net",
     "Server":{
         "Host": "127.0.0.1",
         "Port": 7000

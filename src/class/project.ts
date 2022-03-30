@@ -6,9 +6,14 @@ import Common from '../common'
 import Task from './task'
 import Core from './core'
 
-
+export const getProject = async (projectConfig, core) => {
+    const project = Project.getInstance<Project>()
+    project.setConf(projectConfig)
+    if(core) project.setCore(core)
+    await project.init()
+    return project
+}
 export default class Project extends Base {
-    static instance: Project
     private _core: Core
     private _conf: ProjectConfig
     private _storage: BaseObject
@@ -18,20 +23,10 @@ export default class Project extends Base {
     private _notification: BaseObject
     private _custom: BaseObject
 
-    constructor(conf) {
+    constructor() {
         super()
-        this.setConf(conf)
         this.initValue()
         this.initLogger()
-    }
-
-    static async getInstance(core, projectConfig){
-        if(!this.instance){
-            this.instance = new Project(projectConfig)
-            core && this.instance.setCore(core)
-            await this.instance.init()
-        }
-        return this.instance
     }
 
     static getPath(name: string, key: string){
@@ -59,39 +54,38 @@ export default class Project extends Base {
             await this.deleteData()
         }
     }
+
     async exportData() {
-        this.log.info('Prepare to export data')
-        if(this.conf.Task?.CustomStage?.ExportData){
+        this.log.info('Prepare to export data, todo')
+        return
+        // if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
+        // this.log.info('Start exec custom method of export data')
+        // const customCode = await import(this.getPath('custom_export_data')).then(e=>e.default)
+        // return customCode?.call(this.customCodeThis)
 
-            if(!await Utils.checkFile(this.getPath('custom_export_data'))) throw new Error(this.getMsg(5))
-            this.log.info('Start exec custom method of export data')
-            const customCode = await import(this.getPath('custom_export_data')).then(e=>e.default)
-            return customCode?.call(this.customCodeThis)
-        }
+        // const files = await this.storage.all()
 
-        const files = await this.storage.all()
-
-        if (files.length == 0) {
-            throw new Error('0 files, not need save.')
-        }
-        this.log.info(`has ${files.length} data prepare to export`);
-        const endData = await Utils.loopTask(files, Utils.readJson, {
-            timeGap: 0
-        })
+        // if (files.length == 0) {
+        //     throw new Error('0 files, not need save.')
+        // }
+        // this.log.info(`has ${files.length} data prepare to export`);
+        // const endData = await Utils.loopTask(files, Utils.readJson, {
+        //     timeGap: 0
+        // })
         //特殊处理 [[item],[[item],[item]]] [{item},[{item},{item}]] 数据
         // const endData = []
         // data.map(item=>{
         //     endData.push(`"${item.data.join('","')}"`)
         //     // endData.push(item.data)
         // })
-        this.log.info(`first export data preview: ${endData[0]}`)
-        const filename = `${Utils.getTodayDate()}_${endData.length}_export_data`
-        try {
-            await Utils.exportFile(endData, path.join(this.getPath('data_dir'), `export/${filename}.json`), 'json')
-            await Utils.exportFile(endData, path.join(this.getPath('data_dir'), `export/${filename}.csv`), 'csv')
-        } catch (error) {
-            this.log.err(`export data failed:`, error.message)
-        }
+        // this.log.info(`first export data preview: ${endData[0]}`)
+        // const filename = `${Utils.getTodayDate()}_${endData.length}_export_data`
+        // try {
+        //     await Utils.exportFile(endData, path.join(this.getPath('data_dir'), `export/${filename}.json`), 'json')
+        //     await Utils.exportFile(endData, path.join(this.getPath('data_dir'), `export/${filename}.csv`), 'csv')
+        // } catch (error) {
+        //     this.log.err(`export data failed:`, error.message)
+        // }
         this.log.info('data export success.')
     }
 
@@ -99,22 +93,14 @@ export default class Project extends Base {
 
     async init(){
         await this.loadTask()
-        await this.loadStorage()
-        await this.loadDriver()
-        await this.loadNotification()
         await this.loadCustomCode()
     }
 
     private async startPrepare(){
         this.setExitHandle()
         await this.setRunPid()
-
-        await this.driver?.init()
+ 
         await this.task?.init()
-
-        this.task.setDriver(this.driver)
-        this.task.setCustom(this.custom)
-        this.task.setStorage(this.storage)
 
         // 初始化相关任务事件
         this.loadEvent()
@@ -148,8 +134,8 @@ export default class Project extends Base {
                 console.log(error)
                 // 遇到错误退出程序，有可能的话重启进程
                 await this.saveContext()
-                this.log.info(`check need to restart: ${this.conf?.main?.alwaysRestart}`)
-                if (this.conf?.main?.alwaysRestart) {
+                this.log.info(`check need to restart: ${this.conf?.AlwaysRestart}`)
+                if (this.conf?.AlwaysRestart) {
                     // must delay some time to restart
                     this.restart()
                 }
@@ -245,36 +231,25 @@ export default class Project extends Base {
         }
     }
 
-    private async loadModule(moduleType:ModuleType){
-        const capitalizeFirstLetter = (s:string) => s.charAt(0).toUpperCase() + s.slice(1)
-        let useModuleName = this.conf.main?.[moduleType]
-        if(!useModuleName){
-            const keyNmae = capitalizeFirstLetter(moduleType)
-            if(!this.appSettings.Modules[keyNmae]?.Default){
-                throw new Error(this.getMsg(37,keyNmae))
-            }
-            useModuleName = this.appSettings.Modules[keyNmae].Default
-        }
-        const moduleClass = await this.core.getModule(useModuleName)
+    // private async loadModule(module:Module){       
+    //     const moduleClass = await this.core.getModule(module.name)
         
-        this[`_${moduleType}`] = moduleClass.getInstance()
-        this[moduleType].setConfig(this.conf)
-    }
-
-    private async loadStorage() {
-        return this.loadModule(ModuleType.Storage)
-    }
-
-    private async loadDriver() {
-        return this.loadModule(ModuleType.Driver)
-    }
+    //     this[`_${module.type}`] = await moduleClass.getInstance()
+    //     this[`_${module.type}`].setTaskConfig(this.conf)
+    // }
 
     private async loadTask(){
-        return this.loadModule(ModuleType.Task)
-    }
+        let task:Module
+        if(!this.conf.Task){
+            task = await this.core.defaultTask()
+        }
+        task = await this.core.getModuleInfo(this.conf.Task)
 
-    private async loadNotification(){
-        return this.loadModule(ModuleType.Notification)
+        const moduleClass = await this.core.getModule(task.name)
+        
+        this._task = await moduleClass.getInstance()
+
+
     }
 
     private async loadCustomCode() {
@@ -302,7 +277,7 @@ export default class Project extends Base {
         // Utils.restartProcess()
     }
 
-    private setConf(v){
+    setConf(v: ProjectConfig){
         this._conf = v
     }
 
@@ -339,7 +314,7 @@ export default class Project extends Base {
     }
 
     get name(){
-        return this.conf?.main?.name
+        return this.conf.Name
     }
 
     get customCodeThis(){

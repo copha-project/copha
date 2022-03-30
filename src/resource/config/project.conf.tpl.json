@@ -1,21 +1,9 @@
 {
-    "main": {
-        "name": "",
-        "desc": "",
-        "createTime": "",
-        "dataPath": "",
-        "debug": false,
-        "useProxy": false,
-        "alwaysRestart": false,
-        "driver": "",
-        "task": ""
-    },
-    "Driver": {},
-    "Task": {},
-    "Storage":{
-        "Name": "file"
-    },
-    "Proxy":{
-        "SelectIndex": 0
-    }
+    "Name": "",
+    "Desc": "",
+    "CreateTime": "",
+    "DataPath": "",
+    "Debug": false,
+    "AlwaysRestart": false,
+    "Task": ""
 }

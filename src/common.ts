@@ -1,5 +1,9 @@
 import path from 'path'
 import fs from 'fs'
+import domain from 'domain'
+import archiver from 'archiver'
+import { ncp } from 'ncp'
+
 
 export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
@@ -43,8 +47,6 @@ export default class Common {
 
   static zip(inPath, outPath) {
     return new Promise((resolve, reject) => {
-      const archiver = require('archiver')
-
       const output = fs.createWriteStream(outPath)
 
       const archive = archiver('zip', {
@@ -92,7 +94,6 @@ export default class Common {
   }
 
   static cp(source, destination) {
-    const ncp = require('ncp').ncp
     ncp.limit = 10
     return new Promise((resolve, reject) => {
       ncp(source, destination, function (err) {
@@ -105,7 +106,7 @@ export default class Common {
   }
 
   static domain(func, errHandle, cb) {
-    const d = require('domain').create()
+    const d = domain.create()
 
     d.on('error', async error => {
       await errHandle(error)
@@ -121,7 +122,10 @@ export default class Common {
       cb && await cb()
     })
   }
-
+  capitalizeFirstLetter(s:string){
+    s.charAt(0).toUpperCase() + s.slice(1)
+  }
+  
   static loadPackageEnv() {
     const packageDir = path.dirname(path.dirname(__dirname))
     if (!process.env.NODE_PATH) {
@@ -129,6 +133,6 @@ export default class Common {
     } else {
       throw new Error("NODE_PATH  has value!")
     }
-    require('module').Module._initPaths()
+    // Module._initPaths()
   }
 }

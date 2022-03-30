@@ -1,8 +1,5 @@
 export { default as Cli } from './class/cli'
 export { default as Task } from './class/task'
-export { default as Driver } from './class/driver'
-export { default as Storage } from './class/storage'
 export { default as Project } from './class/project'
-export { default as Notification } from './class/notification'
 export { default as Core } from './class/core'
 export { default as Utils } from 'uni-utils'

@@ -8,23 +8,6 @@ interface AppSettings {
     Language:string
     Editor:string
     ModuleHub: string
-    Modules: {
-        Driver: {
-            Default: string
-        },
-        Task: {
-            Default: string
-        },
-        Storage: {
-            Default: string
-        },
-        Notification: {
-            Default: string
-        }
-    },
-    Proxy: {
-        List: []
-    },
     Server: {
         Host: string,
         Port: number
@@ -32,17 +15,11 @@ interface AppSettings {
 }
 
 interface ProjectConfig {
-    main: {
-        name: string
-        desc: string
-        createTime: string
-        task: string
-        alwaysRestart: boolean
-    }
-    Driver: BaseObject
-    Proxy: BaseObject
-    Storage: BaseObject
-    Task: BaseObject
+    Name: string
+    Desc: string
+    CreateTime: string
+    Task: string
+    AlwaysRestart: boolean
 }
 
 interface ServerConfig {
@@ -51,31 +28,22 @@ interface ServerConfig {
 }
 
 declare const enum ModuleType {
-    Task="task",
-    Driver="driver",
-    Storage="storage",
-    Notification="notification"
-}
-
-declare const enum ModuleLevel {
-    I="I",
-    II="II",
-    III="III"
+    Task="task"
 }
 interface Module {
     name: string
     desc: string
-    type: ModuleType
+    type: string
     repository: string | undefined
     version: string
     active: boolean
-    level: ModuleLevel
+    default: boolean
 }
 
 interface RemoteModule {
     name: string
     desc: string
-    type: ModuleType
+    type: string
     repository: string
     down_link: string
 }

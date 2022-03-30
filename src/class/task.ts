@@ -10,21 +10,11 @@ export default abstract class Task extends Module {
     private _notification = null
     private _custom = null
 
-    setStorage (storage) {
-      this.setModule(storage, ModuleType.Storage)
-    }
+   
 
-    setDriver (driver) {
-      this.setModule(driver, ModuleType.Driver)
-    }
-
-    setNotification (notifier) {
-      this.setModule(notifier, ModuleType.Notification)
-    }
-
-    private setModule (module, moduleType: ModuleType) {
-      this[`_${moduleType}`] = module
-    }
+    // private setModule (module, moduleType: ModuleType) {
+    //   this[`_${moduleType}`] = module
+    // }
 
     setCustom (custom) {
       this._custom = custom
@@ -83,6 +73,6 @@ export default abstract class Task extends Module {
     }
 
     get name () {
-      return this.projectConfig.main.task
+      return this.projectConfig.Task
     }
 }

@@ -2,7 +2,6 @@ import openInEditor from 'open-in-editor'
 import commander from 'commander'
 import Base from './base'
 import Core from './core'
-import Server from './server'
 import Common from '../common'
 
 function preCheck() {
@@ -16,7 +15,6 @@ function preCheck() {
 }
 
 export default class Cli extends Base {
-    static instance: Cli
     private _core: Core
     constructor() { super() }
 
@@ -34,9 +32,10 @@ export default class Cli extends Base {
             .version(this.constData.AppInfo.version, '-v, --version', 'output the current version')
 
         program.command('list')
-            .description('list project info')
+            .description('show list info')
             .option('-a, --all','show all list data')
-            .option('-t, --type <value>', 'show list info about project')
+            .option('--task', 'show list info of task')
+            .option('--module', 'show list info of module')
             .action(this.instance.listInfo)
 
         program.command('create <name>')
@@ -98,18 +97,11 @@ export default class Cli extends Base {
         return program.parseAsync()
     }
 
-    static getInstance() {
-        if(!this.instance){
-            this.instance = new Cli
-        }
-        return this.instance
-    }
-
     static async run(){
-        Common.loadPackageEnv()
+        // Common.loadPackageEnv()
         try {
             await Cli.installCheck()
-            await Cli.getInstance().createCommander()
+            await Cli.getInstance<Cli>().createCommander()
         } catch (e) {
             if(Common.isDebug){
                 console.log(e)
@@ -122,13 +114,13 @@ export default class Cli extends Base {
 
     private get core() {
         if (!this._core) {
-            this._core = Core.getInstance()
+            this._core = Core.getInstance<Core>()
         }
         return this._core
     }
     
     private get instance(){
-        return Cli.getInstance()
+        return Cli.getInstance<Cli>()
     }
 
     // xx = xx => (){} 形式的方法会忽略 装饰器方法
@@ -136,26 +128,17 @@ export default class Cli extends Base {
     private async listInfo(options){
         if(options.all) {
             await this.listTask()
-            await this.listDriver()
-            await this.listStorage()
-            await this.listNotification()
+            await this.listModule()
             await this.listProject()
             return
         }
-        if(!options.type) return this.listProject()
-        switch (options.type) {
-            case 'task':
-                return this.listTask()
-            case 'project':
-                return this.listProject()
-            case 'driver':
-                return this.listDriver()
-            case 'storage':
-                return this.listStorage()
-            case 'notification':
-                return this.listNotification()
-            default:
-                throw new Error(this.getMsg(22))
+        if(!options.module && !options.task) return this.listProject()
+
+        if(options.module){
+            return this.listModule()
+        }
+        if(options.task){
+            return this.listTask()
         }
     }
 
@@ -170,9 +153,9 @@ export default class Cli extends Base {
         console.table(
             projectsData.map(project => {
                 return {
-                    Name: project.main.name,
-                    Description: project.main.desc || '',
-                    createTime: project.main.createTime || '-'
+                    Name: project.Name,
+                    Description: project.Desc || '',
+                    createTime: project.CreateTime || '-'
                 }
             })
         )
@@ -182,29 +165,16 @@ export default class Cli extends Base {
         return this.listModule('Task')
     }
 
-    private async listDriver(){
-        return this.listModule('Driver')
-    }
-
-    private async listStorage(){
-        return this.listModule('Storage')
-    }
-
-    private async listNotification(){
-        return this.listModule('Notification')
-    }
-
-    private async listModule(name){
-        const driverList: Module[] = await this.core['list'+name]()
-        const isDefaultModuleName = this.appSettings.Modules?.[name]?.Default
-        console.log(this.getMsg(23, name))
+    private async listModule(moduleTypeName?:string){
+        const moduleList: Module[] = await this.core['list'+moduleTypeName]()
+        console.log(this.getMsg(23))
         console.table(
-            driverList.map(driver => {
+            moduleList.map(module => {
                 return {
-                    Name: driver.name,
-                    Ver: driver.version,
-                    Default: isDefaultModuleName  === driver.name ? 'Y' : '-',
-                    Active: driver.active
+                    Name: module.name,
+                    Ver: module.version,
+                    Default: module.default ? 'Y' : '-',
+                    Active: module.active
                 }
             })
         )
@@ -243,11 +213,11 @@ export default class Cli extends Base {
     private async runProject(name, options) {
         name = await this.core.getProjectName(name)
         if (options.export) {
-            return (await this.core.getProject(name, true)).exportData()
+            return (await this.core.getProject(name)).exportData()
         } else if (options.test) {
-            return (await this.core.getProject(name, true)).test()
+            return (await this.core.getProject(name)).test()
         } else if (options.custom) {
-            return (await this.core.getProject(name, true)).execCustomCode()
+            return (await this.core.getProject(name)).execCustomCode()
         } else if (options.daemon) {
             const sp = await this.core.startProjectByDaemon(name)
             this.log.info(this.getMsg(17,name,sp.pid))
@@ -262,7 +232,7 @@ export default class Cli extends Base {
             //     return Utils.createProcess(path.resolve(__dirname, '../bin/index.js'), ['run', name])
             // }
         }
-        return (await this.core.getProject(name, true)).start()
+        return (await this.core.getProject(name)).start()
     }
 
     @preCheck()
@@ -298,9 +268,7 @@ export default class Cli extends Base {
         const project = await this.core.getProject(name)
         if (!project) return
         configPath = project.getPath('config')
-        if (options.set) {
-            return this.core.setProjectConfig(name, options.set)
-        }
+    
         if (options.custom) {
             configPath = project.getPath('custom_exec_code')
         }
@@ -316,9 +284,10 @@ export default class Cli extends Base {
 
     @preCheck()
     private async serve(options: ServerConfig) {
-        const server = Server.getInstance(options)
-        server.launch()
-        console.log(`The API server is running at : ${server.serverConfig.host}:${server.serverConfig.port}`)
+        this.log.info('todo', options)
+        // const server = Server.getInstance(options)
+        // server.launch()
+        // console.log(`The API server is running at : ${server.serverConfig.host}:${server.serverConfig.port}`)
     }
 
     @preCheck()

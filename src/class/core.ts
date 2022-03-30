@@ -1,26 +1,18 @@
 import path from 'path'
 import os from 'os'
 import Utils from 'uni-utils'
-import Project from './project'
+import Project, { getProject } from './project'
 import Base from './base'
 import Common from '../common'
-import Proxy from './proxy'
+import { getModuleManager } from './moduleManager'
 
 export default class Core extends Base{
-    static instance: Core
+
     private _modules: Module[] = []
     private modulesHub: RemoteModule[]
-    proxy: Proxy
+    private moduleManager = getModuleManager()
     constructor(){
         super()
-    }
-
-    static getInstance(){
-        if(!this.instance){
-            this.instance = new this()
-            this.instance.proxy = Proxy.getInstance()
-        }
-        return this.instance
     }
 
     static async preCheck(){
@@ -62,16 +54,8 @@ export default class Core extends Base{
         return this.modules.filter(e=>e.type === ModuleType.Task)
     }
 
-    async listDriver(): Promise<Module[]>{
-        return this.modules.filter(e=>e.type === ModuleType.Driver)
-    }
-
-    async listStorage(): Promise<Module[]>{
-        return this.modules.filter(e=>e.type === ModuleType.Storage)
-    }
-
-    async listNotification(): Promise<Module[]>{
-        return this.modules.filter(e=>e.type === ModuleType.Notification)
+    async defaultTask() {
+        return this.moduleManager.getDefaultTask()
     }
 
     async getProjectName(data){
@@ -80,19 +64,18 @@ export default class Core extends Base{
             if(!projects[data]){
                 throw Error(this.getMsg(14 ))
             }
-            return projects[data].main.name
+            return projects[data].Name
         }
         return data
     }
 
-    async createProject(name, task){
+    async createProject(name, task:string){
         const taskListData = await this.listTask()
         if(!task) {
-            try {
-                task = this.appSettings.Modules.Task.Default
-            } catch (error) {
-                throw new Error('not find default task module!')
-            }
+            const defaultTask = taskListData.find(e=>e.default)
+            if(!defaultTask) throw new Error('not find default task module!')
+            if(!defaultTask.active) throw new Error('default task module is inactive!')
+            task = defaultTask.name
         }else{
             if(taskListData.find(e => e.name === task)) {
                 this.log.info(`use task module : ${task}`)
@@ -124,29 +107,28 @@ export default class Core extends Base{
         await Utils.rm(projectPath)
     }
 
-    async getProject(name: string, singleton = false){
+    async getProject(name: string){
         const projectConfig = await this.getProjectConf(name)
-        const project = singleton ? await Project.getInstance(this, projectConfig) : new Project(projectConfig)
-        return project
+        return getProject(projectConfig, this)
     }
 
-    async setProjectConfig(name,data){
-        await this.getProject(name)
-        const kv = data.split('=')
-        const [key,value] = kv
-        if(kv.length!=2) {
-            throw Error(this.getMsg(28))
-        }
+    // async setProjectConfig(name,data){
+    //     await this.getProject(name)
+    //     const kv = data.split('=')
+    //     const [key,value] = kv
+    //     if(kv.length!=2) {
+    //         throw Error(this.getMsg(28))
+    //     }
 
-        // TODO: set value with k1.k2.k3 = value
-        // if(!projectConfig[key]){
-        //     throw Error(`config field [ ${key} ] not existed!`)
-        // }
-        // projectConfig[key] = value
-        if(key.toLowerCase() === 'driver'){
-            return this.changeProjectDriver(name,value)
-        }
-    }
+    //     // TODO: set value with k1.k2.k3 = value
+    //     // if(!projectConfig[key]){
+    //     //     throw Error(`config field [ ${key} ] not existed!`)
+    //     // }
+    //     // projectConfig[key] = value
+    //     if(key.toLowerCase() === 'driver'){
+    //         return this.changeProjectDriver(name,value)
+    //     }
+    // }
 
     async stopProject(name){
         const project = await this.getProject(name)
@@ -166,7 +148,6 @@ export default class Core extends Base{
     }
 
     async load(value: string|undefined){
-        await this.getModulesHub()
         if(value == undefined){
             // load all module
             for (const module of this.modules) {
@@ -238,15 +219,7 @@ export default class Core extends Base{
     }
 
     async getModuleInfo(name:string) {
-        const module = this.modules.find(e=>e.name === name)
-        if(module === undefined){
-            throw new Error(this.getMsg(34,name))
-        }
-        return module
-    }
-
-    async getProxy(index){
-        return this.proxy.getProxy(index)
+        return this.moduleManager.getDefaultModuleByName(name)
     }
 
     // other
@@ -329,11 +302,11 @@ export default class Core extends Base{
         }
     }
 
-    private async getModulesHub(){
-        this.log.debug(`fetch modules info from : ${this.appSettings.ModuleHub}`)
-        const listData = await Utils.download(this.appSettings.ModuleHub)
-        this.modulesHub = JSON.parse(listData)
-    }
+    // private async getModulesHub(){
+    //     this.log.debug(`fetch modules info from : ${this.appSettings.HubDomain}`)
+    //     const listData = await Utils.download(this.appSettings.HubDomain)
+    //     this.modulesHub = JSON.parse(listData)
+    // }
 
     get modules(){
         if(!this._modules.length){

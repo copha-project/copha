@@ -6,25 +6,25 @@ import { CommonRouter, ApiRouter } from '../server/router'
 import { errHandler, reqLog } from '../server/mid'
 
 export default class Server extends Base {
-    static instance: Server
+    // static instance: Server
     private _serverConfig: ServerConfig
     private app: Koa
     constructor() { super() }
 
-    static getInstance(options: ServerConfig): Server{
-        if(!this.instance){
-            this.instance = new Server()
-            this.instance.setConfig(options)
-            this.instance.init()
-        }
-        return this.instance
-    }
+    // static getInstance(options: ServerConfig): Server{
+    //     if(!this.instance){
+    //         this.instance = new Server()
+    //         this.instance.setConfig(options)
+    //         this.instance.init()
+    //     }
+    //     return this.instance
+    // }
 
-    private setConfig(options: ServerConfig){
-        options.port = options.port || this.appSettings.Server?.Port || 7000
-        options.host = options.host || this.appSettings.Server?.Host || '127.0.0.1'
-        this._serverConfig = options
-    }
+    // private setConfig(options: ServerConfig){
+    //     options.port = options.port || this.appSettings.Server?.Port || 7000
+    //     options.host = options.host || this.appSettings.Server?.Host || '127.0.0.1'
+    //     this._serverConfig = options
+    // }
 
     get serverConfig(){
         return this._serverConfig

@@ -10,6 +10,14 @@ export default class Base {
     static constData = ConstData
     static log = new Logger()
 
+    static instance: Base
+    static getInstance<T extends Base>(){
+        if(!this.instance){
+            this.instance = new this()
+        }
+        return this.instance as T
+    }
+
     constructor() {
         this.initConfig()
         Base.log.debug(this.getMsg(31, this.constructor.name))
