@@ -34,8 +34,8 @@ export default class Cli extends Base {
         program.command('list')
             .description('show list info')
             .option('-a, --all','show all list data')
-            .option('--task', 'show list info of task')
-            .option('--module', 'show list info of module')
+            .option('-t --task', 'show list info of task')
+            .option('-m --module', 'show list info of module')
             .action(this.instance.listInfo)
 
         program.command('create <name>')
@@ -162,12 +162,21 @@ export default class Cli extends Base {
     }
 
     private async listTask(){
-        return this.listModule('Task')
+        const moduleList: Module[] = await this.core.listTask()
+        return this.showListData(moduleList, 'Task')
     }
 
-    private async listModule(moduleTypeName?:string){
-        const moduleList: Module[] = await this.core['list'+moduleTypeName]()
-        console.log(this.getMsg(23))
+    private async listModule(){
+        const moduleList: Module[] = await this.core.listModule()
+        return this.showListData(moduleList, 'Module')
+    }
+
+    private showListData(moduleList: Module[], title: string){
+        if(moduleList.length == 0){
+            console.log(` --- no ${title} data --- `)
+            return
+        }
+        console.log(this.getMsg(23, title))
         console.table(
             moduleList.map(module => {
                 return {

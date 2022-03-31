@@ -2,14 +2,12 @@ import Utils from 'uni-utils'
 import Base from './base'
 
 export default class ModuleManager extends Base {
-    private _modules: Module[]
+    private _modules: Module[] = []
     constructor(){
         super()
     }
     get modules(){
-        if(!this._modules.length){
-            this._modules = Utils.readJsonSync(this.constData.AppModuleDBPath)
-        }
+        this._modules = Utils.readJsonSync(this.constData.AppModuleDBPath)
         return this._modules
     }
     

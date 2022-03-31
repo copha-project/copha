@@ -7,8 +7,6 @@ import Common from '../common'
 import { getModuleManager } from './moduleManager'
 
 export default class Core extends Base{
-
-    private _modules: Module[] = []
     private modulesHub: RemoteModule[]
     private moduleManager = getModuleManager()
     constructor(){
@@ -50,8 +48,12 @@ export default class Core extends Base{
         }))
     }
 
-    async listTask(): Promise<Module[]> {
-        return this.modules.filter(e=>e.type === ModuleType.Task)
+    async listTask(){
+        return this.moduleManager.getTaskList()
+    }
+    
+    async listModule(){
+        return this.moduleManager.modules
     }
 
     async defaultTask() {
@@ -150,7 +152,7 @@ export default class Core extends Base{
     async load(value: string|undefined){
         if(value == undefined){
             // load all module
-            for (const module of this.modules) {
+            for (const module of this.moduleManager.modules) {
                 this.log.info(`Check module info: [${module.name}]: ${module.active?'Ready':'No Ready'}`)
                 if(!module.active){
                     this.log.info(`Module: [${module.name}] is ready to use.`)
@@ -307,11 +309,4 @@ export default class Core extends Base{
     //     const listData = await Utils.download(this.appSettings.HubDomain)
     //     this.modulesHub = JSON.parse(listData)
     // }
-
-    get modules(){
-        if(!this._modules.length){
-            this._modules = Utils.readJsonSync(this.constData.AppModuleDBPath)
-        }
-        return this._modules
-    }
 }
