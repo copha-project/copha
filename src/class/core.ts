@@ -7,7 +7,6 @@ import Common from '../common'
 import { getModuleManager } from './moduleManager'
 
 export default class Core extends Base{
-    private modulesHub: RemoteModule[]
     private moduleManager = getModuleManager()
     constructor(){
         super()
@@ -56,7 +55,7 @@ export default class Core extends Base{
         return this.moduleManager.modules
     }
 
-    async defaultTask() {
+    async getDefaultTask() {
         return this.moduleManager.getDefaultTask()
     }
 
@@ -149,31 +148,35 @@ export default class Core extends Base{
         return project.reset(options)
     }
 
-    async load(value: string|undefined){
-        if(value == undefined){
+    async load(name: string|undefined){
+        if(name == undefined){
             // load all module
-            for (const module of this.moduleManager.modules) {
-                this.log.info(`Check module info: [${module.name}]: ${module.active?'Ready':'No Ready'}`)
-                if(!module.active){
-                    this.log.info(`Module: [${module.name}] is ready to use.`)
-                }else{
-                    await this.loadModule(module)
-                }
-                this.log.info("\n")
-            }
+            // for (const module of this.moduleManager.modules) {
+            //     this.log.info(`Check module info: [${module.name}]: ${module.active?'Ready':'No Ready'}`)
+            //     if(!module.active){
+            //         this.log.info(`Module: [${module.name}] is ready to use.`)
+            //     }else{
+            //         await this.loadModule(module)
+            //     }
+            //     this.log.info("\n")
+            // }
         }else{
              // local file
-            if(await Utils.fileExist(value)){
-                const ext = path.extname(value)
+            if(await Utils.fileExist(name)){
+                const ext = path.extname(name)
                 if(!ext || ext !== '.zip'){
                     throw Error(this.getMsg(29))
                 }
                 console.log('file ok')
             }
             // git
-            if(value.includes('http') && value.includes('github.com')){
+            if(name.includes('http') && name.includes('github.com')){
                 console.log('github ok')
             }
+
+            //search module hub and install
+            const [module, modulePackage] = await this.moduleManager.queryModuleFromHub(name)
+            return this.loadModule(module, modulePackage)
         }
     }
 
@@ -221,7 +224,7 @@ export default class Core extends Base{
     }
 
     async getModuleInfo(name:string) {
-        return this.moduleManager.getDefaultModuleByName(name)
+        return this.moduleManager.getModuleByName(name)
     }
 
     // other
@@ -294,14 +297,9 @@ export default class Core extends Base{
         return path.join(os.tmpdir(),`copha_project_${name}_export_data.zip`)
     }
 
-    private async loadModule(module: Module){
-        this.log.info(`Start load module: [${module.name}]`)   
-        const remoteModule = this.modulesHub.find(e=>e.name == module.name)
-        if(remoteModule == undefined){
-            this.log.err('not find module info from module hub.')
-        }else{
-            this.log.debug(remoteModule.repository)
-        }
+    private async loadModule(module: Module, modulePackage: ModulePackage){
+        this.log.info(`Start load module: [${module.name}] from ${modulePackage.url}`)   
+        return this.moduleManager.load(module, modulePackage)
     }
 
     // private async getModulesHub(){

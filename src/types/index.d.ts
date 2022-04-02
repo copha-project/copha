@@ -31,6 +31,7 @@ declare const enum ModuleType {
     Task="task"
 }
 interface Module {
+    id: string
     name: string
     desc: string
     type: string
@@ -40,12 +41,11 @@ interface Module {
     default: boolean
 }
 
-interface RemoteModule {
-    name: string
-    desc: string
-    type: string
-    repository: string
-    down_link: string
+interface ModulePackage {
+    version: string
+    md5: string
+    sha1: string,
+    url: string
 }
 
 declare type TaskModule = Module

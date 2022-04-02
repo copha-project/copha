@@ -241,15 +241,13 @@ export default class Project extends Base {
     private async loadTask(){
         let task:Module
         if(!this.conf.Task){
-            task = await this.core.defaultTask()
+            task = await this.core.getDefaultTask()
         }
         task = await this.core.getModuleInfo(this.conf.Task)
 
         const moduleClass = await this.core.getModule(task.name)
         
         this._task = await moduleClass.getInstance()
-
-
     }
 
     private async loadCustomCode() {

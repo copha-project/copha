@@ -1,6 +1,11 @@
+import {tmpdir} from 'os'
+import path from 'path'
+import fs from 'fs'
 import Utils from 'uni-utils'
 import Base from './base'
 import { default as axios } from 'axios'
+import compareVersions from 'compare-versions'
+import unzipper from 'unzipper'
 export default class ModuleManager extends Base {
     private _moduleHubApi: {[key:string]:string}
     private _modules: Module[] = []
@@ -12,6 +17,12 @@ export default class ModuleManager extends Base {
         return this._modules
     }
     
+    getModuleByName(name:string){
+        const module = this.modules.find(e=>e.name === name)
+        if(!module?.active) throw Error('module inactive')
+        return module
+    }
+
     getModuleListByType(typeName:string){
         return this.modules.filter(e=>e.type === typeName)
     }
@@ -30,26 +41,80 @@ export default class ModuleManager extends Base {
         return this.getDefaultModuleByType(ModuleType.Task)
     }
 
-    getDefaultModuleByName(name:string){
-        const module = this.modules.find(e=>e.name === name)
-        if(!module) throw Error("not find module")
-        if(!module.active) throw Error("module is inactive")
-        return module
+    //download verify unzip install move active
+    async load(module:Module, modulePackage: ModulePackage){
+        const savePath = path.resolve(tmpdir(),`copha-module/${module.id}/${modulePackage.version}.zip`)
+        await Utils.createDir(path.dirname(savePath))
+        this.log.debug(`download : ${modulePackage.url} | save : ${savePath}`)
+        await Utils.download(modulePackage.url, {savePath: savePath})
+        const md5 = await Utils.hash.getFileMd5(savePath)
+        this.log.debug(`verify: caculete md5: ${md5} | target md5 : ${modulePackage.md5}`)
+        if(md5 !== modulePackage.md5) throw Error('module file hash code are not the same')
+        this.log.debug(`unzip`)
+        const dir = path.resolve(path.dirname(savePath),`${modulePackage.version}`)
+        const destDir = path.resolve(this.constData.AppModulesDir,module.name,modulePackage.version)
+        await Utils.createDir(path.dirname(destDir))
+        fs.createReadStream(savePath).pipe(unzipper.Extract({ path: dir }))
+        this.log.debug(`install`)
+        this.log.debug(`move`)
+        await Utils.moveFile(dir,destDir)
+        this.log.debug(`active`)
     }
 
-    async queryModuleFromHub(name:string){
-        const moduleList: Module[] = await this.queryModuleListFromHub()
+    async queryModuleFromHub(name:string, version?: string): Promise<[Module,ModulePackage]>{
+        const moduleList = await this.queryModuleListFromHub()
         const queryModule = moduleList.find(e=>e.name === name)
         if(!queryModule) throw Error(`no module named ${name} found`)
-        return queryModule
+        const packageList = await this.queryPackageListFromHub(queryModule.id)
+        if(!packageList.length) throw Error("module no package")
+        let queryPackage: ModulePackage | undefined
+        // no version declare
+        if(!version){
+            queryPackage = this.getLatestVersionPackage(packageList)
+        }else{
+            queryPackage = packageList.find(e=>e.version === version)
+        }
+        if(!queryPackage) throw Error("not find version package")
+        const packageItem = await this.queryPackageFromHub(queryModule.id, queryPackage.version)
+
+        return [queryModule,packageItem]
     }
-    private async queryModuleListFromHub(){
+
+    private async queryModuleListFromHub(): Promise<Module[]> {
         const resp = await axios.get(this.moduleHubApi.moduleList,{responseType: 'json'})
         this.log.debug('queryModuleListFromHub:',resp.status,resp.statusText,JSON.stringify(resp.data||'no data'))
         if(resp.status !== 200 || resp.data.code !== 200) throw Error('module hub not work')
         return resp.data.data
     }
 
+    private async queryPackageListFromHub(moduleId: string): Promise<ModulePackage[]>{
+        const url = this.getRemotePackageListUrl(moduleId)
+        const resp = await axios.get(url)
+        this.log.debug('queryPackageListFromHub:',resp.status,resp.statusText,JSON.stringify(resp.data||'no data'))
+        if(resp.status !== 200 || resp.data.code !== 200) throw Error('module hub not work')
+        return resp.data.data
+    }
+
+    private async queryPackageFromHub(moduleId: string, version:string): Promise<ModulePackage>{
+        const url = this.getRemotePackageUrl(moduleId, version)
+        const resp = await axios.get(url)
+        this.log.debug('queryPackageFromHub:',resp.status,resp.statusText,JSON.stringify(resp.data||'no data'))
+        if(resp.status !== 200 || resp.data.code !== 200) throw Error('module hub not work')
+        return resp.data.data
+    }
+
+    // private getRemoteModuleUrl(moduleId: string){
+    //     return this.moduleHubApi.getModule.replace('{id}', moduleId)
+    // }
+
+    private getRemotePackageListUrl(moduleId: string){
+        return this.moduleHubApi.packageList.replace('{id}', moduleId)
+    }
+    
+    private getRemotePackageUrl(moduleId: string, version: string){
+        return this.moduleHubApi.getPackage.replace('{id}', moduleId).replace('{ver}',version)
+    }
+    
     get moduleHubApi(){
         if(!this._moduleHubApi){
             const baseUrl = (this.appSettings.ModuleHub.startsWith('http') ? this.appSettings.ModuleHub : `https://${this.appSettings.ModuleHub}`) + '/api/v1/modules'
@@ -61,6 +126,11 @@ export default class ModuleManager extends Base {
             }
         }
         return this._moduleHubApi
+    }
+
+    private getLatestVersionPackage(packageList: ModulePackage[]){
+        if(!packageList.length) throw Error('no package data')
+        return packageList.find(e=>e.version === packageList.map(e=>e.version).sort(compareVersions)[packageList.length-1])
     }
 }
 

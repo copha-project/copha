@@ -80,8 +80,8 @@ export default class Cli extends Base {
             .option('-d, --daemon', 'run with daemon')
             .action(this.instance.serve)
 
-        program.command('load [data]')
-            .description('load resource : project, module')
+        program.command('load <name>')
+            .description('load resource : task, module')
             .action(this.instance.load)
 
         program.command('logs [project]')
@@ -191,6 +191,10 @@ export default class Cli extends Base {
 
     @preCheck()
     private async load(name){
+        this.log.debug(`get load params: ${ JSON.stringify(name)}`)
+        if(!name) {
+            throw Error('no name got')
+        }
         return this.core.load(name)
     }
 
