@@ -1,11 +1,12 @@
 import {tmpdir} from 'os'
 import path from 'path'
-import fs from 'fs'
 import Utils from 'uni-utils'
+import {copy} from 'fs-extra'
 import Base from './base'
 import { default as axios } from 'axios'
 import compareVersions from 'compare-versions'
-import unzipper from 'unzipper'
+import { unzip } from '../common'
+import {execaCommand} from 'execa'
 export default class ModuleManager extends Base {
     private _moduleHubApi: {[key:string]:string}
     private _modules: Module[] = []
@@ -43,21 +44,27 @@ export default class ModuleManager extends Base {
 
     //download verify unzip install move active
     async load(module:Module, modulePackage: ModulePackage){
-        const savePath = path.resolve(tmpdir(),`copha-module/${module.id}/${modulePackage.version}.zip`)
-        await Utils.createDir(path.dirname(savePath))
-        this.log.debug(`download : ${modulePackage.url} | save : ${savePath}`)
-        await Utils.download(modulePackage.url, {savePath: savePath})
-        const md5 = await Utils.hash.getFileMd5(savePath)
-        this.log.debug(`verify: caculete md5: ${md5} | target md5 : ${modulePackage.md5}`)
+        const packageTmpDirPath = path.resolve(tmpdir(),`copha-module/${module.id}/${modulePackage.version}`)
+        const packageTmpPath = `${packageTmpDirPath}.zip`
+        const packageDestDir = path.resolve(this.constData.AppModulesDir,module.name,modulePackage.version)
+        await Utils.createDir(packageTmpDirPath)
+
+        this.log.debug(`download-> ${modulePackage.url} | save : ${packageTmpPath}`)
+        await Utils.download(modulePackage.url, {savePath: packageTmpPath})
+        
+        const md5 = await Utils.hash.getFileMd5(packageTmpPath)
+        this.log.debug(`verify-> caculete md5: ${md5} | target md5 : ${modulePackage.md5}`)
         if(md5 !== modulePackage.md5) throw Error('module file hash code are not the same')
-        this.log.debug(`unzip`)
-        const dir = path.resolve(path.dirname(savePath),`${modulePackage.version}`)
-        const destDir = path.resolve(this.constData.AppModulesDir,module.name,modulePackage.version)
-        await Utils.createDir(path.dirname(destDir))
-        fs.createReadStream(savePath).pipe(unzipper.Extract({ path: dir }))
-        this.log.debug(`install`)
-        this.log.debug(`move`)
-        await Utils.moveFile(dir,destDir)
+        
+        this.log.debug(`unzip-> ${packageTmpPath} to ${packageTmpDirPath}`)
+        await unzip(packageTmpPath, packageTmpDirPath)
+
+        const installRes = await execaCommand('npm install',{cwd: packageTmpDirPath})
+        console.log(installRes.stdout,installRes.exitCode);
+        this.log.debug(`install->`)
+
+        this.log.debug(`move-> from :${packageTmpDirPath} to ${packageDestDir}`)
+        await copy(packageTmpDirPath,packageDestDir)
         this.log.debug(`active`)
     }
 

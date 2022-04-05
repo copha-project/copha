@@ -3,7 +3,7 @@ import Controller from './controller'
 
 export function CommonRouter(){
     const router = new Router()
-    const service = Controller.getInstance()
+    const service = Controller.getInstance<Controller>()
     
     router.get('/',service.home)
     router.all('(.*)',service.notFind)
@@ -13,7 +13,7 @@ export function CommonRouter(){
 
 export function ApiRouter(){
     const apiRouter = new Router({prefix: '/api'})
-    const service = Controller.getInstance()
+    const service = Controller.getInstance<Controller>()
 
     apiRouter
     .get('/',service.home)

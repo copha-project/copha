@@ -3,8 +3,17 @@ import fs from 'fs'
 import domain from 'domain'
 import archiver from 'archiver'
 import { ncp } from 'ncp'
+import unzipper from 'unzipper'
+import stream from 'stream'
+import util from 'util';
 
-
+export async function unzip(zipFile, destDir){
+  const pipelinePromise = util.promisify(stream.pipeline)
+  await pipelinePromise(
+    fs.createReadStream(zipFile),
+    unzipper.Extract({ path: destDir }),
+  )
+}
 export default class Common {
   static isDebug = typeof process.env.COPHA_DEBUG !== "undefined"
   static isDev = process.env.NODE_ENV !== "production"

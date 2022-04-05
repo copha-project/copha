@@ -1,19 +1,6 @@
 import Base from '../class/base'
 
 export default class Controller extends Base {
-    static instance: Controller
-    constructor() {
-        super()
-    }
-
-    static getInstance(){
-        if(!this.instance){
-            this.log.debug('init server Controller')
-            this.instance = new this()
-        }
-        return this.instance
-    }
-
     async home(ctx){
         ctx.body = "ok"
     }
