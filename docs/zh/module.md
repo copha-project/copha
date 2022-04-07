@@ -6,9 +6,9 @@ lang: "zh"
 ---
 
 # Copha 模块
-任务可以调用不同的功能模块完成业务需求，例如网络访问，通知，存储等功能。
+任务通过加载不同的模块来调用对应的功能，例如网络访问，通知，存储等功能。
 
-> 以存储模块举例，copha 内置了一个简单的本地文件存储模块 [file-storage](https://github.com/copha-project/file-storage) 来提供数据存储等功能，如果本地文件存储不能满足需求，也可以选择其他存储模块。
+> 以存储模块举例，Copha 内置了一个简单的本地文件存储模块 [file-storage](https://github.com/copha-project/file-storage) 来提供数据存储等功能，如果本地文件存储不能满足需求，也可以选择其他存储模块。
 
 ## 查看模块列表
 在 cli 下可以使用 `copha list --module` 查看模块列表，列表字段说明如下：
@@ -19,17 +19,18 @@ lang: "zh"
 
 ## 模块的格式和结构
 ### 1. 描述格式
-模块由特定文件组合而成，并且模块都符合 npm 包格式标准。
+模块由特定文件按一定规则组合而成，且模块都符合 npm 包格式标准。
 因为模块是标准的 npm 包，所以模块描述元信息直接复用 **package.json** 中的相关字段，并且有额外字段添加，相关模块使用的字段解释如下：
 
 | 字段 |是否复用| 说明|
 |--|--|--|
 | name |是| 模块名 |
-|type|新增| 模块类型名|
 | description |是 |描述信息 |
 | version| 是 |版本号 |
+| copha.type|新增| 模块类型名|
 
 ### 2. 文件组织结构
+
 | 名称 | 类型 | 说明|
 |--|--|--|
 | resource | 文件夹 | 存放模块所需要的相关资源，存放内容，格式，形式由开发者定义，资源访问方式参考 [getResource](#getResource) API |
@@ -55,15 +56,14 @@ this.config.Key1
 
 |功能|名称|描述|
 |--|--|--|
-|驱动|[default-net](https://github.com/copha-project/simple-driver)|提供基础的网络数据请求功能|
-|存储|[default-storage](https://github.com/copha-project/file-storage)|提供基础的本地文件存储功能|
-|任务|[default-task](https://github.com/copha-project/copha-empty-task)|一个简单的任务模块，创建项目时使用的默认任务|
+|网络|[default-net](https://github.com/copha-project/simple-driver)|提供基础的网络数据请求功能|
+|存储|[file-storage](https://github.com/copha-project/file-storage)|提供基础的本地文件存储功能|
 
 ## 已注册模块
 内置模块是指已经在 Copha 中注册过的，可以先初始化然后直接使用的一类模块，在命令行中加载并初始化已注册模块的方式如下：
 
 ```
-copha load module-name --init
+copha load module-name
 ```
 
 ## 第三方模块（未注册）
